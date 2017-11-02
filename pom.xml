@@ -28,9 +28,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/esanchezros/quickfix-spring-boot-starter/</url>
-        <connection>scm:git:git://github.com/esanchezros/quickfix-spring-boot-starter</connection>
-        <developerConnection>scm:git:git@github.com:esanchezros/quickfix-spring-boot-starter</developerConnection>
+        <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
+        <connection>https://github.com/esanchezros/quickfixj-spring-boot-starter.git</connection>
+        <developerConnection>https://github.com/esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

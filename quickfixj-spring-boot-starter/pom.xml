@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.allune.quickfixj.spring.boot.starter</groupId>
+		<artifactId>quickfixj-spring-boot-starter-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>quickfixj-spring-boot-starter</artifactId>
+	<packaging>jar</packaging>
+
+	<name>quickfixj-spring-boot-starter</name>
+	<description>Spring Boot Starter for QuickFixJ</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- QuickFIX/J dependencies -->
+		<dependency>
+			<groupId>org.quickfixj</groupId>
+			<artifactId>quickfixj-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quickfixj</groupId>
+			<artifactId>quickfixj-messages-all</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cloudhopper.proxool</groupId>
+			<artifactId>proxool</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<!-- bug in proxool pom - should be test scope -->
+				<exclusion>
+					<groupId>avalon-framework</groupId>
+					<artifactId>avalon-framework-api</artifactId>
+				</exclusion>
+				<!-- we use slf4j which provides this API -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cloudhopper.proxool</groupId>
+			<artifactId>proxool-cglib</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<!-- bug in proxool pom - should be test scope -->
+				<exclusion>
+					<groupId>avalon-framework</groupId>
+					<artifactId>avalon-framework-api</artifactId>
+				</exclusion>
+				<!-- we use slf4j which provides this API -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Test dependencies -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+</project>

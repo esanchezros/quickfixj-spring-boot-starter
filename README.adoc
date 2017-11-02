@@ -1,0 +1,118 @@
+
+= Spring Boot Starter for QuickFixJ
+
+https://github.com/quickfix-j/quickfixj
+
+//*Examples:*
+//https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
+//
+//* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-client[Client]
+//* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-server[Server]
+
+This project is a http://projects.spring.io/spring-boot/[Spring Boot Starter] for QuickFixJ.
+It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.
+
+== Getting started
+
+To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Spring Boot Starter dependency in
+your project.
+
+[source, xml]
+----
+<dependency>
+	<groupId>com.allune.quickfixj.spring.boot.starter</groupId>
+	<artifactId>quickfixj-spring-boot-starter</artifactId>
+</dependency>
+----
+
+=== QuickFixJ Spring Boot Starter - Server
+
+The `@EnableQuickFixJServer` will auto configure a QuickFixJ Server:
+
+[source, java]
+----
+@EnableQuickFixJServer
+@SpringBootApplication
+public class AppServer {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AppServer.class, args);
+    }
+}
+----
+
+The configuration can be done in the application.properties / application.yml.
+
+[source,yml]
+----
+quickfixj:
+  server:
+    config: classpath:quickfixj-server.cfg
+----
+
+Additionally you need to add a https://www.quickfixj.org/usermanual/1.6.4//usage/configuration.html[quickfix-server.cfg]
+file to configure the FIX sessions. The configuration is resolved using the following approach:
+
+* By the presence of a `quickfix.SessionSettings` bean named `serverSessionSettings`
+* By a configuration file defined by the `quickfixj.server.config` property
+* By the presence of the `quickfixj.server.config` system property
+* By a `quickfixj-server.cfg` in the working directory or at the root of the classpath
+
+
+==== QuickFixJ Server properties
+
+[source, properties]
+----
+quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor
+quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up
+quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped
+quickfixj.client.jmxEnabled=true # whether to register the jmx mbeans for the acceptor
+----
+
+
+=== QuickFixJ Spring Boot Starter - Client
+
+The `@EnableQuickFixJClient` will auto configure a QuickFixJ Client:
+
+[source, java]
+----
+@EnableQuickFixJClient
+@SpringBootApplication
+public class AppClient {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AppClient.class, args);
+    }
+}
+----
+
+The configuration can be done in the application.properties / application.yml.
+
+[source,yml]
+----
+quickfixj:
+  client:
+    config: classpath:quickfixj-client.cfg
+----
+
+Additionally you need to add a https://www.quickfixj.org/usermanual/1.6.4//usage/configuration.html[quickfix-client.cfg]
+file to configure the FIX sessions. The configuration is resolved using the following approach:
+
+* By the presence of a `quickfix.SessionSettings` bean named `clientSessionSettings`
+* By a configuration file defined by the `quickfixj.client.config` property
+* By the presence of the `quickfixj.client.config` system property
+* By a `quickfixj-client.cfg` in the working directory or at the root of the classpath
+
+==== QuickFixJ Client properties
+
+[source, properties]
+----
+quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfixj initiator
+quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up
+quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped
+quickfixj.client.jmxEnabled=true # whether to register the jmx mbeans for the initiator
+----
+
+
+
+

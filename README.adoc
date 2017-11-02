@@ -3,11 +3,11 @@
 
 https://github.com/quickfix-j/quickfixj
 
-//*Examples:*
-//https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
-//
-//* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-client[Client]
-//* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-server[Server]
+*Examples:*
+https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-client[Client]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-server[Server]
 
 This project is a http://projects.spring.io/spring-boot/[Spring Boot Starter] for QuickFixJ.
 It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.

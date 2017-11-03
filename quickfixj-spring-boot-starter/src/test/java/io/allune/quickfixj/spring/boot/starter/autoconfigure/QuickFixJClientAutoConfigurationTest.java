@@ -1,6 +1,7 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eduardo Sanchez-Ros
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"quickfixj.client.autoStartup=false"})
-public class QuickFixJClientAutoConfigurationTests {
+@SpringBootTest(properties = {"quickfixj.client.autoStartup=false", "quickfixj.client.config="})
+public class QuickFixJClientAutoConfigurationTest {
 
     @Autowired
     private ConnectorManager clientConnectionManager;
@@ -48,7 +49,6 @@ public class QuickFixJClientAutoConfigurationTests {
         assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);
-
     }
 
     @Configuration

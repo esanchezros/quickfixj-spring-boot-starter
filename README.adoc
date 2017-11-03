@@ -20,7 +20,7 @@ your project.
 [source, xml]
 ----
 <dependency>
-	<groupId>io.allune.quickfixj.spring.boot.starter</groupId>
+	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
 </dependency>
 ----

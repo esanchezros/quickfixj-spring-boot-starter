@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eduardo Sanchez-Ros
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"quickfixj.server.autoStartup=false"})
-public class QuickFixJServerAutoConfigurationTests {
+@SpringBootTest(properties = {"quickfixj.server.autoStartup=false", "quickfixj.server.config="})
+public class QuickFixJServerAutoConfigurationTest {
 
     @Autowired
     private ConnectorManager serverConnectionManager;
@@ -41,9 +41,6 @@ public class QuickFixJServerAutoConfigurationTests {
     @Autowired
     private MessageFactory serverMessageFactory;
 
-    @Autowired
-    private ObjectName serverAcceptorJmx;
-
     @Test
     public void testAutoConfiguredBeans() {
         assertThat(serverConnectionManager.isRunning()).isFalse();
@@ -53,7 +50,6 @@ public class QuickFixJServerAutoConfigurationTests {
         assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
-        assertThat(serverAcceptorJmx).isInstanceOf(ObjectName.class);
     }
 
     @Configuration

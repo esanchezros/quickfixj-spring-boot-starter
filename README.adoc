@@ -113,6 +113,8 @@ quickfixj.client.phase=0 # phase in which this connection manager should be star
 quickfixj.client.jmxEnabled=true # whether to register the jmx mbeans for the initiator
 ----
 
+=== License and Acknowledgement
 
+The QuickFixJ Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].
 
-
+This code includes software developed by http://www.quickfixengine.org/[quickfixengine.org].

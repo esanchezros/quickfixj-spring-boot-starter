@@ -72,13 +72,11 @@ public class ConnectorManager implements SmartLifecycle {
     @Override
     public void start() {
         synchronized (this.lifecycleMonitor) {
-            // Check whether there is already an instance running
             if (!isRunning()) {
                 if (logger.isInfoEnabled()) {
                     logger.info("start: Starting ConnectorManager");
                 }
                 try {
-                    // Start the connection with the server
                     connector.start();
                 } catch (ConfigError | RuntimeError ex) {
                     throw new ConfigurationException(ex.getMessage(), ex);
@@ -103,7 +101,6 @@ public class ConnectorManager implements SmartLifecycle {
                     logger.info("stop: Stopping ConnectorManager");
                 }
                 try {
-                    // Stop the connection with FIX acceptor
                     connector.stop();
                 } finally {
                     running = false;

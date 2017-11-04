@@ -38,10 +38,13 @@ public class SessionSettingsLocator {
             }
 
             // Try loading the settings from the system property
-            resource = loadFromSystemProperty(systemProperty);
-            if (resource!= null && resource.exists()) {
-                logger.info("Loading settings from System property '" + systemProperty + "'");
-                return new SessionSettings(resource.getInputStream());
+            String configSystemProperty = System.getProperty(systemProperty);
+            if (configSystemProperty != null) {
+                resource = loadResource(configSystemProperty);
+                if (resource!= null && resource.exists()) {
+                    logger.info("Loading settings from System property '" + systemProperty + "'");
+                    return new SessionSettings(resource.getInputStream());
+                }
             }
 
             // Try loading the settings file from the same location in the filesystem
@@ -62,16 +65,6 @@ public class SessionSettingsLocator {
         } catch (RuntimeException | ConfigError | IOException e) {
             throw new SettingsNotFoundException(e.getMessage(), e);
         }
-    }
-
-    private static Resource loadFromSystemProperty(String propertyName) {
-        String configSystemProperty = System.getProperty(propertyName);
-        if (configSystemProperty == null) {
-            logger.debug("Could not find '" + propertyName + "' System property");
-            return null;
-        }
-
-        return loadResource(configSystemProperty);
     }
 
     private static Resource loadResource(String location) {

@@ -1,3 +1,4 @@
+image:https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter.svg?branch=master["Build Status", link="https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter"]
 
 = Spring Boot Starter for QuickFixJ
 

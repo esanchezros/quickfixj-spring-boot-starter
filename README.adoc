@@ -66,7 +66,7 @@ file to configure the FIX sessions. The configuration is resolved using the foll
 quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor
 quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up
 quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped
-quickfixj.client.jmxEnabled=true # whether to register the jmx mbeans for the acceptor
+quickfixj.server.jmxEnabled=true # whether to register the jmx mbeans for the acceptor
 ----
 
 

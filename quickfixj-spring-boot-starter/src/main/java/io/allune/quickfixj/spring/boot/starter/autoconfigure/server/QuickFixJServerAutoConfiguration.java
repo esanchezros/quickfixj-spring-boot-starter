@@ -101,7 +101,7 @@ public class QuickFixJServerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "quickfixj.server", name = "jmxEnabled")
+    @ConditionalOnProperty(prefix = "quickfixj.server", name = "jmx-enabled", havingValue = "true")
     @ConditionalOnClass(JmxExporter.class)
     @ConditionalOnSingleCandidate(Acceptor.class)
     @ConditionalOnMissingBean(name = "serverInitiatorMBean")

@@ -42,47 +42,78 @@ public class SessionSettingsLocator {
         //
     }
 
-    public static SessionSettings loadSettings(String applicationProperty, String systemProperty, String fileSystemLocation,
+    public static SessionSettings loadSettings(String applicationConfigLocation, String systemProperty, String fileSystemLocation,
                                                String classpathLocation) {
 
         try {
-            Resource resource;
-            if (applicationProperty != null) {
-                resource = loadResource(applicationProperty);
-                if (resource != null && resource.exists()) {
-                    logger.info("Loading settings from application property '" + applicationProperty + "'");
-                    return new SessionSettings(resource.getInputStream());
-                }
-            }
+            SessionSettings settings;
+            settings = loadFromApplicationConfig(applicationConfigLocation);
+            if (settings != null) return settings;
 
-            // Try loading the settings from the system property
-            String configSystemProperty = System.getProperty(systemProperty);
-            if (configSystemProperty != null) {
-                resource = loadResource(configSystemProperty);
-                if (resource!= null && resource.exists()) {
-                    logger.info("Loading settings from System property '" + systemProperty + "'");
-                    return new SessionSettings(resource.getInputStream());
-                }
-            }
+            settings = loadFromSystemProperty(systemProperty);
+            if (settings != null) return settings;
 
-            // Try loading the settings file from the same location in the filesystem
-            resource = loadResource(fileSystemLocation);
-            if (resource != null && resource.exists()) {
-                logger.info("Loading settings from default filesystem location '" + fileSystemLocation + "'");
-                return new SessionSettings(resource.getInputStream());
-            }
+            settings = loadFromFileSystem(fileSystemLocation);
+            if (settings != null) return settings;
 
-            // Try loading the settings file from the classpath
-            resource = loadResource(classpathLocation);
-            if ( resource != null && resource.exists()) {
-                logger.info("Loading settings from default classpath location '" + classpathLocation + "'");
-                return new SessionSettings(resource.getInputStream());
-            }
+            settings = loadFromClassPath(classpathLocation);
+            if (settings != null) return settings;
 
             throw new SettingsNotFoundException("Settings file not found");
         } catch (RuntimeException | ConfigError | IOException e) {
             throw new SettingsNotFoundException(e.getMessage(), e);
         }
+    }
+
+    private static SessionSettings loadFromApplicationConfig(String applicationConfigLocation) throws ConfigError, IOException {
+        Resource resource;
+        if (applicationConfigLocation != null) {
+            resource = loadResource(applicationConfigLocation);
+            if (resource != null && resource.exists()) {
+                logger.info("Loading settings from application property '" + applicationConfigLocation + "'");
+                return new SessionSettings(resource.getInputStream());
+            }
+        }
+        return null;
+    }
+
+    private static SessionSettings loadFromSystemProperty(String systemProperty) throws ConfigError, IOException {
+        // Try loading the settings from the system property
+        if (systemProperty != null) {
+            String configSystemProperty = System.getProperty(systemProperty);
+            if (configSystemProperty != null) {
+                Resource resource = loadResource(configSystemProperty);
+                if (resource != null && resource.exists()) {
+                    logger.info("Loading settings from System property '" + systemProperty + "'");
+                    return new SessionSettings(resource.getInputStream());
+                }
+            }
+        }
+        return null;
+    }
+
+    private static SessionSettings loadFromFileSystem(String fileSystemLocation) throws ConfigError, IOException {
+        // Try loading the settings file from the same location in the filesystem
+        if (fileSystemLocation != null) {
+            Resource resource = loadResource(fileSystemLocation);
+            if (resource != null && resource.exists()) {
+                logger.info("Loading settings from default filesystem location '" + fileSystemLocation + "'");
+                return new SessionSettings(resource.getInputStream());
+            }
+        }
+        return null;
+    }
+
+    private static SessionSettings loadFromClassPath(String classpathLocation) throws ConfigError, IOException {
+        // Try loading the settings file from the classpath
+        if (classpathLocation != null) {
+            Resource resource = loadResource(classpathLocation);
+            if (resource != null && resource.exists()) {
+                logger.info("Loading settings from default classpath location '" + classpathLocation + "'");
+                return new SessionSettings(resource.getInputStream());
+            }
+        }
+        return null;
     }
 
     private static Resource loadResource(String location) {

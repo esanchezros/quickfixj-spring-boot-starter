@@ -127,6 +127,16 @@
                         <format>xml</format>
                     </formats>
                     <check />
+                    <instrumentation>
+                        <excludes>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJClient.class</exclude>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJServer.class</exclude>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/autoconfigure/QuickFixJBootProperties.class</exclude>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/autoconfigure/client/QuickFixJClientMarkerConfiguration.class</exclude>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/autoconfigure/server/QuickFixJServerMarkerConfiguration.class</exclude>
+                            <exclude>io/allune/quickfixj/spring/boot/starter/exception/*.class</exclude>
+                        </excludes>
+                    </instrumentation>
                 </configuration>
             </plugin>
         </plugins>

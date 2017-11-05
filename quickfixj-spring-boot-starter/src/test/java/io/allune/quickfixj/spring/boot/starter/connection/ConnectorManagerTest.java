@@ -16,11 +16,17 @@
 
 package io.allune.quickfixj.spring.boot.starter.connection;
 
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import quickfix.ConfigError;
 import quickfix.Connector;
+import quickfix.RuntimeError;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -29,19 +35,71 @@ import static org.mockito.Mockito.verify;
  */
 public class ConnectorManagerTest {
 
-    @Test
-    public void clientLifecycle() throws Exception {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
+    @Test
+    public void shouldStartAndStopConnector() throws Exception {
+
+        // Given
         Connector connector = mock(Connector.class);
         ConnectorManager connectorManager = new ConnectorManager(connector);
 
+        // When
         connectorManager.start();
         assertTrue(connectorManager.isRunning());
 
         connectorManager.stop();
         assertFalse(connectorManager.isRunning());
 
+        // Then
         verify(connector).start();
         verify(connector).stop();
+    }
+
+    @Test
+    public void shouldStartConnectorAndStopWithCallback() throws Exception {
+
+        Connector connector = mock(Connector.class);
+        ConnectorManager connectorManager = new ConnectorManager(connector);
+
+        connectorManager.start();
+        assertTrue(connectorManager.isRunning());
+        verify(connector).start();
+
+        Runnable callback = mock(Runnable.class);
+        connectorManager.stop(callback);
+        assertFalse(connectorManager.isRunning());
+
+        verify(connector).stop();
+        verify(callback).run();
+    }
+
+    @Test
+    public void shouldThrowConfigurationExceptionUponConfigErrorFailure() throws Exception {
+
+        Connector connector = mock(Connector.class);
+        willThrow(ConfigError.class).given(connector).start();
+        ConnectorManager connectorManager = new ConnectorManager(connector);
+
+        thrown.expect(ConfigurationException.class);
+        connectorManager.start();
+        assertFalse(connectorManager.isRunning());
+
+        verify(connector).start();
+    }
+
+    @Test
+    public void shouldThrowConfigurationExceptionUponRuntimeErrorFailure() throws Exception {
+
+        Connector connector = mock(Connector.class);
+        willThrow(RuntimeError.class).given(connector).start();
+        ConnectorManager connectorManager = new ConnectorManager(connector);
+
+        thrown.expect(ConfigurationException.class);
+        connectorManager.start();
+        assertFalse(connectorManager.isRunning());
+
+        verify(connector).start();
     }
 }

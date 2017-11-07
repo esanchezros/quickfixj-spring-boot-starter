@@ -21,18 +21,18 @@ public class SessionSettingsLocatorTest {
 
     @Test
     public void shouldLoadDefaultFromSystemProperty() throws URISyntaxException {
-        SessionSettings settings = loadSettings("classpath:quickfixj-client.cfg", null, null, null);
+        SessionSettings settings = loadSettings("classpath:quickfixj.cfg", null, null, null);
         assertThat(settings).isNotNull();
 
-        URL resource = SessionSettingsLocatorTest.class.getResource("/quickfixj-client.cfg");
+        URL resource = SessionSettingsLocatorTest.class.getResource("/quickfixj.cfg");
         File file = Paths.get(resource.toURI()).toFile();
         settings = loadSettings(null, null, "file://" + file.getAbsolutePath(), null);
         assertThat(settings).isNotNull();
 
-        settings = loadSettings(null, null, null, "classpath:quickfixj-client.cfg");
+        settings = loadSettings(null, null, null, "classpath:quickfixj.cfg");
         assertThat(settings).isNotNull();
 
-        System.setProperty("quickfixj.client.config", "classpath:quickfixj-client.cfg");
+        System.setProperty("quickfixj.client.config", "classpath:quickfixj.cfg");
         settings = loadSettings(null, "quickfixj.client.config", null, null);
         assertThat(settings).isNotNull();
     }

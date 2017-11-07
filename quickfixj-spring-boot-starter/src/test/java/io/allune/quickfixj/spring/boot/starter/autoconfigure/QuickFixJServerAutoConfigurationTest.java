@@ -36,7 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eduardo Sanchez-Ros
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"quickfixj.server.autoStartup=false", "quickfixj.server.config="})
+@SpringBootTest(
+        properties = {
+                "quickfixj.server.autoStartup=false",
+                "quickfixj.server.config=classpath:quickfixj.cfg",
+                "quickfixj.server.jmx-enabled=true"
+        })
 public class QuickFixJServerAutoConfigurationTest {
 
     @Autowired
@@ -57,6 +62,12 @@ public class QuickFixJServerAutoConfigurationTest {
     @Autowired
     private MessageFactory serverMessageFactory;
 
+    @Autowired
+    private SessionSettings serverSessionSettings;
+
+    @Autowired
+    private ObjectName serverInitiatorMBean;
+
     @Test
     public void testAutoConfiguredBeans() {
         assertThat(serverConnectionManager.isRunning()).isFalse();
@@ -66,16 +77,13 @@ public class QuickFixJServerAutoConfigurationTest {
         assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+        assertThat(serverSessionSettings).isNotNull();
+        assertThat(serverInitiatorMBean).isNotNull();
     }
 
     @Configuration
     @EnableAutoConfiguration
     @EnableQuickFixJServer
     static class TestConfig {
-
-        @Bean
-        public SessionSettings serverSessionSettings() {
-            return new SessionSettings();
-        }
     }
 }

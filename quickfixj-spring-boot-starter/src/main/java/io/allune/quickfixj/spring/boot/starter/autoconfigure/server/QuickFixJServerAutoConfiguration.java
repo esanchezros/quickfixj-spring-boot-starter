@@ -51,7 +51,7 @@ public class QuickFixJServerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "serverSessionSettings")
     public SessionSettings serverSessionSettings(QuickFixJBootProperties properties) {
-        return SessionSettingsLocator.loadSettings(properties.getClient().getConfig(),
+        return SessionSettingsLocator.loadSettings(properties.getServer().getConfig(),
                 SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG, "file:./" + QUICKFIXJ_SERVER_CONFIG,
                 "classpath:/" + QUICKFIXJ_SERVER_CONFIG);
     }

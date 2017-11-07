@@ -1,6 +1,6 @@
 image:https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter.svg?branch=master["Build Status", link="https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter"]
 image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/master/graph/badge.svg["codecov", link="https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter"]
-image:https://img.shields.io/badge/maven--central-v1.0.0-blue.svg[Maven Central]
+image:https://img.shields.io/badge/maven%20central-v1.0.1-blue.svg[Maven Central]
 image:https://img.shields.io/hexpm/l/plug.svg[Apache 2]
 image:https://img.shields.io/badge/quickfixj-1.6.4-blue.svg[QuickFixJ 1.6.4]
 
@@ -28,7 +28,7 @@ your project.
 <dependency>
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
 ----
 

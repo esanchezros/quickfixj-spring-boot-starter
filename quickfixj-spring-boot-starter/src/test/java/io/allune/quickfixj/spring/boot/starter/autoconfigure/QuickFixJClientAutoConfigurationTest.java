@@ -29,13 +29,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import quickfix.*;
 
+import javax.management.ObjectName;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eduardo Sanchez-Ros
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"quickfixj.client.autoStartup=false", "quickfixj.client.config="})
+@SpringBootTest(
+        properties = {
+                "quickfixj.client.autoStartup=false",
+                "quickfixj.client.config=classpath:quickfixj.cfg",
+                "quickfixj.client.jmx-enabled=true"
+        })
 public class QuickFixJClientAutoConfigurationTest {
 
     @Autowired
@@ -56,6 +63,12 @@ public class QuickFixJClientAutoConfigurationTest {
     @Autowired
     private MessageFactory clientMessageFactory;
 
+    @Autowired
+    private SessionSettings clientSessionSettings;
+
+    @Autowired
+    private ObjectName clientInitiatorMBean;
+
     @Test
     public void testAutoConfiguredBeans() {
         assertThat(clientConnectionManager.isRunning()).isFalse();
@@ -65,16 +78,13 @@ public class QuickFixJClientAutoConfigurationTest {
         assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+        assertThat(clientSessionSettings).isNotNull();
+        assertThat(clientInitiatorMBean).isNotNull();
     }
 
     @Configuration
     @EnableAutoConfiguration
     @EnableQuickFixJClient
     static class TestConfig {
-
-        @Bean
-        public SessionSettings clientSessionSettings() {
-            return new SessionSettings();
-        }
     }
 }

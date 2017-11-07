@@ -28,6 +28,7 @@ your project.
 <dependency>
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
+	<version>1.0.0</version>
 </dependency>
 ----
 

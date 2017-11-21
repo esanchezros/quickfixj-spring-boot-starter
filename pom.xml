@@ -19,6 +19,7 @@
 
     <modules>
         <module>quickfixj-spring-boot-starter</module>
+        <module>quickfixj-spring-boot-actuator</module>
     </modules>
 
     <licenses>
@@ -49,7 +50,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.allune</groupId>
-                <artifactId>quickfix-spring-boot-starter</artifactId>
+                <artifactId>quickfixj-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

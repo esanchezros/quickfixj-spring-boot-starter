@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.allune.quickfixj.spring.boot.actuate.config.QuickFixJServerEndpointAutoConfiguration,\
+io.allune.quickfixj.spring.boot.actuate.config.QuickFixJClientEndpointAutoConfiguration

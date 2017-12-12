@@ -47,8 +47,6 @@ public class AbstractQuickFixJEndpoint extends AbstractEndpoint<Map<String, Prop
         Map<String, Properties> reports = new HashMap<>();
         connector.getSessions().forEach(sessionId -> {
             try {
-//                Session session = Session.lookupSession(sessionId);
-
                 Properties p = new Properties();
                 p.putAll(sessionSettings.getDefaultProperties());
                 p.putAll(sessionSettings.getSessionProperties(sessionId));
@@ -64,28 +62,28 @@ public class AbstractQuickFixJEndpoint extends AbstractEndpoint<Map<String, Prop
 
     private Properties addSessionIdProperties(SessionID sessionID) {
         Properties properties = new Properties();
-        properties.put("beginString", sessionID.getBeginString());
-        properties.put("senderCompID", sessionID.getSenderCompID());
+        properties.put("BeginString", sessionID.getBeginString());
+        properties.put("SenderCompID", sessionID.getSenderCompID());
         String senderSubID = sessionID.getSenderSubID();
         if (!senderSubID.equals(NOT_SET)) {
-            properties.put("senderSubID", senderSubID);
+            properties.put("SenderSubID", senderSubID);
         }
         String senderLocationID = sessionID.getSenderLocationID();
         if (!senderLocationID.equals(NOT_SET)) {
-            properties.put("senderLocationID", senderLocationID);
+            properties.put("SenderLocationID", senderLocationID);
         }
-        properties.put("targetCompID", sessionID.getTargetCompID());
+        properties.put("TargetCompID", sessionID.getTargetCompID());
         String targetSubID = sessionID.getTargetSubID();
         if (!targetSubID.equals(NOT_SET)) {
-            properties.put("targetSubID", targetSubID);
+            properties.put("TargetSubID", targetSubID);
         }
         String targetLocationID = sessionID.getTargetLocationID();
         if (!targetLocationID.equals(NOT_SET)) {
-            properties.put("targetLocationID", targetLocationID);
+            properties.put("TargetLocationID", targetLocationID);
         }
         String sessionQualifier = sessionID.getSessionQualifier();
         if (!sessionQualifier.equals(NOT_SET)) {
-            properties.put("qualifier", sessionQualifier);
+            properties.put("Qualifier", sessionQualifier);
         }
 
         return properties;

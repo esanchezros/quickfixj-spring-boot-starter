@@ -28,7 +28,18 @@ your project.
 <dependency>
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
+</dependency>
+----
+
+To enable the actuator endpoints you will also have to add the QuicFixJ Spring Boot Actuator dependency.
+
+[source, xml]
+----
+<dependency>
+    <groupId>io.allune</groupId>
+    <artifactId>quickfixj-spring-boot-actuator</artifactId>
+	<version>1.1.0</version>
 </dependency>
 ----
 
@@ -50,7 +61,7 @@ public class AppServer {
 
 The configuration can be done in the application.properties / application.yml.
 
-[source,yml]
+[source, yml]
 ----
 quickfixj:
   server:
@@ -76,6 +87,58 @@ quickfixj.server.phase=0 # phase in which this connection manager should be star
 quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor
 ----
 
+==== QuickFixJ Server Actuator properties
+
+[source, properties]
+----
+endpoints.quickfixjserver.id=qfjserver # endpoint id, quickfixjserver by default
+endpoints.quickfixjserver.sensitive=false # whether the endpoint will require a authentication when accessed over HTTP
+endpoints.quickfixjserver.enabled=true # whether the endpoint is enabled or not
+----
+
+Example usage:
+
+    http://localhost:8081/qfjserver
+
+[source, json]
+----
+{
+  "FIX.4.2:EXEC->BANZAI": {
+    "SenderCompID": "EXEC",
+    "StartTime": "00:00:00",
+    "DefaultMarketPrice": "12.30",
+    "ValidOrderTypes": "1,2,F",
+    "ConnectionType": "acceptor",
+    "EndTime": "00:00:00",
+    "BeginString": "FIX.4.2",
+    "SocketAcceptPort": "9878",
+    "TargetCompID": "BANZAI",
+    "SenderCompID": "EXEC",
+    "HeartBtInt": "30",
+    "BeginString": "FIX.4.2",
+    "TargetCompID": "BANZAI",
+    "FileStorePath": "target/data/executor",
+    "UseDataDictionary": "Y"
+  },
+  "FIX.4.1:EXEC->BANZAI": {
+    "SenderCompID": "EXEC",
+    "StartTime": "00:00:00",
+    "DefaultMarketPrice": "12.30",
+    "ValidOrderTypes": "1,2,F",
+    "ConnectionType": "acceptor",
+    "EndTime": "00:00:00",
+    "BeginString": "FIX.4.1",
+    "SocketAcceptPort": "9877",
+    "TargetCompID": "BANZAI",
+    "SenderCompID": "EXEC",
+    "HeartBtInt": "30",
+    "BeginString": "FIX.4.1",
+    "TargetCompID": "BANZAI",
+    "FileStorePath": "target/data/executor",
+    "UseDataDictionary": "Y"
+  }
+}
+----
 
 === QuickFixJ Spring Boot Starter - Client
 
@@ -118,6 +181,58 @@ quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfi
 quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up
 quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped
 quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the initiator
+----
+
+==== QuickFixJ Client Actuator properties
+
+[source, properties]
+----
+endpoints.quickfixjclient.id=qfjclient # endpoint id, quickfixjclient by default
+endpoints.quickfixjclient.sensitive=false # whether the endpoint will require a authentication when accessed over HTTP
+endpoints.quickfixjclient.enabled=true # whether the endpoint is enabled or not
+----
+
+Example usage:
+
+    http://localhost:8080/qfjclient
+
+[source, json]
+----
+{
+  "FIXT.1.1:BANZAI->EXEC": {
+    "SenderCompID": "BANZAI",
+    "StartTime": "00:00:00",
+    "ConnectionType": "initiator",
+    "EndTime": "00:00:00",
+    "BeginString": "FIXT.1.1",
+    "ReconnectInterval": "5",
+    "TargetCompID": "EXEC",
+    "DefaultApplVerID": "FIX.5.0",
+    "SocketConnectHost": "localhost",
+    "SenderCompID": "BANZAI",
+    "HeartBtInt": "30",
+    "BeginString": "FIXT.1.1",
+    "TargetCompID": "EXEC",
+    "FileStorePath": "target/data/banzai",
+    "SocketConnectPort": "9881"
+  },
+  "FIX.4.2:BANZAI->EXEC": {
+    "SenderCompID": "BANZAI",
+    "StartTime": "00:00:00",
+    "ConnectionType": "initiator",
+    "EndTime": "00:00:00",
+    "BeginString": "FIX.4.2",
+    "ReconnectInterval": "5",
+    "TargetCompID": "EXEC",
+    "SocketConnectHost": "localhost",
+    "SenderCompID": "BANZAI",
+    "HeartBtInt": "30",
+    "BeginString": "FIX.4.2",
+    "TargetCompID": "EXEC",
+    "FileStorePath": "target/data/banzai",
+    "SocketConnectPort": "9878"
+  }
+}
 ----
 
 === License and Acknowledgement

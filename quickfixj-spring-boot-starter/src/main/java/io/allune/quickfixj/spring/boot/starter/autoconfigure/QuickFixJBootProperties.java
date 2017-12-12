@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Holds all the relevant starter properties which can be configured with
- * Spring Boots application.properties / application.yml configuration files.
+ * Spring Boot's application.properties / application.yml configuration files.
  *
  * @author Eduardo Sanchez-Ros
  */

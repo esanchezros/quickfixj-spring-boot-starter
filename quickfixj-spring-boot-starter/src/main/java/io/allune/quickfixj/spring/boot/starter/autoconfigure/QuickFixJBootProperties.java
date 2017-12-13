@@ -17,9 +17,7 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -39,8 +37,6 @@ public class QuickFixJBootProperties {
     private Server server = new Server();
 
     @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class Client {
 
         /**
@@ -65,8 +61,6 @@ public class QuickFixJBootProperties {
     }
 
     @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class Server {
 
         /**

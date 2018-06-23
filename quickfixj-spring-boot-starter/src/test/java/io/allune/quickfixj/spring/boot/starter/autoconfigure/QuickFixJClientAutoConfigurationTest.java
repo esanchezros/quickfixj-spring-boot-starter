@@ -17,17 +17,25 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import quickfix.*;
+import quickfix.Application;
+import quickfix.ApplicationAdapter;
+import quickfix.DefaultMessageFactory;
+import quickfix.Initiator;
+import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.MessageFactory;
+import quickfix.MessageStoreFactory;
+import quickfix.ScreenLogFactory;
+import quickfix.SessionSettings;
+import quickfix.SocketInitiator;
 
 import javax.management.ObjectName;
 

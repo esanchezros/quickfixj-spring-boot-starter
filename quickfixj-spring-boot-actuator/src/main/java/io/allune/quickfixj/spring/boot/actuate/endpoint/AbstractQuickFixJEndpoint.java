@@ -16,9 +16,11 @@
 
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import quickfix.*;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import quickfix.ConfigError;
+import quickfix.Connector;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,23 +29,22 @@ import java.util.Properties;
 import static quickfix.SessionID.NOT_SET;
 
 /**
- * Base class for QuickFixJ {@link Endpoint}s.
+ * Base class for QuickFixJ {@link @Endpoint}s.
  *
  * @author Eduardo Sanchez-Ros
  */
-public class AbstractQuickFixJEndpoint extends AbstractEndpoint<Map<String, Properties>> {
+public class AbstractQuickFixJEndpoint {
 
     private final Connector connector;
     private final SessionSettings sessionSettings;
 
-    AbstractQuickFixJEndpoint(String id, Connector connector, SessionSettings sessionSettings) {
-        super(id);
+    AbstractQuickFixJEndpoint(Connector connector, SessionSettings sessionSettings) {
         this.connector = connector;
         this.sessionSettings = sessionSettings;
     }
 
-    @Override
-    public Map<String, Properties> invoke() {
+    @ReadOperation
+    public Map<String, Properties> readProperties() {
         Map<String, Properties> reports = new HashMap<>();
         connector.getSessions().forEach(sessionId -> {
             try {

@@ -16,8 +16,7 @@
 
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import quickfix.Initiator;
 import quickfix.SessionSettings;
 
@@ -26,10 +25,10 @@ import quickfix.SessionSettings;
  *
  * @author Eduardo Sanchez-Ros
  */
-@ConfigurationProperties(prefix = "endpoints.quickfixjclient")
+@Endpoint(id = "quickfixjclient")
 public class QuickFixJClientEndpoint extends AbstractQuickFixJEndpoint {
 
     public QuickFixJClientEndpoint(Initiator clientInitiator, SessionSettings clientSessionSettings) {
-        super("quickfixjclient", clientInitiator, clientSessionSettings);
+        super(clientInitiator, clientSessionSettings);
     }
 }

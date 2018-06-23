@@ -20,51 +20,43 @@ package io.allune.quickfixj.spring.boot.actuate.endpoint;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import quickfix.Acceptor;
-import quickfix.SessionSettings;
+import org.springframework.context.annotation.PropertySource;
 
-import java.util.HashMap;
+public class QuickFixJServerEndpointTest extends AbstractEndpointTests {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class QuickFixJServerEndpointTest extends AbstractEndpointTests<QuickFixJServerEndpoint> {
+    private static final String ENDPOINT_ID = "quickfixjserver";
 
     public QuickFixJServerEndpointTest() {
-        super(Config.class, QuickFixJServerEndpoint.class, "quickfixjserver", true,
-                "endpoints.quickfixjserver", new HashMap<String, Object>() {
-                    {
-                        put("quickfixj.server.config", "classpath:quickfixj-server.cfg");
-                        put("quickfixj.server.autoStartup", "true");
-                    }
-                });
+        super(ENDPOINT_ID);
     }
 
     @Test
-    public void invoke() throws Exception {
-        this.context.refresh();
-        assertThat(getEndpointBean().invoke()).hasSize(1);
+    public void shouldLoadActuatorEndpoint() {
+        assertActuatorEndpointLoaded(TestConfig.class);
+    }
+
+    @Test
+    public void shouldNotLoadActuatorWithEndpointDisabled() {
+        assertActuatorEndpointNotLoaded(TestConfigNoEndpoint.class);
+    }
+
+    @Test
+    public void shouldReadProperties() {
+        assertReadProperties(TestConfig.class);
     }
 
     @Configuration
     @EnableAutoConfiguration
     @EnableQuickFixJServer
-    public static class Config {
+    @PropertySource("classpath:application.properties")
+    public static class TestConfig {
+    }
 
-        private Acceptor serverAcceptor;
-
-        private SessionSettings serverSessionSettings;
-
-        public Config(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
-            this.serverAcceptor = serverAcceptor;
-            this.serverSessionSettings = serverSessionSettings;
-        }
-
-        @Bean
-        public QuickFixJServerEndpoint endpoint() {
-            return new QuickFixJServerEndpoint(serverAcceptor, serverSessionSettings);
-        }
-
+    @Configuration
+    @EnableAutoConfiguration
+    @EnableQuickFixJServer
+    @PropertySource("classpath:application-noendpoint.properties")
+    public static class TestConfigNoEndpoint {
     }
 }

@@ -36,7 +36,7 @@ public abstract class QuickFixJConfigResourceCondition extends ResourceCondition
 
 	public QuickFixJConfigResourceCondition(String configSystemProperty, String prefix, String propertyName,
 									 String... resourceLocations) {
-		super("QuickFixJ", prefix, propertyName, resourceLocations);
+		super(prefix, propertyName, resourceLocations);
 		Assert.hasLength(configSystemProperty, "ConfigSystemProperty must not be null or empty");
 		this.configSystemProperty = configSystemProperty;
 	}

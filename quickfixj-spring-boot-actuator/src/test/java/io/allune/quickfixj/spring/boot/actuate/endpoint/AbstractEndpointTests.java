@@ -16,204 +16,104 @@
 
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker;
+import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Abstract base class for endpoint tests.
  *
- * @param <T> the endpoint type
- * Based on AbstractEndpointTests class from Spring Framework
+ * Based on WebEndpointDiscovererTests class from Spring Boot actuate tests
  */
-public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
+abstract class AbstractEndpointTests {
 
-    protected AnnotationConfigApplicationContext context;
+    private final String endpointId;
 
-    protected final Class<?> configClass;
-
-    private final Class<?> type;
-
-    private final String id;
-
-    private final boolean sensitive;
-
-    private final String property;
-
-    private final Map<String, Object> systemProperties;
-
-    public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
-                                 boolean sensitive, String property, Map<String, Object> systemProperties) {
-        this.configClass = configClass;
-        this.type = type;
-        this.id = id;
-        this.sensitive = sensitive;
-        this.property = property;
-        this.systemProperties = systemProperties;
+    AbstractEndpointTests(String endpointId) {
+        this.endpointId = endpointId;
     }
 
-    @Before
-    public void setup() {
-        this.context = new AnnotationConfigApplicationContext();
-        this.context.register(JacksonAutoConfiguration.class, this.configClass);
-        this.context.getEnvironment().getSystemProperties().putAll(systemProperties);
-//        this.context.refresh();
+    void assertActuatorEndpointLoaded(Class<?> testConfigClass) {
+        load(testConfigClass, (discoverer) -> {
+            Map<String, ExposableWebEndpoint> endpoints = mapEndpoints(
+                    discoverer.getEndpoints());
+            assertThat(endpoints).containsOnlyKeys(endpointId);
+        });
     }
 
-    @After
-    public void close() {
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
-
-    @Test
-    public void getId() throws Exception {
-        this.context.refresh();
-        assertThat(getEndpointBean().getId()).isEqualTo(this.id);
-    }
-
-    @Test
-    public void isSensitive() throws Exception {
-        this.context.refresh();
-        assertThat(getEndpointBean().isSensitive()).isEqualTo(this.sensitive);
-    }
-
-    @Test
-    public void idOverride() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().getId()).isEqualTo("myid");
-    }
-
-    @Test
-    public void isSensitiveOverride() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        PropertySource<?> propertySource = new MapPropertySource("test",
-                Collections.<String, Object>singletonMap(this.property + ".sensitive",
-                        String.valueOf(!this.sensitive)));
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
-    }
-
-    @Test
-    public void isSensitiveOverrideWithGlobal() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("endpoint.sensitive", this.sensitive);
-        properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
-        PropertySource<?> propertySource = new MapPropertySource("test", properties);
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
-    }
-
-    @Test
-    public void isEnabledByDefault() throws Exception {
-        this.context.refresh();
-        assertThat(getEndpointBean().isEnabled()).isTrue();
-    }
-
-    @Test
-    public void isEnabledFallbackToEnvironment() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        PropertySource<?> propertySource = new MapPropertySource("test", Collections
-                .<String, Object>singletonMap(this.property + ".enabled", false));
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isEnabled()).isFalse();
-    }
-
-    @Test
-    @SuppressWarnings("rawtypes")
-    public void isExplicitlyEnabled() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        PropertySource<?> propertySource = new MapPropertySource("test", Collections
-                .<String, Object>singletonMap(this.property + ".enabled", false));
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        ((AbstractEndpoint) getEndpointBean()).setEnabled(true);
-        assertThat(getEndpointBean().isEnabled()).isTrue();
-    }
-
-    @Test
-    public void isAllEndpointsDisabled() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        PropertySource<?> propertySource = new MapPropertySource("test",
-                Collections.<String, Object>singletonMap("endpoints.enabled", false));
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isEnabled()).isFalse();
-    }
-
-    @Test
-    public void isOptIn() throws Exception {
-        this.context = new AnnotationConfigApplicationContext();
-        Map<String, Object> source = new HashMap<String, Object>();
-        source.put("endpoints.enabled", false);
-        source.put(this.property + ".enabled", true);
-        PropertySource<?> propertySource = new MapPropertySource("test", source);
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isEnabled()).isTrue();
-    }
-
-    @Test
-    public void serialize() throws Exception {
-        this.context.refresh();
-        Object result = getEndpointBean().invoke();
-        if (result != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(System.out, result);
-        }
-    }
-
-    @Test
-    public void isAllEndpointsSensitive() throws Exception {
-        testGlobalEndpointsSensitive(true);
-    }
-
-    @Test
-    public void isAllEndpointsNotSensitive() throws Exception {
-        testGlobalEndpointsSensitive(false);
-    }
-
-    private void testGlobalEndpointsSensitive(boolean sensitive) {
-        this.context = new AnnotationConfigApplicationContext();
-        PropertySource<?> propertySource = new MapPropertySource("test", Collections
-                .<String, Object>singletonMap("endpoints.sensitive", sensitive));
-        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-        this.context.register(this.configClass);
-        this.context.refresh();
-        assertThat(getEndpointBean().isSensitive()).isEqualTo(sensitive);
+    void assertActuatorEndpointNotLoaded(Class<?> testConfigClass) {
+        load(testConfigClass, (discoverer) -> {
+            Map<String, ExposableWebEndpoint> endpoints = mapEndpoints(
+                    discoverer.getEndpoints());
+            assertThat(endpoints).doesNotContainKey(endpointId);
+        });
     }
 
     @SuppressWarnings("unchecked")
-    protected T getEndpointBean() {
-        return (T) this.context.getBean(this.type);
+    void assertReadProperties(Class<?> testConfigClass) {
+        load(testConfigClass, (discoverer) -> {
+            Map<String, ExposableWebEndpoint> endpoints = mapEndpoints(
+                    discoverer.getEndpoints());
+            assertThat(endpoints).containsKey(endpointId);
+
+            ExposableWebEndpoint endpoint = endpoints.get(endpointId);
+            assertThat(endpoint.getOperations()).hasSize(1);
+
+            WebOperation operation = endpoint.getOperations().iterator().next();
+            Object invoker = ReflectionTestUtils.getField(operation, "invoker");
+            assertThat(invoker).isInstanceOf(ReflectiveOperationInvoker.class);
+
+            Map<String, Properties> properties = (Map<String, Properties>)((ReflectiveOperationInvoker) invoker).invoke(
+                    new InvocationContext(mock(SecurityContext.class), Collections.emptyMap()));
+            assertThat(properties).hasSize(1);
+        });
     }
 
+    private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
+        this.load((id) -> null, (id) -> id, configuration, consumer);
+    }
+
+    private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
+                      Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
+            ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
+                    DefaultConversionService.getSharedInstance());
+            EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
+                    Collections.singletonList("application/json"),
+                    Collections.singletonList("application/json"));
+            WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context,
+                    parameterMapper, mediaTypes, endpointPathMapper,
+                    Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+                    Collections.emptyList());
+            consumer.accept(discoverer);
+        }
+    }
+
+    private Map<String, ExposableWebEndpoint> mapEndpoints(
+            Collection<ExposableWebEndpoint> endpoints) {
+        Map<String, ExposableWebEndpoint> endpointById = new HashMap<>();
+        endpoints.forEach((endpoint) -> endpointById.put(endpoint.getId(), endpoint));
+        return endpointById;
+    }
 }

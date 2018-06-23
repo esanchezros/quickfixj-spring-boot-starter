@@ -24,7 +24,7 @@ public class QuickFixJConfigResourceConditionTest {
         ConditionOutcome conditionOutcome =
                 resourceCondition.getResourceOutcome(mock(ConditionContext.class), mock(AnnotatedTypeMetadata.class));
         assertThat(conditionOutcome).isNotNull();
-        assertThat(conditionOutcome.getMessage()).contains("ResourceCondition (QuickFixJ) System property 'anyProperty' is set.");
+        assertThat(conditionOutcome.getMessage()).contains("ResourceCondition (quickfixj.client) System property 'anyProperty' is set.");
     }
 
     @Test
@@ -37,7 +37,7 @@ public class QuickFixJConfigResourceConditionTest {
         ConditionOutcome conditionOutcome =
                 resourceCondition.getResourceOutcome(context, metadata);
         assertThat(conditionOutcome).isNotNull();
-        assertThat(conditionOutcome.getMessage()).contains("ResourceCondition (QuickFixJ) did not find resource");
+        assertThat(conditionOutcome.getMessage()).contains("ResourceCondition (quickfixj.client) did not find resource");
     }
 
     @Test

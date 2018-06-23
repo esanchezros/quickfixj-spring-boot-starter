@@ -15,7 +15,7 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-client[Client]
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-server[Server]
 
-This project is a http://projects.spring.io/spring-boot/[Spring Boot Starter] for QuickFixJ.
+This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for QuickFixJ.
 It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.
 
 == Getting started
@@ -28,18 +28,18 @@ your project.
 <dependency>
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
-	<version>1.1.0</version>
+	<version>2.0.0</version>
 </dependency>
 ----
 
-To enable the actuator endpoints you will also have to add the QuicFixJ Spring Boot Actuator dependency.
+To enable the actuator endpoints you will also have to add the QuickFixJ Spring Boot Actuator dependency.
 
 [source, xml]
 ----
 <dependency>
     <groupId>io.allune</groupId>
     <artifactId>quickfixj-spring-boot-actuator</artifactId>
-	<version>1.1.0</version>
+	<version>2.0.0</version>
 </dependency>
 ----
 
@@ -91,14 +91,13 @@ quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the a
 
 [source, properties]
 ----
-endpoints.quickfixjserver.id=qfjserver # endpoint id, quickfixjserver by default
-endpoints.quickfixjserver.sensitive=false # whether the endpoint will require a authentication when accessed over HTTP
-endpoints.quickfixjserver.enabled=true # whether the endpoint is enabled or not
+management.endpoint.quickfixjserver.enabled=true # whether the endpoint is enabled or not
+management.endpoints.web.exposure.include=quickfixjserver # whether the endpoint will be exposed
 ----
 
 Example usage:
 
-    http://localhost:8081/qfjserver
+    http://localhost:8081/actuator/quickfixjserver
 
 [source, json]
 ----
@@ -187,14 +186,13 @@ quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the i
 
 [source, properties]
 ----
-endpoints.quickfixjclient.id=qfjclient # endpoint id, quickfixjclient by default
-endpoints.quickfixjclient.sensitive=false # whether the endpoint will require a authentication when accessed over HTTP
-endpoints.quickfixjclient.enabled=true # whether the endpoint is enabled or not
+management.endpoint.quickfixjclient.enabled=true # whether the endpoint is enabled or not
+management.endpoints.web.exposure.include=quickfixjclient # whether the endpoint will be exposed
 ----
 
 Example usage:
 
-    http://localhost:8080/qfjclient
+    http://localhost:8080/actuator/quickfixjclient
 
 [source, json]
 ----

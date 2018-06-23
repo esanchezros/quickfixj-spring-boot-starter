@@ -31,7 +31,7 @@ public class QuickFixJServerEndpointAutoConfigurationTest {
     @Test
     public void testAutoConfiguredBeans() {
         assertThat(quickfixjServerEndpoint).isNotNull();
-        assertThat(quickfixjServerEndpoint.invoke().size()).isEqualTo(0);
+        assertThat(quickfixjServerEndpoint.readProperties().size()).isEqualTo(0);
     }
 
     @Configuration

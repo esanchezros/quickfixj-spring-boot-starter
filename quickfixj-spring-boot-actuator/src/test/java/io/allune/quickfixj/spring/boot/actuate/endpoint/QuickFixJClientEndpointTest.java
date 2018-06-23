@@ -20,51 +20,43 @@ package io.allune.quickfixj.spring.boot.actuate.endpoint;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import quickfix.Initiator;
-import quickfix.SessionSettings;
+import org.springframework.context.annotation.PropertySource;
 
-import java.util.HashMap;
+public class QuickFixJClientEndpointTest extends AbstractEndpointTests {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class QuickFixJClientEndpointTest extends AbstractEndpointTests<QuickFixJClientEndpoint> {
+    private static final String ENDPOINT_ID = "quickfixjclient";
 
     public QuickFixJClientEndpointTest() {
-        super(Config.class, QuickFixJClientEndpoint.class, "quickfixjclient", true,
-                "endpoints.quickfixjclient", new HashMap<String, Object>() {
-                    {
-                        put("quickfixj.client.config", "classpath:quickfixj-client.cfg");
-                        put("quickfixj.client.autoStartup", "true");
-                    }
-                });
+        super(ENDPOINT_ID);
     }
 
     @Test
-    public void invoke() throws Exception {
-        this.context.refresh();
-        assertThat(getEndpointBean().invoke()).hasSize(1);
+    public void shouldLoadActuatorEndpoint() {
+        assertActuatorEndpointLoaded(TestConfig.class);
+    }
+
+    @Test
+    public void shouldNotLoadActuatorWithEndpointDisabled() {
+        assertActuatorEndpointNotLoaded(TestConfigNoEndpoint.class);
+    }
+
+    @Test
+    public void shouldReadProperties() {
+        assertReadProperties(TestConfig.class);
     }
 
     @Configuration
     @EnableAutoConfiguration
     @EnableQuickFixJClient
-    public static class Config {
+    @PropertySource("classpath:application.properties")
+    public static class TestConfig {
+    }
 
-        private Initiator clientInitiator;
-
-        private SessionSettings clientSessionSettings;
-
-        public Config(Initiator clientInitiator, SessionSettings clientSessionSettings) {
-            this.clientInitiator = clientInitiator;
-            this.clientSessionSettings = clientSessionSettings;
-        }
-
-        @Bean
-        public QuickFixJClientEndpoint endpoint() {
-            return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
-        }
-
+    @Configuration
+    @EnableAutoConfiguration
+    @EnableQuickFixJClient
+    @PropertySource("classpath:application-noendpoint.properties")
+    public static class TestConfigNoEndpoint {
     }
 }

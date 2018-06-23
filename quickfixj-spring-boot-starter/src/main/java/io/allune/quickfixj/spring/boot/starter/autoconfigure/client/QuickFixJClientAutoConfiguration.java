@@ -17,18 +17,33 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.client;
 
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJConfigResourceCondition;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import quickfix.*;
+import quickfix.Application;
+import quickfix.ApplicationAdapter;
+import quickfix.ConfigError;
+import quickfix.DefaultMessageFactory;
+import quickfix.Initiator;
+import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.MessageFactory;
+import quickfix.MessageStoreFactory;
+import quickfix.ScreenLogFactory;
+import quickfix.SessionSettings;
+import quickfix.SocketInitiator;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
@@ -119,10 +134,10 @@ public class QuickFixJClientAutoConfiguration {
      * {@link ClientConfigAvailableCondition} that checks if the client configuration file is defined in
      * {@code quickfixj.client.config} configuration key or in the default locations.
      */
-    static class ClientConfigAvailableCondition extends QuickFixJConfigResourceCondition {
+    static class ClientConfigAvailableCondition extends ResourceCondition {
 
         ClientConfigAvailableCondition() {
-            super(SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG, "quickfixj.client", "config",
+            super("QuickFixJ Client", SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG,
                     "file:./" + QUICKFIXJ_CLIENT_CONFIG, "classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
         }
     }

@@ -5,7 +5,7 @@ image:https://img.shields.io/hexpm/l/plug.svg["Apache 2", link="http://www.apach
 image:https://img.shields.io/badge/quickfixj-1.6.4-blue.svg["QuickFixJ 1.6.4", link="https://github.com/quickfix-j/quickfixj"]
 image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba9043950["Codacy code quality", link="https://www.codacy.com/app/esanchezros/quickfixj-spring-boot-starter?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
 
-= Spring Boot Starter for QuickFixJ
+= Spring Boot Starter for QuickFixJ (Spring Boot 2)
 
 https://github.com/quickfix-j/quickfixj
 

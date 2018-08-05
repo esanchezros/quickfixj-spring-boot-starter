@@ -29,6 +29,20 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>esanchezros</id>
+            <name>Eduardo Sanchez-Ros</name>
+            <email>esanchezros@yahoo.es</email>
+            <organization>Allune Software Ltd.</organization>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>Allune Software Ltd.</name>
+        <url>https://github.com/esanchezros</url>
+    </organization>
+
     <scm>
         <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
         <connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>

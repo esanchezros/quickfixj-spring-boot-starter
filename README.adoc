@@ -18,6 +18,10 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 This project is a http://projects.spring.io/spring-boot/[Spring Boot Starter] for QuickFixJ.
 It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.
 
+== Spring Boot 2
+
+If you need to use the project using Spring Boot 2 please checkout https://github.com/esanchezros/quickfixj-spring-boot-starter/tree/2.0.x[2.0.x]
+
 == Getting started
 
 To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Spring Boot Starter dependency in

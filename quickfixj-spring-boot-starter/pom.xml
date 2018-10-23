@@ -65,41 +65,6 @@
 			<artifactId>mina-core</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.cloudhopper.proxool</groupId>
-			<artifactId>proxool</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<!-- bug in proxool pom - should be test scope -->
-				<exclusion>
-					<groupId>avalon-framework</groupId>
-					<artifactId>avalon-framework-api</artifactId>
-				</exclusion>
-				<!-- we use slf4j which provides this API -->
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>com.cloudhopper.proxool</groupId>
-			<artifactId>proxool-cglib</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<!-- bug in proxool pom - should be test scope -->
-				<exclusion>
-					<groupId>avalon-framework</groupId>
-					<artifactId>avalon-framework-api</artifactId>
-				</exclusion>
-				<!-- we use slf4j which provides this API -->
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<!-- Test dependencies -->
 

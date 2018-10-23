@@ -37,11 +37,11 @@ public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<
 
 		if(cause instanceof ConfigurationException) {
 			descriptionMessage = "A configuration error has been detected in the QuickFixJ settings provided.";
-			actionMessage = "Please configure your QuickFixJ settings as per the documentation: https://www.quickfixj.org/usermanual/1.6.4//usage/configuration.html";
+			actionMessage = "Please configure your QuickFixJ settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0//usage/configuration.html";
 		}
 
 		if(cause instanceof SettingsNotFoundException) {
-			descriptionMessage = "The QuickFixJ settings file could be found.";
+			descriptionMessage = "The QuickFixJ settings file could not be found.";
 			actionMessage = "Please provide a QuickFixJ settings file on the property 'config' for the client/server section in your configuration file.";
 		}
 

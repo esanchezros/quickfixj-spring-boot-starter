@@ -36,7 +36,7 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
         FailureAnalysis analyze = analyzer.analyze(null, exception);
 
         assertThat(analyze.getAction()).contains("Please provide a QuickFixJ settings file");
-        assertThat(analyze.getDescription()).contains("The QuickFixJ settings file could be found.");
+        assertThat(analyze.getDescription()).contains("The QuickFixJ settings file could not be found.");
         assertThat(analyze.getCause()).isEqualTo(exception);
     }
 

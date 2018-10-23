@@ -16,6 +16,7 @@
 
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
@@ -94,7 +95,7 @@ abstract class AbstractEndpointTests {
         this.load((id) -> null, (id) -> id, configuration, consumer);
     }
 
-    private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
+    private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper,
                       Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
             ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(

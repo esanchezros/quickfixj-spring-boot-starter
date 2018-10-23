@@ -17,8 +17,7 @@
 package io.allune.quickfixj.spring.boot.starter.connection;
 
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.util.Assert;
 import quickfix.ConfigError;
@@ -31,9 +30,8 @@ import quickfix.RuntimeError;
  *
  * @author Eduardo Sanchez-Ros
  */
+@Slf4j
 public class ConnectorManager implements SmartLifecycle {
-
-    private final Log logger = LogFactory.getLog(getClass());
 
     private final Connector connector;
 
@@ -89,9 +87,7 @@ public class ConnectorManager implements SmartLifecycle {
     public void start() {
         synchronized (this.lifecycleMonitor) {
             if (!isRunning()) {
-                if (logger.isInfoEnabled()) {
-                    logger.info("start: Starting ConnectorManager");
-                }
+                log.info("start: Starting ConnectorManager");
                 try {
                     connector.start();
                 } catch (ConfigError | RuntimeError ex) {
@@ -113,9 +109,7 @@ public class ConnectorManager implements SmartLifecycle {
     public void stop() {
         synchronized (this.lifecycleMonitor) {
             if (isRunning()) {
-                if (logger.isInfoEnabled()) {
-                    logger.info("stop: Stopping ConnectorManager");
-                }
+                log.info("stop: Stopping ConnectorManager");
                 try {
                     connector.stop();
                 } finally {

@@ -17,8 +17,7 @@
 package io.allune.quickfixj.spring.boot.starter.connection;
 
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -34,9 +33,8 @@ import static java.lang.Thread.currentThread;
  *
  * @author Eduardo Sanchez-Ros
  */
+@Slf4j
 public class SessionSettingsLocator {
-
-    private static final Log logger = LogFactory.getLog(SessionSettingsLocator.class);
 
     private SessionSettingsLocator() {
         //
@@ -70,7 +68,7 @@ public class SessionSettingsLocator {
         if (applicationConfigLocation != null) {
             resource = loadResource(applicationConfigLocation);
             if (resource != null && resource.exists()) {
-                logger.info("Loading settings from application property '" + applicationConfigLocation + "'");
+                log.info("Loading settings from application property '{}'", applicationConfigLocation);
                 return new SessionSettings(resource.getInputStream());
             }
         }
@@ -84,7 +82,7 @@ public class SessionSettingsLocator {
             if (configSystemProperty != null) {
                 Resource resource = loadResource(configSystemProperty);
                 if (resource != null && resource.exists()) {
-                    logger.info("Loading settings from System property '" + systemProperty + "'");
+                    log.info("Loading settings from System property '{}'", systemProperty);
                     return new SessionSettings(resource.getInputStream());
                 }
             }
@@ -97,7 +95,7 @@ public class SessionSettingsLocator {
         if (fileSystemLocation != null) {
             Resource resource = loadResource(fileSystemLocation);
             if (resource != null && resource.exists()) {
-                logger.info("Loading settings from default filesystem location '" + fileSystemLocation + "'");
+                log.info("Loading settings from default filesystem location '{}'", fileSystemLocation);
                 return new SessionSettings(resource.getInputStream());
             }
         }
@@ -109,7 +107,7 @@ public class SessionSettingsLocator {
         if (classpathLocation != null) {
             Resource resource = loadResource(classpathLocation);
             if (resource != null && resource.exists()) {
-                logger.info("Loading settings from default classpath location '" + classpathLocation + "'");
+                log.info("Loading settings from default classpath location '{}'", classpathLocation);
                 return new SessionSettings(resource.getInputStream());
             }
         }

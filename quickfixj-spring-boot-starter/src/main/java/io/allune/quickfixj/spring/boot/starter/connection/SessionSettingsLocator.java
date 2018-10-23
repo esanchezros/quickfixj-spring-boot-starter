@@ -25,8 +25,10 @@ import quickfix.ConfigError;
 import quickfix.SessionSettings;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.lang.Thread.currentThread;
+import static java.util.Optional.empty;
 
 /**
  * {@link SessionSettings} helper class that attempts to load the settings files from the default locations
@@ -40,22 +42,18 @@ public class SessionSettingsLocator {
         //
     }
 
-    public static SessionSettings loadSettings(String applicationConfigLocation, String systemProperty, String fileSystemLocation,
-                                               String classpathLocation) {
+    public static SessionSettings loadSettings(String... locations) {
 
         try {
-            SessionSettings settings;
-            settings = loadFromApplicationConfig(applicationConfigLocation);
-            if (settings != null) return settings;
+            for (String location : locations) {
+                Optional<Resource> resource = load(location);
 
-            settings = loadFromSystemProperty(systemProperty);
-            if (settings != null) return settings;
+                if (resource.isPresent()) {
+                    log.info("Loading settings from '{}'", location);
 
-            settings = loadFromFileSystem(fileSystemLocation);
-            if (settings != null) return settings;
-
-            settings = loadFromClassPath(classpathLocation);
-            if (settings != null) return settings;
+                    return new SessionSettings(resource.get().getInputStream());
+                }
+            }
 
             throw new SettingsNotFoundException("Settings file not found");
         } catch (RuntimeException | ConfigError | IOException e) {
@@ -63,60 +61,16 @@ public class SessionSettingsLocator {
         }
     }
 
-    private static SessionSettings loadFromApplicationConfig(String applicationConfigLocation) throws ConfigError, IOException {
-        Resource resource;
-        if (applicationConfigLocation != null) {
-            resource = loadResource(applicationConfigLocation);
-            if (resource != null && resource.exists()) {
-                log.info("Loading settings from application property '{}'", applicationConfigLocation);
-                return new SessionSettings(resource.getInputStream());
-            }
-        }
-        return null;
-    }
 
-    private static SessionSettings loadFromSystemProperty(String systemProperty) throws ConfigError, IOException {
-        // Try loading the settings from the system property
-        if (systemProperty != null) {
-            String configSystemProperty = System.getProperty(systemProperty);
-            if (configSystemProperty != null) {
-                Resource resource = loadResource(configSystemProperty);
-                if (resource != null && resource.exists()) {
-                    log.info("Loading settings from System property '{}'", systemProperty);
-                    return new SessionSettings(resource.getInputStream());
-                }
-            }
+    private static Optional<Resource> load(String location) {
+        if (location == null) {
+            return empty();
         }
-        return null;
-    }
 
-    private static SessionSettings loadFromFileSystem(String fileSystemLocation) throws ConfigError, IOException {
-        // Try loading the settings file from the same location in the filesystem
-        if (fileSystemLocation != null) {
-            Resource resource = loadResource(fileSystemLocation);
-            if (resource != null && resource.exists()) {
-                log.info("Loading settings from default filesystem location '{}'", fileSystemLocation);
-                return new SessionSettings(resource.getInputStream());
-            }
-        }
-        return null;
-    }
-
-    private static SessionSettings loadFromClassPath(String classpathLocation) throws ConfigError, IOException {
-        // Try loading the settings file from the classpath
-        if (classpathLocation != null) {
-            Resource resource = loadResource(classpathLocation);
-            if (resource != null && resource.exists()) {
-                log.info("Loading settings from default classpath location '{}'", classpathLocation);
-                return new SessionSettings(resource.getInputStream());
-            }
-        }
-        return null;
-    }
-
-    private static Resource loadResource(String location) {
         ClassLoader classLoader = currentThread().getContextClassLoader();
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(classLoader);
-        return resolver.getResource(location);
+
+        Resource resource = resolver.getResource(location);
+        return resource.exists() ? Optional.of(resource) : empty();
     }
 }

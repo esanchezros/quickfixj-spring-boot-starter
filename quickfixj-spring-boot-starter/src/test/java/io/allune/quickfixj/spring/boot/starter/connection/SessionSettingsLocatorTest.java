@@ -31,10 +31,6 @@ public class SessionSettingsLocatorTest {
 
         settings = loadSettings(null, null, null, "classpath:quickfixj.cfg");
         assertThat(settings).isNotNull();
-
-        System.setProperty("quickfixj.client.config", "classpath:quickfixj.cfg");
-        settings = loadSettings(null, "quickfixj.client.config", null, null);
-        assertThat(settings).isNotNull();
     }
 
     @Test

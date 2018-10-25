@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.allune</groupId>
     <artifactId>quickfixj-spring-boot-starter-parent</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.1.0</version>
     <packaging>pom</packaging>
 
     <name>quickfixj-spring-boot-starter-parent</name>
@@ -48,7 +47,7 @@
         <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
         <connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>
         <developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>quickfixj-spring-boot-starter-2.1.0</tag>
     </scm>
 
     <properties>
@@ -117,7 +116,7 @@
                         <format>html</format>
                         <format>xml</format>
                     </formats>
-                    <check/>
+                    <check />
                     <instrumentation>
                         <excludes>
                             <exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJClient.class</exclude>

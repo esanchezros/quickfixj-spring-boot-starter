@@ -19,13 +19,14 @@ package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 public class QuickFixJServerEndpointTest extends AbstractEndpointTests {
 
-    private static final String ENDPOINT_ID = "quickfixjserver";
+    private static final EndpointId ENDPOINT_ID = EndpointId.of("quickfixjserver");
 
     public QuickFixJServerEndpointTest() {
         super(ENDPOINT_ID);

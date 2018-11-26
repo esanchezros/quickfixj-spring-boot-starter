@@ -32,18 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import quickfix.Application;
-import quickfix.ApplicationAdapter;
-import quickfix.ConfigError;
-import quickfix.DefaultMessageFactory;
-import quickfix.Initiator;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.ScreenLogFactory;
-import quickfix.SessionSettings;
-import quickfix.SocketInitiator;
+import quickfix.*;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
@@ -99,11 +88,25 @@ public class QuickFixJClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "clientInitiator")
+    @ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
     public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
                                      SessionSettings clientSessionSettings, LogFactory clientLogFactory,
                                      MessageFactory clientMessageFactory) throws ConfigError {
 
         return new SocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
+                clientLogFactory, clientMessageFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "clientInitiator")
+    @ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
+    public Initiator clientThreadedInitiator(Application clientApplication,
+                                           MessageStoreFactory clientMessageStoreFactory,
+                                           SessionSettings clientSessionSettings,
+                                           LogFactory clientLogFactory,
+                                           MessageFactory clientMessageFactory) throws ConfigError {
+
+        return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
                 clientLogFactory, clientMessageFactory);
     }
 

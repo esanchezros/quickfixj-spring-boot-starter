@@ -28,7 +28,7 @@ your project.
 <dependency>
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 </dependency>
 ----
 
@@ -39,7 +39,7 @@ To enable the actuator endpoints you will also have to add the QuickFixJ Spring 
 <dependency>
     <groupId>io.allune</groupId>
     <artifactId>quickfixj-spring-boot-actuator</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 </dependency>
 ----
 
@@ -85,6 +85,7 @@ quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfi
 quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up
 quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped
 quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor
+quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor
 ----
 
 ==== QuickFixJ Server Actuator properties
@@ -180,6 +181,7 @@ quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfi
 quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up
 quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped
 quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the initiator
+quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiator or a ThreadedSocketInitiator
 ----
 
 ==== QuickFixJ Client Actuator properties

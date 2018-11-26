@@ -32,18 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import quickfix.Acceptor;
-import quickfix.Application;
-import quickfix.ApplicationAdapter;
-import quickfix.ConfigError;
-import quickfix.DefaultMessageFactory;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.ScreenLogFactory;
-import quickfix.SessionSettings;
-import quickfix.SocketAcceptor;
+import quickfix.*;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
@@ -98,11 +87,25 @@ public class QuickFixJServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "serverAcceptor")
+    @ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
     public Acceptor serverAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
                                    SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
 
         try {
             return new SocketAcceptor(serverApplication, serverMessageStoreFactory, serverSessionSettings, serverLogFactory, serverMessageFactory);
+        } catch (ConfigError configError) {
+            throw new ConfigurationException(configError.getMessage(), configError);
+        }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "serverAcceptor")
+    @ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
+    public Acceptor serverThreadedAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
+                                   SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
+
+        try {
+            return new ThreadedSocketAcceptor(serverApplication, serverMessageStoreFactory, serverSessionSettings, serverLogFactory, serverMessageFactory);
         } catch (ConfigError configError) {
             throw new ConfigurationException(configError.getMessage(), configError);
         }

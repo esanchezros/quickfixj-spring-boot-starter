@@ -1,6 +1,6 @@
 image:https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter.svg?branch=2.0.x["Build Status", link="https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter"]
 image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/2.0.x/graph/badge.svg["codecov", link="https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter"]
-image:https://img.shields.io/badge/maven%20central-v2.1.0-blue.svg["Maven Central", link="https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22quickfixj-spring-boot-starter%22"]
+image:https://img.shields.io/badge/maven%20central-v2.2.0-blue.svg["Maven Central", link="https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22quickfixj-spring-boot-starter%22"]
 image:https://img.shields.io/hexpm/l/plug.svg["Apache 2", link="http://www.apache.org/licenses/LICENSE-2.0"]
 image:https://img.shields.io/badge/quickfixj-2.1.0-blue.svg["QuickFixJ 2.1.0", link="https://github.com/quickfix-j/quickfixj"]
 image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba9043950["Codacy code quality", link="https://www.codacy.com/app/esanchezros/quickfixj-spring-boot-starter?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
@@ -68,7 +68,7 @@ quickfixj:
     config: classpath:quickfixj-server.cfg
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/1.6.4//usage/configuration.html[quickfix-server.cfg]
+Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfix-server.cfg]
 file to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `serverSessionSettings`
@@ -165,7 +165,7 @@ quickfixj:
     config: classpath:quickfixj-client.cfg
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/1.6.4//usage/configuration.html[quickfix-client.cfg]
+Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfix-client.cfg]
 file to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `clientSessionSettings`

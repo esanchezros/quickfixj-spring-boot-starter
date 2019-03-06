@@ -166,7 +166,7 @@ quickfixj:
     config: classpath:quickfixj-client.cfg
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfix-client.cfg]
+Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-client.cfg]
 file to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `clientSessionSettings`

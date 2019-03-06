@@ -69,7 +69,7 @@ quickfixj:
     config: classpath:quickfixj-server.cfg
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfix-server.cfg]
+Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-server.cfg]
 file to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `serverSessionSettings`

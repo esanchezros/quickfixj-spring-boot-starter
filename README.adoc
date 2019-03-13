@@ -236,6 +236,55 @@ Example usage:
 }
 ----
 
+=== Listening on quickfixj.Application messages
+
+The QuickFixJ Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor)
+and the Client (Initiator) as `ApplicationEvent`s.
+
+If your application is only processing a subset of message types (i.e. `toAdmin`, `toApp`, `onCreate`, etc.) you will need to register an `EventListener` for these,
+with the appropriate message type as the only parameter for the listener method:
+
+[source, java]
+----
+@EventListener
+public void listenFromAdmin(FromAdmin fromAdmin) {
+	...
+}
+
+@EventListener
+public void listenFromApp(FromApp fromApp) {
+	...
+}
+
+@EventListener
+public void listenOnCreate(Create create) {
+	...
+}
+
+@EventListener
+public void listenOnLogon(Logon logon) {
+	...
+}
+
+@EventListener
+public void listenOnLogout(Logout logout) {
+	...
+}
+
+@EventListener
+public void listenToAdmin(ToAdmin toAdmin) {
+	...
+}
+
+@EventListener
+public void listenToApp(ToApp toApp) {
+	...
+}
+----
+
+In case the `EventListener` method throws an exception, this exception will be propagated up the `quickfix.Session#next()` method. Depending on the value of `RejectMessageOnUnhandledException`
+in the quickfixj configuration file, the message will be redelivered or dismissed.
+
 === License and Acknowledgement
 
 The QuickFixJ Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].

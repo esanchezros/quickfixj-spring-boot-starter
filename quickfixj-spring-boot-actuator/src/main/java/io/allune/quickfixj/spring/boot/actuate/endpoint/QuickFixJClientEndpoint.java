@@ -17,6 +17,7 @@
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+
 import quickfix.Initiator;
 import quickfix.SessionSettings;
 

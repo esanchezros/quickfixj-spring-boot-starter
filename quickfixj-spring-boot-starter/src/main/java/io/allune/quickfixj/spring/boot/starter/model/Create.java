@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package io.allune.quickfixj.spring.boot.actuate.endpoint;
+package io.allune.quickfixj.spring.boot.starter.model;
 
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import lombok.Value;
+import quickfix.SessionID;
 
-import quickfix.Acceptor;
-import quickfix.SessionSettings;
+@Value(staticConstructor = "of")
+public class Create {
 
-/**
- * {@link Endpoint} to expose QuickFixJ server info.
- *
- * @author Eduardo Sanchez-Ros
- */
-@Endpoint(id = "quickfixjserver")
-public class QuickFixJServerEndpoint extends AbstractQuickFixJEndpoint {
-
-    public QuickFixJServerEndpoint(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
-        super(serverAcceptor, serverSessionSettings);
-    }
+	private SessionID sessionId;
 }

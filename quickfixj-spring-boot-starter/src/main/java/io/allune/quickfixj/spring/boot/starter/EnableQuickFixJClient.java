@@ -16,10 +16,14 @@
 
 package io.allune.quickfixj.spring.boot.starter;
 
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientMarkerConfiguration;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.*;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientMarkerConfiguration;
 
 /**
  * Sets up an Initiator (Client), configures the connection to communicate to an Acceptor (Server), handles the

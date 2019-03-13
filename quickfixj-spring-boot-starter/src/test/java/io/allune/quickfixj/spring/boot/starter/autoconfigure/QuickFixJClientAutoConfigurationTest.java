@@ -16,8 +16,9 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.management.ObjectName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import quickfix.Application;
-import quickfix.ApplicationAdapter;
 import quickfix.DefaultMessageFactory;
 import quickfix.Initiator;
 import quickfix.LogFactory;
@@ -36,10 +40,6 @@ import quickfix.MessageStoreFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
-
-import javax.management.ObjectName;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -82,7 +82,7 @@ public class QuickFixJClientAutoConfigurationTest {
         assertThat(clientConnectionManager.isRunning()).isFalse();
         assertThat(clientConnectionManager.isAutoStartup()).isFalse();
         assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
-        assertThat(clientApplication).isInstanceOf(ApplicationAdapter.class);
+        assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
         assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);

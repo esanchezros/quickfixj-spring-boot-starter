@@ -16,8 +16,6 @@
 
 package io.allune.quickfixj.spring.boot.actuate.config;
 
-import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,6 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import quickfix.Acceptor;
 import quickfix.SessionSettings;
 

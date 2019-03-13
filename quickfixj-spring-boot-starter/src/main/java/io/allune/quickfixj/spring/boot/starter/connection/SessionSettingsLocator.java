@@ -16,19 +16,19 @@
 
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import quickfix.ConfigError;
-import quickfix.SessionSettings;
+import static java.lang.Thread.currentThread;
+import static java.util.Optional.empty;
 
 import java.io.IOException;
 import java.util.Optional;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
-import static java.lang.Thread.currentThread;
-import static java.util.Optional.empty;
+import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import quickfix.ConfigError;
+import quickfix.SessionSettings;
 
 /**
  * {@link SessionSettings} helper class that attempts to load the settings files from the default locations

@@ -16,11 +16,12 @@
 
 package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
 
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
-import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * The failure analyzer is responsible to provide readable information of exception which

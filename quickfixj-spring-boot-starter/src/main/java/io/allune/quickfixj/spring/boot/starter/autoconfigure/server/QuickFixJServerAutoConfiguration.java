@@ -16,11 +16,10 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import javax.management.JMException;
+import javax.management.ObjectName;
 import org.quickfixj.jmx.JmxExporter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,13 +28,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import quickfix.*;
 
-import javax.management.JMException;
-import javax.management.ObjectName;
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import quickfix.Acceptor;
+import quickfix.Application;
+import quickfix.ConfigError;
+import quickfix.DefaultMessageFactory;
+import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.MessageFactory;
+import quickfix.MessageStoreFactory;
+import quickfix.ScreenLogFactory;
+import quickfix.SessionSettings;
+import quickfix.SocketAcceptor;
+import quickfix.ThreadedSocketAcceptor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the Fix Server
@@ -53,18 +67,22 @@ public class QuickFixJServerAutoConfiguration {
 
     private static final String QUICKFIXJ_SERVER_CONFIG = "quickfixj-server.cfg";
 
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
+
     @Bean
     @ConditionalOnMissingBean(name = "serverSessionSettings")
     public SessionSettings serverSessionSettings(QuickFixJBootProperties properties) {
         return SessionSettingsLocator.loadSettings(properties.getServer().getConfig(),
-                SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG, "file:./" + QUICKFIXJ_SERVER_CONFIG,
+				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
+				"file:./" + QUICKFIXJ_SERVER_CONFIG,
                 "classpath:/" + QUICKFIXJ_SERVER_CONFIG);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "serverApplication")
     public Application serverApplication() {
-        return new ApplicationAdapter();
+        return new EventPublisherApplicationAdapter(applicationEventPublisher);
     }
 
     @Bean

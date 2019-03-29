@@ -16,21 +16,30 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.management.ObjectName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import quickfix.*;
 
-import javax.management.ObjectName;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import quickfix.Acceptor;
+import quickfix.Application;
+import quickfix.DefaultMessageFactory;
+import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.MessageFactory;
+import quickfix.MessageStoreFactory;
+import quickfix.ScreenLogFactory;
+import quickfix.SessionSettings;
+import quickfix.SocketAcceptor;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -73,7 +82,7 @@ public class QuickFixJServerAutoConfigurationTest {
         assertThat(serverConnectionManager.isRunning()).isFalse();
         assertThat(serverConnectionManager.isAutoStartup()).isFalse();
         assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
-        assertThat(serverApplication).isInstanceOf(ApplicationAdapter.class);
+        assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
         assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
         assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
         assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);

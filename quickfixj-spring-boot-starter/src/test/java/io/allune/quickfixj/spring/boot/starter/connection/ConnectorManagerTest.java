@@ -16,19 +16,20 @@
 
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import quickfix.ConfigError;
-import quickfix.Connector;
-import quickfix.RuntimeError;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import quickfix.ConfigError;
+import quickfix.Connector;
+import quickfix.RuntimeError;
 
 /**
  * @author Eduardo Sanchez-Ros

@@ -84,6 +84,12 @@
                 <artifactId>mina-core</artifactId>
                 <version>${mina.version}</version>
             </dependency>
+
+			<dependency>
+				<groupId>org.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>3.1.6</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 

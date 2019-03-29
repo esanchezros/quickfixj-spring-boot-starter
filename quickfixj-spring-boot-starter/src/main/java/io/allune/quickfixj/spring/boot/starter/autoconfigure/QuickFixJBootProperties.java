@@ -16,9 +16,10 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Holds all the relevant starter properties which can be configured with

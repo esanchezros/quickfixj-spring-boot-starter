@@ -16,10 +16,11 @@
 
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.util.Assert;
+
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import lombok.extern.slf4j.Slf4j;
 import quickfix.ConfigError;
 import quickfix.Connector;
 import quickfix.RuntimeError;

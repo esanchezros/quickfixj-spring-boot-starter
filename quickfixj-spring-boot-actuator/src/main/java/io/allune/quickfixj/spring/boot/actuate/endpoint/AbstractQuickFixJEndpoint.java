@@ -16,17 +16,17 @@
 
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import quickfix.ConfigError;
-import quickfix.Connector;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
+import static quickfix.SessionID.NOT_SET;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
-import static quickfix.SessionID.NOT_SET;
+import quickfix.ConfigError;
+import quickfix.Connector;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
 
 /**
  * Base class for QuickFixJ {@link @Endpoint}s.

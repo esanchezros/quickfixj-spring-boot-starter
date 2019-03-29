@@ -1,18 +1,18 @@
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import quickfix.SessionSettings;
+import static io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator.loadSettings;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator.loadSettings;
-import static org.assertj.core.api.Assertions.assertThat;
+import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import quickfix.SessionSettings;
 
 public class SessionSettingsLocatorTest {
 

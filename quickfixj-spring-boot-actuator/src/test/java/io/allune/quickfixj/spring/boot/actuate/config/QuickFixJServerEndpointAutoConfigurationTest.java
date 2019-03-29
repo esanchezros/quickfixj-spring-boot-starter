@@ -1,7 +1,7 @@
 package io.allune.quickfixj.spring.boot.actuate.config;
 
-import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
+import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 
 /**
  * @author Eduardo Sanchez-Ros

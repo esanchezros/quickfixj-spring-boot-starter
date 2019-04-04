@@ -93,8 +93,8 @@ public class QuickFixJServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "serverLogFactory")
-    public LogFactory serverLogFactory() {
-        return new ScreenLogFactory(true, true, true);
+    public LogFactory serverLogFactory(SessionSettings sessionSettings) {
+        return new ScreenLogFactory(sessionSettings);
     }
 
     @Bean

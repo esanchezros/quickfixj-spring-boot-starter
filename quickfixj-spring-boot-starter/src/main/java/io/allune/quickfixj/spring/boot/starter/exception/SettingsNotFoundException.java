@@ -20,6 +20,7 @@ package io.allune.quickfixj.spring.boot.starter.exception;
  * @author Eduardo Sanchez-Ros
  */
 public class SettingsNotFoundException extends QuickFixJBaseException {
+
     public SettingsNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }

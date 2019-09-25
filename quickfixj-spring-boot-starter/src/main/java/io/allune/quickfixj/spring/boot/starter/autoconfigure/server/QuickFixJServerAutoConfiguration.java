@@ -16,10 +16,12 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 
-import javax.management.JMException;
-import javax.management.ObjectName;
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,12 +34,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-
-import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.ConfigError;
@@ -50,6 +46,9 @@ import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
+
+import javax.management.JMException;
+import javax.management.ObjectName;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the Fix Server
@@ -67,9 +66,6 @@ public class QuickFixJServerAutoConfiguration {
 
     private static final String QUICKFIXJ_SERVER_CONFIG = "quickfixj-server.cfg";
 
-	@Autowired
-	private ApplicationEventPublisher applicationEventPublisher;
-
     @Bean
     @ConditionalOnMissingBean(name = "serverSessionSettings")
     public SessionSettings serverSessionSettings(QuickFixJBootProperties properties) {
@@ -81,7 +77,7 @@ public class QuickFixJServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "serverApplication")
-    public Application serverApplication() {
+    public Application serverApplication(ApplicationEventPublisher applicationEventPublisher) {
         return new EventPublisherApplicationAdapter(applicationEventPublisher);
     }
 
@@ -110,7 +106,13 @@ public class QuickFixJServerAutoConfiguration {
                                    SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
 
         try {
-            return new SocketAcceptor(serverApplication, serverMessageStoreFactory, serverSessionSettings, serverLogFactory, serverMessageFactory);
+            return SocketAcceptor.newBuilder()
+                    .withApplication(serverApplication)
+                    .withMessageStoreFactory(serverMessageStoreFactory)
+                    .withSettings(serverSessionSettings)
+                    .withLogFactory(serverLogFactory)
+                    .withMessageFactory(serverMessageFactory)
+                    .build();
         } catch (ConfigError configError) {
             throw new ConfigurationException(configError.getMessage(), configError);
         }
@@ -123,7 +125,13 @@ public class QuickFixJServerAutoConfiguration {
                                    SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
 
         try {
-            return new ThreadedSocketAcceptor(serverApplication, serverMessageStoreFactory, serverSessionSettings, serverLogFactory, serverMessageFactory);
+            return ThreadedSocketAcceptor.newBuilder()
+                    .withApplication(serverApplication)
+                    .withMessageStoreFactory(serverMessageStoreFactory)
+                    .withSettings(serverSessionSettings)
+                    .withLogFactory(serverLogFactory)
+                    .withMessageFactory(serverMessageFactory)
+                    .build();
         } catch (ConfigError configError) {
             throw new ConfigurationException(configError.getMessage(), configError);
         }

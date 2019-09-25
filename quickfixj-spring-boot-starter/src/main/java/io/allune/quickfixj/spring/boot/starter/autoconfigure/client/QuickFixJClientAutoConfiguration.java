@@ -16,10 +16,12 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.client;
 
-import javax.management.JMException;
-import javax.management.ObjectName;
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,12 +34,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-
-import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
@@ -50,6 +46,9 @@ import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
+
+import javax.management.JMException;
+import javax.management.ObjectName;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
@@ -67,9 +66,6 @@ public class QuickFixJClientAutoConfiguration {
 
     private static final String QUICKFIXJ_CLIENT_CONFIG = "quickfixj-client.cfg";
 
-	@Autowired
-	private ApplicationEventPublisher applicationEventPublisher;
-
     @Bean
     @ConditionalOnMissingBean(name = "clientSessionSettings")
     public SessionSettings clientSessionSettings(QuickFixJBootProperties properties) {
@@ -81,7 +77,7 @@ public class QuickFixJClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "clientApplication")
-    public Application clientApplication() {
+    public Application clientApplication(ApplicationEventPublisher applicationEventPublisher) {
         return new EventPublisherApplicationAdapter(applicationEventPublisher);
     }
 
@@ -110,21 +106,31 @@ public class QuickFixJClientAutoConfiguration {
                                      SessionSettings clientSessionSettings, LogFactory clientLogFactory,
                                      MessageFactory clientMessageFactory) throws ConfigError {
 
-        return new SocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
-                clientLogFactory, clientMessageFactory);
+        return SocketInitiator.newBuilder()
+                .withApplication(clientApplication)
+                .withMessageStoreFactory(clientMessageStoreFactory)
+                .withSettings(clientSessionSettings)
+                .withLogFactory(clientLogFactory)
+                .withMessageFactory(clientMessageFactory)
+                .build();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "clientInitiator")
     @ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
     public Initiator clientThreadedInitiator(Application clientApplication,
-                                           MessageStoreFactory clientMessageStoreFactory,
-                                           SessionSettings clientSessionSettings,
-                                           LogFactory clientLogFactory,
-                                           MessageFactory clientMessageFactory) throws ConfigError {
+                                             MessageStoreFactory clientMessageStoreFactory,
+                                             SessionSettings clientSessionSettings,
+                                             LogFactory clientLogFactory,
+                                             MessageFactory clientMessageFactory) throws ConfigError {
 
-        return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
-                clientLogFactory, clientMessageFactory);
+        return ThreadedSocketInitiator.newBuilder()
+                .withApplication(clientApplication)
+                .withMessageStoreFactory(clientMessageStoreFactory)
+                .withSettings(clientSessionSettings)
+                .withLogFactory(clientLogFactory)
+                .withMessageFactory(clientMessageFactory)
+                .build();
     }
 
     @Bean

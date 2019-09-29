@@ -51,8 +51,7 @@ import javax.management.JMException;
 import javax.management.ObjectName;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} that configures the Fix Server
- * {@link ConnectorManager} from the properties.
+ * {@link EnableAutoConfiguration Auto-configuration} for QuickFixJ Server (Acceptor)
  *
  * @author Eduardo Sanchez-Ros
  */

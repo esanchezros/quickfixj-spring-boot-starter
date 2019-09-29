@@ -7,7 +7,7 @@
     <version>2.4.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>quickfixj-spring-boot-starter-parent</name>
+    <name>Spring Boot Starter for QuickFixJ</name>
     <description>Spring Boot Starter for QuickFixJ</description>
     <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 

@@ -11,7 +11,7 @@
     <artifactId>quickfixj-spring-boot-actuator</artifactId>
     <packaging>jar</packaging>
 
-    <name>quickfixj-spring-boot-actuator</name>
+    <name>Spring Boot Starter for QuickFixJ :: Actuator</name>
     <description>Spring Boot Actuator for QuickFixJ</description>
     <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 

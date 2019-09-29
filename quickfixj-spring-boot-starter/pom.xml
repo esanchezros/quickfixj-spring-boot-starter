@@ -11,7 +11,7 @@
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
 	<packaging>jar</packaging>
 
-	<name>quickfixj-spring-boot-starter</name>
+	<name>Spring Boot Starter for QuickFixJ :: Starter</name>
 	<description>Spring Boot Starter for QuickFixJ</description>
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 

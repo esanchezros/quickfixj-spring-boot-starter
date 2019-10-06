@@ -1,5 +1,6 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.template;
 
+import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

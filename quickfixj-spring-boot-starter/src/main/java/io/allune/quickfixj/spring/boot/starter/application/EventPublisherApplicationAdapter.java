@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import quickfix.SessionID;
 /**
  * Implements the {@link Application} interface publishing the received payload as a Spring {@link ApplicationEvent} to all
  * matching listeners registered.
- *
+ * <p>
  * In case the {@link ApplicationEventPublisher#publishEvent(Object)} method throws an exception, this exception will be propagated up to
  * the {@link quickfix.Session#next()} method. Depending on the value of {@code RejectMessageOnUnhandledException} in the quickfixj
  * configuration, the message will be redelivered or dismissed.

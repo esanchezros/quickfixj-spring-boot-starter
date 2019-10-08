@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,74 +48,74 @@ import org.springframework.test.util.ReflectionTestUtils;
  */
 abstract class AbstractEndpointTests {
 
-    private final EndpointId endpointId;
+	private final EndpointId endpointId;
 
-    AbstractEndpointTests(EndpointId endpointId) {
-        this.endpointId = endpointId;
-    }
+	AbstractEndpointTests(EndpointId endpointId) {
+		this.endpointId = endpointId;
+	}
 
-    void assertActuatorEndpointLoaded(Class<?> testConfigClass) {
-        load(testConfigClass, (discoverer) -> {
-            Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-            assertThat(endpoints).containsOnlyKeys(endpointId);
-        });
-    }
+	void assertActuatorEndpointLoaded(Class<?> testConfigClass) {
+		load(testConfigClass, (discoverer) -> {
+			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsOnlyKeys(endpointId);
+		});
+	}
 
-    void assertActuatorEndpointNotLoaded(Class<?> testConfigClass) {
-        load(testConfigClass, (discoverer) -> {
-            Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-            assertThat(endpoints).doesNotContainKey(endpointId);
-        });
-    }
+	void assertActuatorEndpointNotLoaded(Class<?> testConfigClass) {
+		load(testConfigClass, (discoverer) -> {
+			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).doesNotContainKey(endpointId);
+		});
+	}
 
-    @SuppressWarnings("unchecked")
-    void assertReadProperties(Class<?> testConfigClass) {
-        load(testConfigClass, (discoverer) -> {
-            Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-            assertThat(endpoints).containsKey(endpointId);
+	@SuppressWarnings("unchecked")
+	void assertReadProperties(Class<?> testConfigClass) {
+		load(testConfigClass, (discoverer) -> {
+			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
+			assertThat(endpoints).containsKey(endpointId);
 
-            ExposableWebEndpoint endpoint = endpoints.get(endpointId);
-            assertThat(endpoint.getOperations()).hasSize(1);
+			ExposableWebEndpoint endpoint = endpoints.get(endpointId);
+			assertThat(endpoint.getOperations()).hasSize(1);
 
-            WebOperation operation = endpoint.getOperations().iterator().next();
-            Object invoker = ReflectionTestUtils.getField(operation, "invoker");
-            assertThat(invoker).isInstanceOf(ReflectiveOperationInvoker.class);
+			WebOperation operation = endpoint.getOperations().iterator().next();
+			Object invoker = ReflectionTestUtils.getField(operation, "invoker");
+			assertThat(invoker).isInstanceOf(ReflectiveOperationInvoker.class);
 
-            Map<String, Properties> properties = (Map<String, Properties>) ((ReflectiveOperationInvoker) invoker).invoke(
-                    new InvocationContext(mock(SecurityContext.class), Collections.emptyMap()));
-            assertThat(properties).hasSize(1);
-        });
-    }
+			Map<String, Properties> properties = (Map<String, Properties>) ((ReflectiveOperationInvoker) invoker).invoke(
+					new InvocationContext(mock(SecurityContext.class), Collections.emptyMap()));
+			assertThat(properties).hasSize(1);
+		});
+	}
 
-    private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
-        this.load((id) -> null, EndpointId::toString, configuration, consumer);
-    }
+	private void load(Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
+		this.load((id) -> null, EndpointId::toString, configuration, consumer);
+	}
 
-    private void load(Function<EndpointId, Long> timeToLive,
-                      PathMapper endpointPathMapper,
-                      Class<?> configuration,
-                      Consumer<WebEndpointDiscoverer> consumer) {
+	private void load(Function<EndpointId, Long> timeToLive,
+			PathMapper endpointPathMapper,
+			Class<?> configuration,
+			Consumer<WebEndpointDiscoverer> consumer) {
 
-        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
-            ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(DefaultConversionService.getSharedInstance());
-            EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
-                    Collections.singletonList("application/json"),
-                    Collections.singletonList("application/json"));
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
+			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(DefaultConversionService.getSharedInstance());
+			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
+					Collections.singletonList("application/json"),
+					Collections.singletonList("application/json"));
 
-            WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context,
-                    parameterMapper,
-                    mediaTypes,
-                    Collections.singletonList(endpointPathMapper),
-                    Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
-                    Collections.emptyList());
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context,
+					parameterMapper,
+					mediaTypes,
+					Collections.singletonList(endpointPathMapper),
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					Collections.emptyList());
 
-            consumer.accept(discoverer);
-        }
-    }
+			consumer.accept(discoverer);
+		}
+	}
 
-    private Map<EndpointId, ExposableWebEndpoint> mapEndpoints(Collection<ExposableWebEndpoint> endpoints) {
-        Map<EndpointId, ExposableWebEndpoint> endpointById = new HashMap<>();
-        endpoints.forEach((endpoint) -> endpointById.put(endpoint.getEndpointId(), endpoint));
-        return endpointById;
-    }
+	private Map<EndpointId, ExposableWebEndpoint> mapEndpoints(Collection<ExposableWebEndpoint> endpoints) {
+		Map<EndpointId, ExposableWebEndpoint> endpointById = new HashMap<>();
+		endpoints.forEach((endpoint) -> endpointById.put(endpoint.getEndpointId(), endpoint));
+		return endpointById;
+	}
 }

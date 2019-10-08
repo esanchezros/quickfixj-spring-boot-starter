@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,9 @@ import quickfix.Application;
 import quickfix.Message;
 import quickfix.SessionID;
 
+/**
+ * @author Eduardo Sanchez-Ros
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
 		properties = {
@@ -72,8 +75,8 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() == 1);
 		assertThat(receivedEvents.get(0)).isInstanceOf(FromAdmin.class);
-		assertThat(((FromAdmin)receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((FromAdmin)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((FromAdmin) receivedEvents.get(0)).getMessage()).isEqualTo(message);
+		assertThat(((FromAdmin) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -84,8 +87,8 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(FromApp.class);
-		assertThat(((FromApp)receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((FromApp)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((FromApp) receivedEvents.get(0)).getMessage()).isEqualTo(message);
+		assertThat(((FromApp) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -95,7 +98,7 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(Create.class);
-		assertThat(((Create)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((Create) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -105,7 +108,7 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(Logon.class);
-		assertThat(((Logon)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((Logon) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -115,7 +118,7 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(Logout.class);
-		assertThat(((Logout)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((Logout) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -126,7 +129,7 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(ToAdmin.class);
-		assertThat(((ToAdmin)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((ToAdmin) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Test
@@ -137,8 +140,8 @@ public class EventPublisherApplicationAdapterTest {
 
 		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
 		assertThat(receivedEvents.get(0)).isInstanceOf(ToApp.class);
-		assertThat(((ToApp)receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((ToApp)receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		assertThat(((ToApp) receivedEvents.get(0)).getMessage()).isEqualTo(message);
+		assertThat(((ToApp) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
 	}
 
 	@Configuration

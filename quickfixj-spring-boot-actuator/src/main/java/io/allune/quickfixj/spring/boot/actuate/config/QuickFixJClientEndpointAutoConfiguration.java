@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ import quickfix.SessionSettings;
 @AutoConfigureAfter(QuickFixJClientAutoConfiguration.class)
 public class QuickFixJClientEndpointAutoConfiguration {
 
-    @Bean
-    @ConditionalOnBean(name = {"clientInitiator", "clientSessionSettings"})
-    @ConditionalOnClass({Initiator.class, SessionSettings.class})
-    @ConditionalOnMissingBean
+	@Bean
+	@ConditionalOnBean(name = { "clientInitiator", "clientSessionSettings" })
+	@ConditionalOnClass({ Initiator.class, SessionSettings.class })
+	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-    public QuickFixJClientEndpoint quickfixjClientEndpoint(Initiator clientInitiator, SessionSettings clientSessionSettings) {
-        return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
-    }
+	public QuickFixJClientEndpoint quickfixjClientEndpoint(Initiator clientInitiator, SessionSettings clientSessionSettings) {
+		return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
+	}
 }

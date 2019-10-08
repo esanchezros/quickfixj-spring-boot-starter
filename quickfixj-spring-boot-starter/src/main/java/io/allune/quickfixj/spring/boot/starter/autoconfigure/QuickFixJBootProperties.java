@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,57 +31,57 @@ import lombok.Data;
 @ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
 public class QuickFixJBootProperties {
 
-    public static final String PROPERTY_PREFIX = "quickfixj";
+	public static final String PROPERTY_PREFIX = "quickfixj";
 
-    private Client client = new Client();
+	private Client client = new Client();
 
-    private Server server = new Server();
+	private Server server = new Server();
 
-    @Data
-    public static class Client {
+	@Data
+	public static class Client {
 
-        /**
-         * Whether the {@link ConnectorManager} should get started automatically
-         */
-        private boolean autoStartup = true;
+		/**
+		 * Whether the {@link ConnectorManager} should get started automatically
+		 */
+		private boolean autoStartup = true;
 
-        /**
-         * The phase value of the {@link ConnectorManager}.
-         */
-        private int phase = Integer.MAX_VALUE;
+		/**
+		 * The phase value of the {@link ConnectorManager}.
+		 */
+		private int phase = Integer.MAX_VALUE;
 
-        /**
-         * The location of the configuration file to use to initialize QuickFixJ client.
-         */
-        private String config;
+		/**
+		 * The location of the configuration file to use to initialize QuickFixJ client.
+		 */
+		private String config;
 
-        /**
-         * Whether to register the Jmx MBeans for the client
-         */
-        private boolean jmxEnabled = false;
-    }
+		/**
+		 * Whether to register the Jmx MBeans for the client
+		 */
+		private boolean jmxEnabled = false;
+	}
 
-    @Data
-    public static class Server {
+	@Data
+	public static class Server {
 
-        /**
-         * Whether the {@link ConnectorManager} should get started automatically
-         */
-        private boolean autoStartup = true;
+		/**
+		 * Whether the {@link ConnectorManager} should get started automatically
+		 */
+		private boolean autoStartup = true;
 
-        /**
-         * The phase value of the {@link ConnectorManager}.
-         */
-        private int phase = Integer.MAX_VALUE;
+		/**
+		 * The phase value of the {@link ConnectorManager}.
+		 */
+		private int phase = Integer.MAX_VALUE;
 
-        /**
-         * The location of the configuration file to use to initialize QuickFixJ client.
-         */
-        private String config;
+		/**
+		 * The location of the configuration file to use to initialize QuickFixJ client.
+		 */
+		private String config;
 
-        /**
-         * Whether to register the Jmx MBeans for the server
-         */
-        private boolean jmxEnabled = false;
-    }
+		/**
+		 * Whether to register the Jmx MBeans for the server
+		 */
+		private boolean jmxEnabled = false;
+	}
 }

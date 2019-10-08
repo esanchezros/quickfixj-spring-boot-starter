@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ package io.allune.quickfixj.spring.boot.starter.exception;
  */
 public class SettingsNotFoundException extends QuickFixJBaseException {
 
-    public SettingsNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public SettingsNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    public SettingsNotFoundException(String message) {
-        super(message);
-    }
+	public SettingsNotFoundException(String message) {
+		super(message);
+	}
 }

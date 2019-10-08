@@ -21,10 +21,9 @@ It simplifies the configuration required to create and start an Initiator or Acc
 
 == Getting started
 
-To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Spring Boot Starter dependency in
-your project.
+To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Spring Boot Starter dependency in your project.
 
-[source, xml]
+[source,xml]
 ----
 <dependency>
     <groupId>io.allune</groupId>
@@ -35,7 +34,7 @@ your project.
 
 To enable the actuator endpoints you will also have to add the QuickFixJ Spring Boot Actuator dependency.
 
-[source, xml]
+[source,xml]
 ----
 <dependency>
     <groupId>io.allune</groupId>
@@ -48,7 +47,7 @@ To enable the actuator endpoints you will also have to add the QuickFixJ Spring 
 
 The `@EnableQuickFixJServer` will auto configure a QuickFixJ Server:
 
-[source, java]
+[source,java]
 ----
 @EnableQuickFixJServer
 @SpringBootApplication
@@ -62,7 +61,7 @@ public class AppServer {
 
 The configuration can be done in the application.properties / application.yml.
 
-[source, yml]
+[source,yml]
 ----
 quickfixj:
   server:
@@ -70,17 +69,17 @@ quickfixj:
 ----
 
 Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-server.cfg]
-file to configure the FIX sessions. The configuration is resolved using the following approach:
+file to configure the FIX sessions.
+The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `serverSessionSettings`
 * By a configuration file defined by the `quickfixj.server.config` property
 * By the presence of the `quickfixj.server.config` system property
 * By a `quickfixj-server.cfg` in the working directory or at the root of the classpath
 
-
 ==== QuickFixJ Server properties
 
-[source, properties]
+[source,properties]
 ----
 quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor
 quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up
@@ -91,7 +90,7 @@ quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAccepto
 
 ==== QuickFixJ Server Actuator properties
 
-[source, properties]
+[source,properties]
 ----
 management.endpoint.quickfixjserver.enabled=true # whether the endpoint is enabled or not
 management.endpoints.web.exposure.include=quickfixjserver # whether the endpoint will be exposed
@@ -101,7 +100,7 @@ Example usage:
 
     http://localhost:8081/actuator/quickfixjserver
 
-[source, json]
+[source,json]
 ----
 {
   "FIX.4.2:EXEC->BANZAI": {
@@ -145,7 +144,7 @@ Example usage:
 
 The `@EnableQuickFixJClient` will auto configure a QuickFixJ Client:
 
-[source, java]
+[source,java]
 ----
 @EnableQuickFixJClient
 @SpringBootApplication
@@ -167,7 +166,8 @@ quickfixj:
 ----
 
 Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-client.cfg]
-file to configure the FIX sessions. The configuration is resolved using the following approach:
+file to configure the FIX sessions.
+The configuration is resolved using the following approach:
 
 * By the presence of a `quickfix.SessionSettings` bean named `clientSessionSettings`
 * By a configuration file defined by the `quickfixj.client.config` property
@@ -176,7 +176,7 @@ file to configure the FIX sessions. The configuration is resolved using the foll
 
 ==== QuickFixJ Client properties
 
-[source, properties]
+[source,properties]
 ----
 quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfixj initiator
 quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up
@@ -187,7 +187,7 @@ quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiat
 
 ==== QuickFixJ Client Actuator properties
 
-[source, properties]
+[source,properties]
 ----
 management.endpoint.quickfixjclient.enabled=true # whether the endpoint is enabled or not
 management.endpoints.web.exposure.include=quickfixjclient # whether the endpoint will be exposed
@@ -197,7 +197,7 @@ Example usage:
 
     http://localhost:8080/actuator/quickfixjclient
 
-[source, json]
+[source,json]
 ----
 {
   "FIXT.1.1:BANZAI->EXEC": {
@@ -238,13 +238,11 @@ Example usage:
 
 === Listening on quickfixj.Application messages
 
-The QuickFixJ Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor)
-and the Client (Initiator) as `ApplicationEvent`s.
+The QuickFixJ Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor) and the Client (Initiator) as `ApplicationEvent`s.
 
-If your application is only processing a subset of message types (i.e. `toAdmin`, `toApp`, `onCreate`, etc.) you will need to register an `EventListener` for these,
-with the appropriate message type as the only parameter for the listener method:
+If your application is only processing a subset of message types (i.e. `toAdmin`, `toApp`, `onCreate`, etc.) you will need to register an `EventListener` for these, with the appropriate message type as the only parameter for the listener method:
 
-[source, java]
+[source,java]
 ----
 @EventListener
 public void listenFromAdmin(FromAdmin fromAdmin) {
@@ -282,7 +280,8 @@ public void listenToApp(ToApp toApp) {
 }
 ----
 
-In case the `EventListener` method throws an exception, this exception will be propagated up the `quickfix.Session#next()` method. Depending on the value of `RejectMessageOnUnhandledException`
+In case the `EventListener` method throws an exception, this exception will be propagated up the `quickfix.Session#next()` method.
+Depending on the value of `RejectMessageOnUnhandledException`
 in the quickfixj configuration file, the message will be redelivered or dismissed.
 
 === License and Acknowledgement

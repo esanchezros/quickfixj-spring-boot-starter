@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.client;
 
-import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
-import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import javax.management.JMException;
+import javax.management.ObjectName;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -34,6 +31,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+
+import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
@@ -47,9 +50,6 @@ import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
 
-import javax.management.JMException;
-import javax.management.ObjectName;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for QuickFix Client (Initiator)
  *
@@ -61,110 +61,110 @@ import javax.management.ObjectName;
 @Conditional(QuickFixJClientAutoConfiguration.ClientConfigAvailableCondition.class)
 public class QuickFixJClientAutoConfiguration {
 
-    private static final String SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG = "quickfixj.client.config";
+	private static final String SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG = "quickfixj.client.config";
 
-    private static final String QUICKFIXJ_CLIENT_CONFIG = "quickfixj-client.cfg";
+	private static final String QUICKFIXJ_CLIENT_CONFIG = "quickfixj-client.cfg";
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientSessionSettings")
-    public SessionSettings clientSessionSettings(QuickFixJBootProperties properties) {
-        return SessionSettingsLocator.loadSettings(properties.getClient().getConfig(),
-                System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG),
-                "file:./" + QUICKFIXJ_CLIENT_CONFIG,
-                "classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "clientSessionSettings")
+	public SessionSettings clientSessionSettings(QuickFixJBootProperties properties) {
+		return SessionSettingsLocator.loadSettings(properties.getClient().getConfig(),
+				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG),
+				"file:./" + QUICKFIXJ_CLIENT_CONFIG,
+				"classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientApplication")
-    public Application clientApplication(ApplicationEventPublisher applicationEventPublisher) {
-        return new EventPublisherApplicationAdapter(applicationEventPublisher);
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "clientApplication")
+	public Application clientApplication(ApplicationEventPublisher applicationEventPublisher) {
+		return new EventPublisherApplicationAdapter(applicationEventPublisher);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-    public MessageStoreFactory clientMessageStoreFactory() {
-        return new MemoryStoreFactory();
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	public MessageStoreFactory clientMessageStoreFactory() {
+		return new MemoryStoreFactory();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientLogFactory")
-    public LogFactory clientLogFactory(SessionSettings sessionSettings) {
-        return new ScreenLogFactory(sessionSettings);
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	public LogFactory clientLogFactory(SessionSettings sessionSettings) {
+		return new ScreenLogFactory(sessionSettings);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientMessageFactory")
-    public MessageFactory clientMessageFactory() {
-        return new DefaultMessageFactory();
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "clientMessageFactory")
+	public MessageFactory clientMessageFactory() {
+		return new DefaultMessageFactory();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientInitiator")
-    @ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
-    public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
-                                     SessionSettings clientSessionSettings, LogFactory clientLogFactory,
-                                     MessageFactory clientMessageFactory) throws ConfigError {
+	@Bean
+	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
+	public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
+			SessionSettings clientSessionSettings, LogFactory clientLogFactory,
+			MessageFactory clientMessageFactory) throws ConfigError {
 
-        return SocketInitiator.newBuilder()
-                .withApplication(clientApplication)
-                .withMessageStoreFactory(clientMessageStoreFactory)
-                .withSettings(clientSessionSettings)
-                .withLogFactory(clientLogFactory)
-                .withMessageFactory(clientMessageFactory)
-                .build();
-    }
+		return SocketInitiator.newBuilder()
+				.withApplication(clientApplication)
+				.withMessageStoreFactory(clientMessageStoreFactory)
+				.withSettings(clientSessionSettings)
+				.withLogFactory(clientLogFactory)
+				.withMessageFactory(clientMessageFactory)
+				.build();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "clientInitiator")
-    @ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
-    public Initiator clientThreadedInitiator(Application clientApplication,
-                                             MessageStoreFactory clientMessageStoreFactory,
-                                             SessionSettings clientSessionSettings,
-                                             LogFactory clientLogFactory,
-                                             MessageFactory clientMessageFactory) throws ConfigError {
+	@Bean
+	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
+	public Initiator clientThreadedInitiator(Application clientApplication,
+			MessageStoreFactory clientMessageStoreFactory,
+			SessionSettings clientSessionSettings,
+			LogFactory clientLogFactory,
+			MessageFactory clientMessageFactory) throws ConfigError {
 
-        return ThreadedSocketInitiator.newBuilder()
-                .withApplication(clientApplication)
-                .withMessageStoreFactory(clientMessageStoreFactory)
-                .withSettings(clientSessionSettings)
-                .withLogFactory(clientLogFactory)
-                .withMessageFactory(clientMessageFactory)
-                .build();
-    }
+		return ThreadedSocketInitiator.newBuilder()
+				.withApplication(clientApplication)
+				.withMessageStoreFactory(clientMessageStoreFactory)
+				.withSettings(clientSessionSettings)
+				.withLogFactory(clientLogFactory)
+				.withMessageFactory(clientMessageFactory)
+				.build();
+	}
 
-    @Bean
-    public ConnectorManager clientConnectionManager(Initiator clientInitiator, QuickFixJBootProperties properties) {
-        ConnectorManager connectorManager = new ConnectorManager(clientInitiator);
-        if (properties.getClient() != null) {
-            connectorManager.setAutoStartup(properties.getClient().isAutoStartup());
-            connectorManager.setPhase(properties.getClient().getPhase());
-        }
-        return connectorManager;
-    }
+	@Bean
+	public ConnectorManager clientConnectionManager(Initiator clientInitiator, QuickFixJBootProperties properties) {
+		ConnectorManager connectorManager = new ConnectorManager(clientInitiator);
+		if (properties.getClient() != null) {
+			connectorManager.setAutoStartup(properties.getClient().isAutoStartup());
+			connectorManager.setPhase(properties.getClient().getPhase());
+		}
+		return connectorManager;
+	}
 
-    @Bean
-    @ConditionalOnProperty(prefix = "quickfixj.client", name = "jmx-enabled", havingValue = "true")
-    @ConditionalOnClass(JmxExporter.class)
-    @ConditionalOnSingleCandidate(Initiator.class)
-    @ConditionalOnMissingBean(name = "clientInitiatorMBean")
-    public ObjectName clientInitiatorMBean(Initiator clientInitiator) {
-        try {
-            JmxExporter exporter = new JmxExporter();
-            return exporter.register(clientInitiator);
-        } catch (JMException e) {
-            throw new ConfigurationException(e.getMessage(), e);
-        }
-    }
+	@Bean
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "jmx-enabled", havingValue = "true")
+	@ConditionalOnClass(JmxExporter.class)
+	@ConditionalOnSingleCandidate(Initiator.class)
+	@ConditionalOnMissingBean(name = "clientInitiatorMBean")
+	public ObjectName clientInitiatorMBean(Initiator clientInitiator) {
+		try {
+			JmxExporter exporter = new JmxExporter();
+			return exporter.register(clientInitiator);
+		} catch (JMException e) {
+			throw new ConfigurationException(e.getMessage(), e);
+		}
+	}
 
-    /**
-     * {@link ClientConfigAvailableCondition} that checks if the client configuration file is defined in
-     * {@code quickfixj.client.config} configuration key or in the default locations.
-     */
-    static class ClientConfigAvailableCondition extends ResourceCondition {
+	/**
+	 * {@link ClientConfigAvailableCondition} that checks if the client configuration file is defined in
+	 * {@code quickfixj.client.config} configuration key or in the default locations.
+	 */
+	static class ClientConfigAvailableCondition extends ResourceCondition {
 
-        ClientConfigAvailableCondition() {
-            super("QuickFixJ Client", SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG,
-                    "file:./" + QUICKFIXJ_CLIENT_CONFIG, "classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
-        }
-    }
+		ClientConfigAvailableCondition() {
+			super("QuickFixJ Client", SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG,
+					"file:./" + QUICKFIXJ_CLIENT_CONFIG, "classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
+		}
+	}
 }

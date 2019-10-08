@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,19 +29,19 @@ import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundExcepti
  *
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<QuickFixJBaseException>{
+public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<QuickFixJBaseException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, QuickFixJBaseException cause) {
 		String descriptionMessage = cause.getMessage();
 		String actionMessage = cause.getMessage();
 
-		if(cause instanceof ConfigurationException) {
+		if (cause instanceof ConfigurationException) {
 			descriptionMessage = "A configuration error has been detected in the QuickFixJ settings provided.";
-            actionMessage = "Please configure your QuickFixJ settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html";
+			actionMessage = "Please configure your QuickFixJ settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html";
 		}
 
-		if(cause instanceof SettingsNotFoundException) {
+		if (cause instanceof SettingsNotFoundException) {
 			descriptionMessage = "The QuickFixJ settings file could not be found.";
 			actionMessage = "Please provide a QuickFixJ settings file on the property 'config' for the client/server section in your configuration file.";
 		}

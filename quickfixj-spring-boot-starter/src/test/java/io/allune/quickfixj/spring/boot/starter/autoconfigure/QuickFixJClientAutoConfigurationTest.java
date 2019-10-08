@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,53 +46,54 @@ import quickfix.SocketInitiator;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        properties = {
-                "quickfixj.client.autoStartup=false",
-                "quickfixj.client.config=classpath:quickfixj.cfg",
-                "quickfixj.client.jmx-enabled=true"
-        })
+		properties = {
+				"quickfixj.client.autoStartup=false",
+				"quickfixj.client.config=classpath:quickfixj.cfg",
+				"quickfixj.client.jmx-enabled=true"
+		})
 public class QuickFixJClientAutoConfigurationTest {
 
-    @Autowired
-    private ConnectorManager clientConnectionManager;
+	@Autowired
+	private ConnectorManager clientConnectionManager;
 
-    @Autowired
-    private Initiator clientInitiator;
+	@Autowired
+	private Initiator clientInitiator;
 
-    @Autowired
-    private Application clientApplication;
+	@Autowired
+	private Application clientApplication;
 
-    @Autowired
-    private MessageStoreFactory clientMessageStoreFactory;
+	@Autowired
+	private MessageStoreFactory clientMessageStoreFactory;
 
-    @Autowired
-    private LogFactory clientLogFactory;
+	@Autowired
+	private LogFactory clientLogFactory;
 
-    @Autowired
-    private MessageFactory clientMessageFactory;
+	@Autowired
+	private MessageFactory clientMessageFactory;
 
-    @Autowired
-    private SessionSettings clientSessionSettings;
+	@Autowired
+	private SessionSettings clientSessionSettings;
 
-    @Autowired
-    private ObjectName clientInitiatorMBean;
+	@Autowired
+	private ObjectName clientInitiatorMBean;
 
-    @Test
-    public void testAutoConfiguredBeans() {
-        assertThat(clientConnectionManager.isRunning()).isFalse();
-        assertThat(clientConnectionManager.isAutoStartup()).isFalse();
-        assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
-        assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
-        assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
-        assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
-        assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);
-        assertThat(clientSessionSettings).isNotNull();
-        assertThat(clientInitiatorMBean).isNotNull();
-    }
+	@Test
+	public void testAutoConfiguredBeans() {
+		assertThat(clientConnectionManager.isRunning()).isFalse();
+		assertThat(clientConnectionManager.isAutoStartup()).isFalse();
+		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
+		assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
+		assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+		assertThat(clientSessionSettings).isNotNull();
+		assertThat(clientInitiatorMBean).isNotNull();
+	}
 
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableQuickFixJClient
-    static class TestConfig {
-    }
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	static class TestConfig {
+
+	}
 }

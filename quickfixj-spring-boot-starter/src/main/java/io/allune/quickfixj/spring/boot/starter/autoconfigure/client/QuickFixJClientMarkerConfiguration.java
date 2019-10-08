@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,19 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure.client;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Responsible for adding in a marker bean to trigger activation of 
+ * Responsible for adding in a marker bean to trigger activation of
  * {@link QuickFixJClientAutoConfiguration}
  *
  * @author Eduardo Sanchez-Ros
  */
 public class QuickFixJClientMarkerConfiguration {
-    @Bean
+
+	@Bean
 	public Marker quickFixJClientMarkerBean() {
 		return new Marker();
 	}
 
 	class Marker {
-    	//
+		//
 	}
 }

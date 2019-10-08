@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,38 +27,40 @@ import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 
 public class QuickFixJServerEndpointTest extends AbstractEndpointTests {
 
-    private static final EndpointId ENDPOINT_ID = EndpointId.of("quickfixjserver");
+	private static final EndpointId ENDPOINT_ID = EndpointId.of("quickfixjserver");
 
-    public QuickFixJServerEndpointTest() {
-        super(ENDPOINT_ID);
-    }
+	public QuickFixJServerEndpointTest() {
+		super(ENDPOINT_ID);
+	}
 
-    @Test
-    public void shouldLoadActuatorEndpoint() {
-        assertActuatorEndpointLoaded(TestConfig.class);
-    }
+	@Test
+	public void shouldLoadActuatorEndpoint() {
+		assertActuatorEndpointLoaded(TestConfig.class);
+	}
 
-    @Test
-    public void shouldNotLoadActuatorWithEndpointDisabled() {
-        assertActuatorEndpointNotLoaded(TestConfigNoEndpoint.class);
-    }
+	@Test
+	public void shouldNotLoadActuatorWithEndpointDisabled() {
+		assertActuatorEndpointNotLoaded(TestConfigNoEndpoint.class);
+	}
 
-    @Test
-    public void shouldReadProperties() {
-        assertReadProperties(TestConfig.class);
-    }
+	@Test
+	public void shouldReadProperties() {
+		assertReadProperties(TestConfig.class);
+	}
 
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableQuickFixJServer
-    @PropertySource("classpath:application.properties")
-    public static class TestConfig {
-    }
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:application.properties")
+	public static class TestConfig {
 
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableQuickFixJServer
-    @PropertySource("classpath:application-noendpoint.properties")
-    public static class TestConfigNoEndpoint {
-    }
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:application-noendpoint.properties")
+	public static class TestConfigNoEndpoint {
+
+	}
 }

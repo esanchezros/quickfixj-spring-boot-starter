@@ -16,10 +16,13 @@
 
 package io.allune.quickfixj.spring.boot.starter.template;
 
+import static quickfix.SessionID.NOT_SET;
+
 import org.springframework.util.Assert;
 
 import quickfix.DataDictionary;
 import quickfix.DataDictionaryProvider;
+import quickfix.FieldNotFound;
 import quickfix.FixVersions;
 import quickfix.LogUtil;
 import quickfix.Message;
@@ -27,7 +30,16 @@ import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.ApplVerID;
+import quickfix.field.BeginString;
+import quickfix.field.SenderCompID;
+import quickfix.field.TargetCompID;
 
+/**
+ * Synchronous client to perform requests, exposing a simple, template
+ * method API over QuickFixJ client
+ *
+ * @author Eduardo Sanchez-Ros
+ */
 public class QuickFixJTemplate implements QuickFixJOperations {
 
 	private SessionLookupHandler sessionLookupHandler;
@@ -40,6 +52,42 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 		this.sessionLookupHandler = sessionLookupHandler;
 	}
 
+	public SessionLookupHandler getSessionLookupHandler() {
+		return sessionLookupHandler;
+	}
+
+	public void setSessionLookupHandler(SessionLookupHandler sessionLookupHandler) {
+		this.sessionLookupHandler = sessionLookupHandler;
+	}
+
+	@Override
+	public boolean send(Message message) {
+		Assert.notNull(message, "'message' must not be null");
+		return send(message, NOT_SET);
+	}
+
+	@Override
+	public boolean send(Message message, String qualifier) {
+		Assert.notNull(message, "'message' must not be null");
+		String senderCompID = getFieldFromMessageHeader(message, SenderCompID.FIELD);
+		String targetCompID = getFieldFromMessageHeader(message, TargetCompID.FIELD);
+		return send(message, senderCompID, targetCompID, qualifier);
+	}
+
+	@Override
+	public boolean send(Message message, String senderCompID, String targetCompID) {
+		Assert.notNull(message, "'message' must not be null");
+		return send(message, senderCompID, targetCompID, NOT_SET);
+	}
+
+	@Override
+	public boolean send(Message message, String senderCompID, String targetCompID, String qualifier) {
+		Assert.notNull(message, "'message' must not be null");
+		String beginString = getFieldFromMessageHeader(message, BeginString.FIELD);
+		SessionID sessionID = new SessionID(beginString, senderCompID, targetCompID, qualifier);
+		return send(message, sessionID);
+	}
+
 	@Override
 	public boolean send(Message message, SessionID sessionID) {
 		Assert.notNull(message, "'message' must not be null");
@@ -50,7 +98,6 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 			throw new SessionNotFoundException("Session not found: " + sessionID.toString());
 		}
 
-		// TODO: Make configurable
 		DataDictionaryProvider dataDictionaryProvider = session.getDataDictionaryProvider();
 		if (dataDictionaryProvider != null) {
 			try {
@@ -66,28 +113,15 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 		return session.send(message);
 	}
 
-	@Override
-	public boolean send(Message message, String qualifier) {
-		throw new UnsupportedOperationException();
+	private static String getFieldFromMessageHeader(final Message message, int fieldTag) {
+		try {
+			return message.getHeader().getString(fieldTag);
+		} catch (FieldNotFound fieldNotFound) {
+			throw new FieldNotFoundException("Field with ID " + fieldTag + " not found in message");
+		}
 	}
 
-	@Override
-	public boolean send(Message message) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean send(Message message, String senderCompID, String targetCompID) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean send(Message message, String senderCompID, String targetCompID, String qualifier) {
-		throw new UnsupportedOperationException();
-	}
-
-	// TODO: Extract to DefaultMessageUtils  <- think of better naming
-	private ApplVerID getApplicationVersionID(Session session) {
+	private static ApplVerID getApplicationVersionID(Session session) {
 		String beginString = session.getSessionID().getBeginString();
 		if (FixVersions.BEGINSTRING_FIXT11.equals(beginString)) {
 			return new ApplVerID(ApplVerID.FIX50);

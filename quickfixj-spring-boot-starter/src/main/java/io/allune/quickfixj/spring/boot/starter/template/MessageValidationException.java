@@ -16,12 +16,29 @@
 
 package io.allune.quickfixj.spring.boot.starter.template;
 
-public class MessageValidationException extends QuickFixJClientException {
+/**
+ * Exception thrown when a message validation failed.
+ *
+ * @author Eduardo Sanchez-Ros
+ */
+public class MessageValidationException extends QuickFixJException {
 
+	/**
+	 * Construct a new {@code MessageValidationException} with the given message.
+	 *
+	 * @param msg the message
+	 */
 	public MessageValidationException(String msg) {
 		super(msg);
 	}
 
+	/**
+	 * Construct a new instance of {@code MessageValidationException} with the given message and
+	 * exception.
+	 *
+	 * @param msg the message
+	 * @param ex  the exception
+	 */
 	public MessageValidationException(String msg, Throwable ex) {
 		super(msg, ex);
 	}

@@ -19,12 +19,11 @@ package io.allune.quickfixj.spring.boot.starter.template;
 import org.springframework.core.NestedRuntimeException;
 
 /**
- * Base class for exceptions thrown by {@link QuickFixJTemplate} whenever it encounters
- * connection errors.
+ * Base class for exceptions thrown by {@link QuickFixJTemplate} whenever it encounters an error.
  *
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJClientException extends NestedRuntimeException {
+public class QuickFixJException extends NestedRuntimeException {
 
 	private static final long serialVersionUID = -4084444984163796577L;
 
@@ -33,7 +32,7 @@ public class QuickFixJClientException extends NestedRuntimeException {
 	 *
 	 * @param msg the message
 	 */
-	public QuickFixJClientException(String msg) {
+	public QuickFixJException(String msg) {
 		super(msg);
 	}
 
@@ -44,7 +43,7 @@ public class QuickFixJClientException extends NestedRuntimeException {
 	 * @param msg the message
 	 * @param ex  the exception
 	 */
-	public QuickFixJClientException(String msg, Throwable ex) {
+	public QuickFixJException(String msg, Throwable ex) {
 		super(msg, ex);
 	}
 

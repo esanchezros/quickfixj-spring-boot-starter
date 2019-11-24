@@ -1,15 +1,5 @@
 package io.allune.quickfixj.spring.boot.starter.template;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static quickfix.FixVersions.FIX50SP2;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
 import quickfix.DataDictionary;
 import quickfix.DataDictionaryProvider;
 import quickfix.FieldNotFound;
@@ -29,6 +18,16 @@ import quickfix.SessionID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static quickfix.FixVersions.FIX50SP2;
 
 public class QuickFixJTemplateTest {
 

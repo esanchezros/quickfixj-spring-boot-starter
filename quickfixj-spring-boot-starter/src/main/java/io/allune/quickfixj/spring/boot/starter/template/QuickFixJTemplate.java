@@ -16,10 +16,7 @@
 
 package io.allune.quickfixj.spring.boot.starter.template;
 
-import static quickfix.SessionID.NOT_SET;
-
 import org.springframework.util.Assert;
-
 import quickfix.DataDictionary;
 import quickfix.DataDictionaryProvider;
 import quickfix.FieldNotFound;
@@ -33,6 +30,8 @@ import quickfix.field.ApplVerID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
+
+import static quickfix.SessionID.NOT_SET;
 
 /**
  * Synchronous client to perform requests, exposing a simple, template
@@ -63,28 +62,10 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 	@Override
 	public boolean send(Message message) {
 		Assert.notNull(message, "'message' must not be null");
-		return send(message, NOT_SET);
-	}
-
-	@Override
-	public boolean send(Message message, String qualifier) {
-		Assert.notNull(message, "'message' must not be null");
 		String senderCompID = getFieldFromMessageHeader(message, SenderCompID.FIELD);
 		String targetCompID = getFieldFromMessageHeader(message, TargetCompID.FIELD);
-		return send(message, senderCompID, targetCompID, qualifier);
-	}
-
-	@Override
-	public boolean send(Message message, String senderCompID, String targetCompID) {
-		Assert.notNull(message, "'message' must not be null");
-		return send(message, senderCompID, targetCompID, NOT_SET);
-	}
-
-	@Override
-	public boolean send(Message message, String senderCompID, String targetCompID, String qualifier) {
-		Assert.notNull(message, "'message' must not be null");
 		String beginString = getFieldFromMessageHeader(message, BeginString.FIELD);
-		SessionID sessionID = new SessionID(beginString, senderCompID, targetCompID, qualifier);
+		SessionID sessionID = new SessionID(beginString, senderCompID, targetCompID, NOT_SET);
 		return send(message, sessionID);
 	}
 

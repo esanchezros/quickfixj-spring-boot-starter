@@ -38,17 +38,6 @@ public interface QuickFixJOperations {
 	boolean send(Message message);
 
 	/**
-	 * Send a message to the session specified in the message's target
-	 * identifiers. The session qualifier is used to distinguish sessions with
-	 * the same target identifiers.
-	 *
-	 * @param message a FIX message
-	 * @param qualifier a session qualifier
-	 * @return true is send was successful, false otherwise
-	 */
-	boolean send(Message message, String qualifier);
-
-	/**
 	 * Send a message to the session specified by the provided session ID.
 	 *
 	 * @param message a FIX message
@@ -56,30 +45,4 @@ public interface QuickFixJOperations {
 	 * @return true is send was successful, false otherwise
 	 */
 	boolean send(Message message, SessionID sessionID);
-
-	/**
-	 * Send a message to the session specified by the provided target company
-	 * ID. The sender company ID is provided as an argument rather than from the
-	 * message.
-	 *
-	 * @param message a FIX message
-	 * @param senderCompID the sender's company ID
-	 * @param targetCompID the target's company ID
-	 * @return true is send was successful, false otherwise
-	 */
-	boolean send(Message message, String senderCompID, String targetCompID);
-
-	/**
-	 * Send a message to the session specified by the provided target company
-	 * ID. The sender company ID is provided as an argument rather than from the
-	 * message. The session qualifier is used to distinguish sessions with the
-	 * same target identifiers.
-	 *
-	 * @param message a FIX message
-	 * @param senderCompID the sender's company ID
-	 * @param targetCompID the target's company ID
-	 * @param qualifier a session qualifier
-	 * @return true is send was successful, false otherwise
-	 */
-	boolean send(Message message, String senderCompID, String targetCompID, String qualifier);
 }

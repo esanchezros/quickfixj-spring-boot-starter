@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package io.allune.quickfixj.spring.boot.starter.autoconfigure.template;
+package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
+import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link QuickFixJTemplate}.

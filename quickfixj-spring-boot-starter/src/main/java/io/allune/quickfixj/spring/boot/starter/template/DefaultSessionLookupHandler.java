@@ -19,6 +19,9 @@ package io.allune.quickfixj.spring.boot.starter.template;
 import quickfix.Session;
 import quickfix.SessionID;
 
+/**
+ * @author Eduardo Sanchez-Ros
+ */
 public class DefaultSessionLookupHandler implements SessionLookupHandler {
 
 	@Override

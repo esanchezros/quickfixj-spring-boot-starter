@@ -19,7 +19,16 @@ package io.allune.quickfixj.spring.boot.starter.template;
 import quickfix.Session;
 import quickfix.SessionID;
 
+/**
+ * @author Eduardo Sanchez-Ro
+ */
 public interface SessionLookupHandler {
 
-	Session lookupBySessionID(SessionID sessionID);
+    /**
+     * Locates a session specified by the provided session ID.
+     *
+     * @param sessionID the session ID
+     * @return the session, if found, or null otherwise
+     */
+    Session lookupBySessionID(SessionID sessionID);
 }

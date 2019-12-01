@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.DefaultMessageFactory;
@@ -77,6 +78,9 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Autowired
 	private ObjectName serverInitiatorMBean;
 
+	@Autowired
+	private QuickFixJTemplate serverQuickFixJTemplate;
+
 	@Test
 	public void testAutoConfiguredBeans() {
 		assertThat(serverConnectionManager.isRunning()).isFalse();
@@ -88,6 +92,7 @@ public class QuickFixJServerAutoConfigurationTest {
 		assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
 		assertThat(serverSessionSettings).isNotNull();
 		assertThat(serverInitiatorMBean).isNotNull();
+		assertThat(serverQuickFixJTemplate).isNotNull();
 	}
 
 	@Configuration

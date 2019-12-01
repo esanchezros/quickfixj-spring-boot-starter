@@ -18,6 +18,7 @@ package io.allune.quickfixj.spring.boot.starter.template;
 
 import quickfix.Message;
 import quickfix.SessionID;
+import quickfix.SessionNotFound;
 
 /**
  * Interface specifying a basic set of QuickFixJ operations.
@@ -29,20 +30,62 @@ import quickfix.SessionID;
 public interface QuickFixJOperations {
 
 	/**
-	 * Send a message to the session specified in the message's target
+	 * Sends a message to the session specified in the message's target
 	 * identifiers.
 	 *
 	 * @param message a FIX message
 	 * @return true is send was successful, false otherwise
+	 * @throws SessionNotFoundException if session could not be found
 	 */
 	boolean send(Message message);
 
 	/**
-	 * Send a message to the session specified by the provided session ID.
+	 * Sends a message to the session specified in the message's target
+	 * identifiers. The session qualifier is used to distinguish sessions with
+	 * the same target identifiers.
+	 *
+	 * @param message a FIX message
+	 * @param qualifier a session qualifier
+	 * @return true is send was successful, false otherwise
+	 * @throws SessionNotFoundException if session could not be found
+	 */
+	boolean send(Message message, String qualifier);
+
+	/**
+	 * Sends a message to the session specified by the provided target company
+	 * ID. The sender company ID is provided as an argument rather than from the
+	 * message.
+	 *
+	 * @param message a FIX message
+	 * @param senderCompID the sender's company ID
+	 * @param targetCompID the target's company ID
+	 * @return true is send was successful, false otherwise
+	 * @throws SessionNotFoundException if session could not be found
+	 */
+	boolean send(Message message, String senderCompID, String targetCompID);
+
+	/**
+	 * Sends a message to the session specified by the provided target company
+	 * ID. The sender company ID is provided as an argument rather than from the
+	 * message. The session qualifier is used to distinguish sessions with the
+	 * same target identifiers.
+	 *
+	 * @param message a FIX message
+	 * @param senderCompID the sender's company ID
+	 * @param targetCompID the target's company ID
+	 * @param qualifier a session qualifier
+	 * @return true is send was successful, false otherwise
+	 * @throws SessionNotFoundException if session could not be found\
+	 */
+	boolean send(Message message, String senderCompID, String targetCompID, String qualifier);
+
+	/**
+	 * Sends a message to the session specified by the provided session ID.
 	 *
 	 * @param message a FIX message
 	 * @param sessionID the target SessionID
 	 * @return true is send was successful, false otherwise
+	 * @throws SessionNotFoundException if session could not be found\
 	 */
 	boolean send(Message message, SessionID sessionID);
 }

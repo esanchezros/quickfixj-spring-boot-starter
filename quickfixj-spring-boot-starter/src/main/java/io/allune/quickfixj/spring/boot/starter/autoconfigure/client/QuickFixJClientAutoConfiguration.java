@@ -37,6 +37,7 @@ import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProper
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
@@ -88,8 +89,8 @@ public class QuickFixJClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "clientLogFactory")
-	public LogFactory clientLogFactory(SessionSettings sessionSettings) {
-		return new ScreenLogFactory(sessionSettings);
+	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+		return new ScreenLogFactory(clientSessionSettings);
 	}
 
 	@Bean
@@ -154,6 +155,12 @@ public class QuickFixJClientAutoConfiguration {
 		} catch (JMException e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "clientQuickFixJTemplate")
+	public QuickFixJTemplate clientQuickFixJTemplate() {
+		return new QuickFixJTemplate();
 	}
 
 	/**

@@ -16,7 +16,12 @@
 
 package io.allune.quickfixj.spring.boot.starter.template;
 
+import static quickfix.SessionID.NOT_SET;
+
 import org.springframework.util.Assert;
+
+import lombok.Builder;
+import lombok.NonNull;
 import quickfix.DataDictionary;
 import quickfix.DataDictionaryProvider;
 import quickfix.FieldNotFound;
@@ -30,8 +35,6 @@ import quickfix.field.ApplVerID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
-
-import static quickfix.SessionID.NOT_SET;
 
 /**
  * Synchronous client to perform requests, exposing a simple, template
@@ -51,10 +54,6 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 		this.sessionLookupHandler = sessionLookupHandler;
 	}
 
-	public SessionLookupHandler getSessionLookupHandler() {
-		return sessionLookupHandler;
-	}
-
 	public void setSessionLookupHandler(SessionLookupHandler sessionLookupHandler) {
 		this.sessionLookupHandler = sessionLookupHandler;
 	}
@@ -62,11 +61,47 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 	@Override
 	public boolean send(Message message) {
 		Assert.notNull(message, "'message' must not be null");
-		String senderCompID = getFieldFromMessageHeader(message, SenderCompID.FIELD);
-		String targetCompID = getFieldFromMessageHeader(message, TargetCompID.FIELD);
-		String beginString = getFieldFromMessageHeader(message, BeginString.FIELD);
-		SessionID sessionID = new SessionID(beginString, senderCompID, targetCompID, NOT_SET);
-		return send(message, sessionID);
+
+		SessionID sessionID = QuickFixJSessionID.quickFixJSessionIDBuilder()
+				.message(message)
+				.build().toSessionID();
+		return doSend(message, sessionID);
+	}
+
+	@Override
+	public boolean send(Message message, String qualifier) {
+		Assert.notNull(message, "'message' must not be null");
+
+		SessionID sessionID = QuickFixJSessionID.quickFixJSessionIDBuilder()
+				.message(message)
+				.qualifier(qualifier)
+				.build().toSessionID();
+		return doSend(message, sessionID);
+	}
+
+	@Override
+	public boolean send(Message message, String senderCompID, String targetCompID) {
+		Assert.notNull(message, "'message' must not be null");
+
+		SessionID sessionID = QuickFixJSessionID.quickFixJSessionIDBuilder()
+				.message(message)
+				.senderCompID(senderCompID)
+				.targetCompID(targetCompID)
+				.build().toSessionID();
+		return doSend(message, sessionID);
+	}
+
+	@Override
+	public boolean send(Message message, String senderCompID, String targetCompID, String qualifier) {
+		Assert.notNull(message, "'message' must not be null");
+
+		SessionID sessionID = QuickFixJSessionID.quickFixJSessionIDBuilder()
+				.message(message)
+				.senderCompID(senderCompID)
+				.targetCompID(targetCompID)
+				.qualifier(qualifier)
+				.build().toSessionID();
+		return doSend(message, sessionID);
 	}
 
 	@Override
@@ -74,6 +109,10 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 		Assert.notNull(message, "'message' must not be null");
 		Assert.notNull(sessionID, "'sessionID' must not be null");
 
+		return doSend(message, sessionID);
+	}
+
+	protected boolean doSend(Message message, SessionID sessionID) {
 		Session session = sessionLookupHandler.lookupBySessionID(sessionID);
 		if (session == null) {
 			throw new SessionNotFoundException("Session not found: " + sessionID.toString());
@@ -94,20 +133,52 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 		return session.send(message);
 	}
 
-	private static String getFieldFromMessageHeader(final Message message, int fieldTag) {
-		try {
-			return message.getHeader().getString(fieldTag);
-		} catch (FieldNotFound fieldNotFound) {
-			throw new FieldNotFoundException("Field with ID " + fieldTag + " not found in message");
-		}
-	}
-
 	private static ApplVerID getApplicationVersionID(Session session) {
 		String beginString = session.getSessionID().getBeginString();
 		if (FixVersions.BEGINSTRING_FIXT11.equals(beginString)) {
 			return new ApplVerID(ApplVerID.FIX50);
 		} else {
 			return MessageUtils.toApplVerID(beginString);
+		}
+	}
+
+	@Builder(builderClassName = "QuickFixJSessionIDBuilder", builderMethodName = "quickFixJSessionIDBuilder")
+	static class QuickFixJSessionID {
+
+		@NonNull
+		public Message message;
+
+		public String beginString;
+
+		public String senderCompID;
+
+		public String targetCompID;
+
+		public String qualifier;
+
+		public SessionID toSessionID() {
+
+			if (beginString == null) {
+				beginString = getFieldFromMessageHeader(message, BeginString.FIELD);
+			}
+			if (senderCompID == null) {
+				senderCompID = getFieldFromMessageHeader(message, SenderCompID.FIELD);
+			}
+			if (targetCompID == null) {
+				targetCompID = getFieldFromMessageHeader(message, TargetCompID.FIELD);
+			}
+			if (qualifier == null) {
+				qualifier = NOT_SET;
+			}
+			return new SessionID(beginString, senderCompID, targetCompID, qualifier);
+		}
+
+		private static String getFieldFromMessageHeader(final Message message, int fieldTag) {
+			try {
+				return message.getHeader().getString(fieldTag);
+			} catch (FieldNotFound fieldNotFound) {
+				throw new FieldNotFoundException("Field with ID " + fieldTag + " not found in message");
+			}
 		}
 	}
 }

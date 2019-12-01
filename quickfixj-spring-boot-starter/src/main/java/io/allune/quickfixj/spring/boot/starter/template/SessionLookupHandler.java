@@ -20,7 +20,7 @@ import quickfix.Session;
 import quickfix.SessionID;
 
 /**
- * @author Eduardo Sanchez-Ro
+ * @author Eduardo Sanchez-Ros
  */
 public interface SessionLookupHandler {
 

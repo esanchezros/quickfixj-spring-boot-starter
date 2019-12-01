@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package io.allune.quickfixj.spring.boot.starter.exception;
+package io.allune.quickfixj.spring.boot.starter.template;
 
 /**
+ * Exception thrown when a session is not found.
+ *
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJBaseException extends RuntimeException {
+public class SessionNotFoundException extends QuickFixJException {
 
-	public QuickFixJBaseException(String message, Throwable cause) {
-		super(message, cause);
+	/**
+	 * Construct a new {@code SessionNotFoundException} with the given message.
+	 *
+	 * @param msg the message
+	 */
+	public SessionNotFoundException(String msg) {
+		super(msg);
 	}
 
-	public QuickFixJBaseException(String message) {
-		super(message);
+	/**
+	 * Construct a new instance of {@code SessionNotFoundException} with the given message and
+	 * exception.
+	 *
+	 * @param msg the message
+	 * @param ex  the exception
+	 */
+	public SessionNotFoundException(String msg, Throwable ex) {
+		super(msg, ex);
 	}
 }

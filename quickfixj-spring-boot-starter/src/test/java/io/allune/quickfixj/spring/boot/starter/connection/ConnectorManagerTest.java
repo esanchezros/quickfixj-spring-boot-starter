@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,71 +36,71 @@ import quickfix.RuntimeError;
  */
 public class ConnectorManagerTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    public void shouldStartAndStopConnector() throws Exception {
+	@Test
+	public void shouldStartAndStopConnector() throws Exception {
 
-        // Given
-        Connector connector = mock(Connector.class);
-        ConnectorManager connectorManager = new ConnectorManager(connector);
+		// Given
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-        // When
-        connectorManager.start();
-        assertTrue(connectorManager.isRunning());
+		// When
+		connectorManager.start();
+		assertTrue(connectorManager.isRunning());
 
-        connectorManager.stop();
-        assertFalse(connectorManager.isRunning());
+		connectorManager.stop();
+		assertFalse(connectorManager.isRunning());
 
-        // Then
-        verify(connector).start();
-        verify(connector).stop();
-    }
+		// Then
+		verify(connector).start();
+		verify(connector).stop();
+	}
 
-    @Test
-    public void shouldStartConnectorAndStopWithCallback() throws Exception {
+	@Test
+	public void shouldStartConnectorAndStopWithCallback() throws Exception {
 
-        Connector connector = mock(Connector.class);
-        ConnectorManager connectorManager = new ConnectorManager(connector);
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-        connectorManager.start();
-        assertTrue(connectorManager.isRunning());
-        verify(connector).start();
+		connectorManager.start();
+		assertTrue(connectorManager.isRunning());
+		verify(connector).start();
 
-        Runnable callback = mock(Runnable.class);
-        connectorManager.stop(callback);
-        assertFalse(connectorManager.isRunning());
+		Runnable callback = mock(Runnable.class);
+		connectorManager.stop(callback);
+		assertFalse(connectorManager.isRunning());
 
-        verify(connector).stop();
-        verify(callback).run();
-    }
+		verify(connector).stop();
+		verify(callback).run();
+	}
 
-    @Test
-    public void shouldThrowConfigurationExceptionUponConfigErrorFailure() throws Exception {
+	@Test
+	public void shouldThrowConfigurationExceptionUponConfigErrorFailure() throws Exception {
 
-        Connector connector = mock(Connector.class);
-        willThrow(ConfigError.class).given(connector).start();
-        ConnectorManager connectorManager = new ConnectorManager(connector);
+		Connector connector = mock(Connector.class);
+		willThrow(ConfigError.class).given(connector).start();
+		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-        thrown.expect(ConfigurationException.class);
-        connectorManager.start();
-        assertFalse(connectorManager.isRunning());
+		thrown.expect(ConfigurationException.class);
+		connectorManager.start();
+		assertFalse(connectorManager.isRunning());
 
-        verify(connector).start();
-    }
+		verify(connector).start();
+	}
 
-    @Test
-    public void shouldThrowConfigurationExceptionUponRuntimeErrorFailure() throws Exception {
+	@Test
+	public void shouldThrowConfigurationExceptionUponRuntimeErrorFailure() throws Exception {
 
-        Connector connector = mock(Connector.class);
-        willThrow(RuntimeError.class).given(connector).start();
-        ConnectorManager connectorManager = new ConnectorManager(connector);
+		Connector connector = mock(Connector.class);
+		willThrow(RuntimeError.class).given(connector).start();
+		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-        thrown.expect(ConfigurationException.class);
-        connectorManager.start();
-        assertFalse(connectorManager.isRunning());
+		thrown.expect(ConfigurationException.class);
+		connectorManager.start();
+		assertFalse(connectorManager.isRunning());
 
-        verify(connector).start();
-    }
+		verify(connector).start();
+	}
 }

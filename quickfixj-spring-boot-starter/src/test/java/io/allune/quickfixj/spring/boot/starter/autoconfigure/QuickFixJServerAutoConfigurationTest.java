@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.DefaultMessageFactory;
@@ -46,53 +47,58 @@ import quickfix.SocketAcceptor;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        properties = {
-                "quickfixj.server.autoStartup=false",
-                "quickfixj.server.config=classpath:quickfixj.cfg",
-                "quickfixj.server.jmx-enabled=true"
-        })
+		properties = {
+				"quickfixj.server.autoStartup=false",
+				"quickfixj.server.config=classpath:quickfixj.cfg",
+				"quickfixj.server.jmx-enabled=true"
+		})
 public class QuickFixJServerAutoConfigurationTest {
 
-    @Autowired
-    private ConnectorManager serverConnectionManager;
+	@Autowired
+	private ConnectorManager serverConnectionManager;
 
-    @Autowired
-    private Acceptor serverAcceptor;
+	@Autowired
+	private Acceptor serverAcceptor;
 
-    @Autowired
-    private Application serverApplication;
+	@Autowired
+	private Application serverApplication;
 
-    @Autowired
-    private MessageStoreFactory serverMessageStoreFactory;
+	@Autowired
+	private MessageStoreFactory serverMessageStoreFactory;
 
-    @Autowired
-    private LogFactory serverLogFactory;
+	@Autowired
+	private LogFactory serverLogFactory;
 
-    @Autowired
-    private MessageFactory serverMessageFactory;
+	@Autowired
+	private MessageFactory serverMessageFactory;
 
-    @Autowired
-    private SessionSettings serverSessionSettings;
+	@Autowired
+	private SessionSettings serverSessionSettings;
 
-    @Autowired
-    private ObjectName serverInitiatorMBean;
+	@Autowired
+	private ObjectName serverInitiatorMBean;
 
-    @Test
-    public void testAutoConfiguredBeans() {
-        assertThat(serverConnectionManager.isRunning()).isFalse();
-        assertThat(serverConnectionManager.isAutoStartup()).isFalse();
-        assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
-        assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
-        assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
-        assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
-        assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
-        assertThat(serverSessionSettings).isNotNull();
-        assertThat(serverInitiatorMBean).isNotNull();
-    }
+	@Autowired
+	private QuickFixJTemplate serverQuickFixJTemplate;
 
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableQuickFixJServer
-    static class TestConfig {
-    }
+	@Test
+	public void testAutoConfiguredBeans() {
+		assertThat(serverConnectionManager.isRunning()).isFalse();
+		assertThat(serverConnectionManager.isAutoStartup()).isFalse();
+		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
+		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
+		assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
+		assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+		assertThat(serverSessionSettings).isNotNull();
+		assertThat(serverInitiatorMBean).isNotNull();
+		assertThat(serverQuickFixJTemplate).isNotNull();
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	static class TestConfig {
+
+	}
 }

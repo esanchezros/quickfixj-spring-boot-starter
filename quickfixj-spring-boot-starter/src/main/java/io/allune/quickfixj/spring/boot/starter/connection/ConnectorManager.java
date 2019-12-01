@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,114 +34,115 @@ import quickfix.RuntimeError;
 @Slf4j
 public class ConnectorManager implements SmartLifecycle {
 
-    private final Connector connector;
+	private final Connector connector;
 
-    private final Object lifecycleMonitor = new Object();
+	private final Object lifecycleMonitor = new Object();
 
-    private boolean autoStartup = true;
+	private boolean autoStartup = true;
 
-    private int phase = Integer.MAX_VALUE;
+	private int phase = Integer.MAX_VALUE;
 
-    private boolean running = false;
+	private boolean running = false;
 
-    public ConnectorManager(Connector connector) {
-        Assert.notNull(connector, "'connector' must not be null");
-        this.connector = connector;
-    }
+	public ConnectorManager(Connector connector) {
+		Assert.notNull(connector, "'connector' must not be null");
+		this.connector = connector;
+	}
 
-    /**
-     * Set whether to auto-connect to the remote endpoint after this connector manager
-     * has been initialized and the Spring context has been refreshed.
-     * <p>Default is "true".
-     */
-    public void setAutoStartup(boolean autoStartup) {
-        this.autoStartup = autoStartup;
-    }
+	/**
+	 * Set whether to auto-connect to the remote endpoint after this connector manager
+	 * has been initialized and the Spring context has been refreshed.
+	 * <p>Default is "true".
+	 */
+	public void setAutoStartup(boolean autoStartup) {
+		this.autoStartup = autoStartup;
+	}
 
-    /**
-     * Return the value for the 'autoStartup' property.
-     */
-    @Override
-    public boolean isAutoStartup() {
-        return this.autoStartup;
-    }
+	/**
+	 * Return the value for the 'autoStartup' property.
+	 */
+	@Override
+	public boolean isAutoStartup() {
+		return this.autoStartup;
+	}
 
-    /**
-     * Specify the phase in which this connection manager should be started and stopped.
-     */
-    public void setPhase(int phase) {
-        this.phase = phase;
-    }
+	/**
+	 * Specify the phase in which this connection manager should be started and stopped.
+	 */
+	public void setPhase(int phase) {
+		this.phase = phase;
+	}
 
-    /**
-     * Return the phase in which this connector manager will be started and stopped.
-     */
-    @Override
-    public int getPhase() {
-        return this.phase;
-    }
+	/**
+	 * Return the phase in which this connector manager will be started and stopped.
+	 */
+	@Override
+	public int getPhase() {
+		return this.phase;
+	}
 
-    /**
-     * Start the connector, accepting new connections
-     */
-    @Override
-    public void start() {
-        synchronized (this.lifecycleMonitor) {
-            if (!isRunning()) {
-                log.info("start: Starting ConnectorManager");
-                try {
-                    connector.start();
-                } catch (ConfigError | RuntimeError ex) {
-                    throw new ConfigurationException(ex.getMessage(), ex);
-                } catch (Throwable ex) {
-                    throw new IllegalStateException("Could not start the connector", ex);
-                }
+	/**
+	 * Start the connector, accepting new connections
+	 */
+	@Override
+	public void start() {
+		synchronized (this.lifecycleMonitor) {
+			if (!isRunning()) {
+				log.info("start: Starting ConnectorManager");
+				try {
+					connector.start();
+				} catch (ConfigError | RuntimeError ex) {
+					throw new ConfigurationException(ex.getMessage(), ex);
+				} catch (Throwable ex) {
+					throw new IllegalStateException("Could not start the connector", ex);
+				}
 
-                running = true;
-            }
-        }
-    }
+				running = true;
+			}
+		}
+	}
 
-    /**
-     * Stop this connector, logging out existing sessions, closing their connections, and stopping to accept new
-     * connections.
-     */
-    @Override
-    public void stop() {
-        synchronized (this.lifecycleMonitor) {
-            if (isRunning()) {
-                log.info("stop: Stopping ConnectorManager");
-                try {
-                    connector.stop();
-                } finally {
-                    running = false;
-                }
-            }
-        }
-    }
+	/**
+	 * Stop this connector, logging out existing sessions, closing their connections, and stopping to accept new
+	 * connections.
+	 */
+	@Override
+	public void stop() {
+		synchronized (this.lifecycleMonitor) {
+			if (isRunning()) {
+				log.info("stop: Stopping ConnectorManager");
+				try {
+					connector.stop();
+				} finally {
+					running = false;
+				}
+			}
+		}
+	}
 
-    /**
-     * Stop this connector, invoking the specific callback once all the sessions have been logged out, all connections
-     * closed and it has stopped accepting new connections.
-     */
-    @Override
-    public void stop(Runnable callback) {
-        synchronized (this.lifecycleMonitor) {
-            stop();
-            callback.run();
-        }
-    }
+	/**
+	 * Stop this connector, invoking the specific callback once all the sessions have been logged out, all connections
+	 * closed and it has stopped accepting new connections.
+	 */
+	@Override
+	public void stop(Runnable callback) {
+		synchronized (this.lifecycleMonitor) {
+			stop();
+			callback.run();
+		}
+	}
 
-    /**
-     * Determine whether this connector is currently running,
-     * that is, whether it has been started and not stopped yet.
-     * @see #start()
-     * @see #stop()
-     */
-    @Override
-    public boolean isRunning() {
-        synchronized (this.lifecycleMonitor) {
-            return running;
-        }
-    }
+	/**
+	 * Determine whether this connector is currently running,
+	 * that is, whether it has been started and not stopped yet.
+	 *
+	 * @see #start()
+	 * @see #stop()
+	 */
+	@Override
+	public boolean isRunning() {
+		synchronized (this.lifecycleMonitor) {
+			return running;
+		}
+	}
 }

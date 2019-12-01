@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package io.allune.quickfixj.spring.boot.starter.exception;
+package io.allune.quickfixj.spring.boot.starter.template;
 
 /**
+ * Exception thrown when a message validation failed.
+ *
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJBaseException extends RuntimeException {
+public class MessageValidationException extends QuickFixJException {
 
-	public QuickFixJBaseException(String message, Throwable cause) {
-		super(message, cause);
+	/**
+	 * Construct a new {@code MessageValidationException} with the given message.
+	 *
+	 * @param msg the message
+	 */
+	public MessageValidationException(String msg) {
+		super(msg);
 	}
 
-	public QuickFixJBaseException(String message) {
-		super(message);
+	/**
+	 * Construct a new instance of {@code MessageValidationException} with the given message and
+	 * exception.
+	 *
+	 * @param msg the message
+	 * @param ex  the exception
+	 */
+	public MessageValidationException(String msg, Throwable ex) {
+		super(msg, ex);
 	}
 }

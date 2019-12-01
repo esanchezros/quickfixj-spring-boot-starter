@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package io.allune.quickfixj.spring.boot.starter.model;
+package io.allune.quickfixj.spring.boot.starter.template;
 
-import lombok.Value;
-import quickfix.Message;
+import quickfix.Session;
 import quickfix.SessionID;
 
-@Value(staticConstructor = "of")
-public class ToApp {
+/**
+ * @author Eduardo Sanchez-Ros
+ */
+public class DefaultSessionLookupHandler implements SessionLookupHandler {
 
-	private Message message;
-
-	private SessionID sessionId;
+	@Override
+	public Session lookupBySessionID(SessionID sessionID) {
+		return Session.lookupSession(sessionID);
+	}
 }

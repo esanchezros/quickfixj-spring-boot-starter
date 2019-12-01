@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,39 +38,38 @@ import quickfix.SessionSettings;
 @Slf4j
 public class SessionSettingsLocator {
 
-    private SessionSettingsLocator() {
-        //
-    }
+	private SessionSettingsLocator() {
+		//
+	}
 
-    public static SessionSettings loadSettings(String... locations) {
+	public static SessionSettings loadSettings(String... locations) {
 
-        try {
-            for (String location : locations) {
-                Optional<Resource> resource = load(location);
+		try {
+			for (String location : locations) {
+				Optional<Resource> resource = load(location);
 
-                if (resource.isPresent()) {
-                    log.info("Loading settings from '{}'", location);
+				if (resource.isPresent()) {
+					log.info("Loading settings from '{}'", location);
 
-                    return new SessionSettings(resource.get().getInputStream());
-                }
-            }
+					return new SessionSettings(resource.get().getInputStream());
+				}
+			}
 
-            throw new SettingsNotFoundException("Settings file not found");
-        } catch (RuntimeException | ConfigError | IOException e) {
-            throw new SettingsNotFoundException(e.getMessage(), e);
-        }
-    }
+			throw new SettingsNotFoundException("Settings file not found");
+		} catch (RuntimeException | ConfigError | IOException e) {
+			throw new SettingsNotFoundException(e.getMessage(), e);
+		}
+	}
 
+	private static Optional<Resource> load(String location) {
+		if (location == null) {
+			return empty();
+		}
 
-    private static Optional<Resource> load(String location) {
-        if (location == null) {
-            return empty();
-        }
+		ClassLoader classLoader = currentThread().getContextClassLoader();
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(classLoader);
 
-        ClassLoader classLoader = currentThread().getContextClassLoader();
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(classLoader);
-
-        Resource resource = resolver.getResource(location);
-        return resource.exists() ? Optional.of(resource) : empty();
-    }
+		Resource resource = resolver.getResource(location);
+		return resource.exists() ? Optional.of(resource) : empty();
+	}
 }

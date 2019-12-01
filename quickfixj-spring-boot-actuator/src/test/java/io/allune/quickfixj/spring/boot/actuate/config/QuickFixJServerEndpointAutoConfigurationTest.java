@@ -18,27 +18,27 @@ import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        properties = {
-                "quickfixj.server.autoStartup=false",
-                "quickfixj.server.config=classpath:quickfixj.cfg",
-                "quickfixj.server.jmx-enabled=true"
-        })
+		properties = {
+				"quickfixj.server.autoStartup=false",
+				"quickfixj.server.config=classpath:quickfixj.cfg",
+				"quickfixj.server.jmx-enabled=true"
+		})
 
 public class QuickFixJServerEndpointAutoConfigurationTest {
 
-    @Autowired
-    private QuickFixJServerEndpoint quickfixjServerEndpoint;
+	@Autowired
+	private QuickFixJServerEndpoint quickfixjServerEndpoint;
 
-    @Test
-    public void testAutoConfiguredBeans() {
-        assertThat(quickfixjServerEndpoint).isNotNull();
-        assertThat(quickfixjServerEndpoint.readProperties().size()).isEqualTo(0);
-    }
+	@Test
+	public void testAutoConfiguredBeans() {
+		assertThat(quickfixjServerEndpoint).isNotNull();
+		assertThat(quickfixjServerEndpoint.readProperties().size()).isEqualTo(0);
+	}
 
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableQuickFixJServer
-    public static class Config {
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	public static class Config {
 
-    }
+	}
 }

@@ -1,225 +1,237 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.allune</groupId>
-    <artifactId>quickfixj-spring-boot-starter-parent</artifactId>
-    <version>2.4.2-SNAPSHOT</version>
-    <packaging>pom</packaging>
+	<groupId>io.allune</groupId>
+	<artifactId>quickfixj-spring-boot-starter-parent</artifactId>
+	<version>2.5.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <name>quickfixj-spring-boot-starter-parent</name>
-    <description>Spring Boot Starter for QuickFixJ</description>
-    <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
+	<name>Spring Boot Starter for QuickFixJ</name>
+	<description>Spring Boot Starter for QuickFixJ</description>
+	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.0.RELEASE</version>
-    </parent>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.0.RELEASE</version>
+	</parent>
 
-    <modules>
-        <module>quickfixj-spring-boot-starter</module>
-        <module>quickfixj-spring-boot-actuator</module>
-    </modules>
+	<modules>
+		<module>quickfixj-spring-boot-starter</module>
+		<module>quickfixj-spring-boot-actuator</module>
+	</modules>
 
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
 
-    <developers>
-        <developer>
-            <id>esanchezros</id>
-            <name>Eduardo Sanchez-Ros</name>
-            <email>esanchezros@yahoo.es</email>
-            <organization>Allune Software Ltd.</organization>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>esanchezros</id>
+			<name>Eduardo Sanchez-Ros</name>
+			<email>esanchezros@yahoo.es</email>
+			<organization>Allune Software Ltd.</organization>
+		</developer>
+	</developers>
 
-    <organization>
-        <name>Allune Software Ltd.</name>
-        <url>https://github.com/esanchezros</url>
-    </organization>
+	<organization>
+		<name>Allune Software Ltd.</name>
+		<url>https://github.com/esanchezros</url>
+	</organization>
 
-    <scm>
-        <url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
-        <connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>
-        <developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+	<scm>
+		<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
+		<connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>
+		<developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <mina.version>2.0.19</mina.version>
-        <quickfixj.version>2.1.0</quickfixj.version>
-    </properties>
+		<mina.version>2.0.19</mina.version>
+		<quickfixj.version>2.1.0</quickfixj.version>
+	</properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.allune</groupId>
-                <artifactId>quickfixj-spring-boot-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.allune</groupId>
+				<artifactId>quickfixj-spring-boot-starter</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.quickfixj</groupId>
-                <artifactId>quickfixj-core</artifactId>
-                <version>${quickfixj.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-core</artifactId>
+				<version>${quickfixj.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.quickfixj</groupId>
-                <artifactId>quickfixj-messages-all</artifactId>
-                <version>${quickfixj.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-all</artifactId>
+				<version>${quickfixj.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.mina</groupId>
-                <artifactId>mina-core</artifactId>
-                <version>${mina.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-core</artifactId>
+				<version>${mina.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.awaitility</groupId>
 				<artifactId>awaitility</artifactId>
 				<version>3.1.6</version>
 			</dependency>
-        </dependencies>
-    </dependencyManagement>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
-                <configuration>
-                    <useFile>false</useFile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
-                    <check />
-                    <instrumentation>
-                        <excludes>
-                            <exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJClient.class</exclude>
-                            <exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJServer.class</exclude>
-                            <exclude>
-                                io/allune/quickfixj/spring/boot/starter/autoconfigure/QuickFixJBootProperties.class
-                            </exclude>
-                            <exclude>
-                                io/allune/quickfixj/spring/boot/starter/autoconfigure/client/QuickFixJClientMarkerConfiguration.class
-                            </exclude>
-                            <exclude>
-                                io/allune/quickfixj/spring/boot/starter/autoconfigure/server/QuickFixJServerMarkerConfiguration.class
-                            </exclude>
-                            <exclude>io/allune/quickfixj/spring/boot/starter/exception/*.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <releaseProfiles>release</releaseProfiles>
-                        <goals>deploy</goals>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+		</dependencies>
+	</dependencyManagement>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.8</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+				<configuration>
+					<useFile>false</useFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<check/>
+					<instrumentation>
+						<excludes>
+							<exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJClient.class</exclude>
+							<exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJServer.class</exclude>
+							<exclude>
+								io/allune/quickfixj/spring/boot/starter/autoconfigure/QuickFixJBootProperties.class
+							</exclude>
+							<exclude>
+								io/allune/quickfixj/spring/boot/starter/autoconfigure/client/QuickFixJClientMarkerConfiguration.class
+							</exclude>
+							<exclude>
+								io/allune/quickfixj/spring/boot/starter/autoconfigure/server/QuickFixJServerMarkerConfiguration.class
+							</exclude>
+							<exclude>io/allune/quickfixj/spring/boot/starter/exception/*.class</exclude>
+						</excludes>
+					</instrumentation>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.3</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<useReleaseProfile>false</useReleaseProfile>
+						<releaseProfiles>release</releaseProfiles>
+						<goals>deploy</goals>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.4</version>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

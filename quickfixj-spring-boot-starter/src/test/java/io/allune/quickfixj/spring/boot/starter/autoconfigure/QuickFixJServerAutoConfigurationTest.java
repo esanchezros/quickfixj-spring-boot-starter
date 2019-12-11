@@ -17,6 +17,8 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 import javax.management.ObjectName;
 import org.junit.Test;
@@ -27,10 +29,13 @@ import org.springframework.context.annotation.PropertySource;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Acceptor;
 import quickfix.Application;
+import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
@@ -93,6 +98,35 @@ public class QuickFixJServerAutoConfigurationTest {
 
 		QuickFixJTemplate serverQuickFixJTemplate = ctx.getBean("serverQuickFixJTemplate", QuickFixJTemplate.class);
 		assertThat(serverQuickFixJTemplate).isNotNull();
+	}
+
+	@Test
+	public void shouldCreateServerThreadedAcceptor() throws ConfigError {
+		// Given
+		Application application = mock(Application.class);
+		MessageStoreFactory messageStoreFactory = mock(MessageStoreFactory.class);
+		SessionSettings sessionSettings = mock(SessionSettings.class);
+		LogFactory logFactory = mock(LogFactory.class);
+		MessageFactory messageFactory = mock(MessageFactory.class);
+
+		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
+
+		// When
+		Acceptor acceptor = autoConfiguration.serverThreadedAcceptor(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+
+		// Then
+		assertThat(acceptor).isNotNull();
+		assertThat(acceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+	}
+
+	@Test
+	public void shouldThrowConfigurationExceptionCreatingServerInitiatorMBeanGivenNullInitiator() {
+		// Given
+		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
+
+		// When/Then
+		assertThatExceptionOfType(ConfigurationException.class)
+				.isThrownBy(() -> autoConfiguration.serverInitiatorMBean(null));
 	}
 
 	@Configuration

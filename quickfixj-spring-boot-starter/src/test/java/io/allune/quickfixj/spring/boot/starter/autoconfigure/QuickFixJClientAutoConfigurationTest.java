@@ -17,6 +17,8 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 import javax.management.ObjectName;
 import org.junit.Test;
@@ -27,9 +29,12 @@ import org.springframework.context.annotation.PropertySource;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Application;
+import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.Initiator;
 import quickfix.LogFactory;
@@ -70,6 +75,35 @@ public class QuickFixJClientAutoConfigurationTest {
 		assertThat(clientInitiator).isInstanceOf(ThreadedSocketInitiator.class);
 
 		hasAutoConfiguredBeans(ctx);
+	}
+
+	@Test
+	public void shouldCreateClientThreadedInitiator() throws ConfigError {
+		// Given
+		Application application = mock(Application.class);
+		MessageStoreFactory messageStoreFactory = mock(MessageStoreFactory.class);
+		SessionSettings sessionSettings = mock(SessionSettings.class);
+		LogFactory logFactory = mock(LogFactory.class);
+		MessageFactory messageFactory = mock(MessageFactory.class);
+
+		QuickFixJClientAutoConfiguration autoConfiguration = new QuickFixJClientAutoConfiguration();
+
+		// When
+		Initiator initiator = autoConfiguration.clientThreadedInitiator(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+
+		// Then
+		assertThat(initiator).isNotNull();
+		assertThat(initiator).isInstanceOf(ThreadedSocketInitiator.class);
+	}
+
+	@Test
+	public void shouldThrowConfigurationExceptionCreatingClientInitiatorMBeanGivenNullInitiator() {
+		// Given
+		QuickFixJClientAutoConfiguration autoConfiguration = new QuickFixJClientAutoConfiguration();
+
+		// When/Then
+		assertThatExceptionOfType(ConfigurationException.class)
+				.isThrownBy(() -> autoConfiguration.clientInitiatorMBean(null));
 	}
 
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {

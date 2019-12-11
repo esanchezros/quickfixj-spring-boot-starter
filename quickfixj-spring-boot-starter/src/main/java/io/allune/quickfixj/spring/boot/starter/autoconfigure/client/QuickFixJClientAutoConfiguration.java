@@ -16,7 +16,6 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.client;
 
-import javax.management.JMException;
 import javax.management.ObjectName;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -102,8 +101,11 @@ public class QuickFixJClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
-	public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
-			SessionSettings clientSessionSettings, LogFactory clientLogFactory,
+	public Initiator clientInitiator(
+			Application clientApplication,
+			MessageStoreFactory clientMessageStoreFactory,
+			SessionSettings clientSessionSettings,
+			LogFactory clientLogFactory,
 			MessageFactory clientMessageFactory) throws ConfigError {
 
 		return SocketInitiator.newBuilder()
@@ -118,7 +120,8 @@ public class QuickFixJClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
-	public Initiator clientThreadedInitiator(Application clientApplication,
+	public Initiator clientThreadedInitiator(
+			Application clientApplication,
 			MessageStoreFactory clientMessageStoreFactory,
 			SessionSettings clientSessionSettings,
 			LogFactory clientLogFactory,
@@ -152,7 +155,7 @@ public class QuickFixJClientAutoConfiguration {
 		try {
 			JmxExporter exporter = new JmxExporter();
 			return exporter.register(clientInitiator);
-		} catch (JMException e) {
+		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
 	}

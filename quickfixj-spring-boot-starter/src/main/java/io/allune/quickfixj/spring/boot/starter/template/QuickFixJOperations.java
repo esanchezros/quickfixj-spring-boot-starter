@@ -18,7 +18,6 @@ package io.allune.quickfixj.spring.boot.starter.template;
 
 import quickfix.Message;
 import quickfix.SessionID;
-import quickfix.SessionNotFound;
 
 /**
  * Interface specifying a basic set of QuickFixJ operations.
@@ -44,7 +43,7 @@ public interface QuickFixJOperations {
 	 * identifiers. The session qualifier is used to distinguish sessions with
 	 * the same target identifiers.
 	 *
-	 * @param message a FIX message
+	 * @param message   a FIX message
 	 * @param qualifier a session qualifier
 	 * @return true is send was successful, false otherwise
 	 * @throws SessionNotFoundException if session could not be found
@@ -56,7 +55,7 @@ public interface QuickFixJOperations {
 	 * ID. The sender company ID is provided as an argument rather than from the
 	 * message.
 	 *
-	 * @param message a FIX message
+	 * @param message      a FIX message
 	 * @param senderCompID the sender's company ID
 	 * @param targetCompID the target's company ID
 	 * @return true is send was successful, false otherwise
@@ -70,10 +69,10 @@ public interface QuickFixJOperations {
 	 * message. The session qualifier is used to distinguish sessions with the
 	 * same target identifiers.
 	 *
-	 * @param message a FIX message
+	 * @param message      a FIX message
 	 * @param senderCompID the sender's company ID
 	 * @param targetCompID the target's company ID
-	 * @param qualifier a session qualifier
+	 * @param qualifier    a session qualifier
 	 * @return true is send was successful, false otherwise
 	 * @throws SessionNotFoundException if session could not be found\
 	 */
@@ -82,7 +81,7 @@ public interface QuickFixJOperations {
 	/**
 	 * Sends a message to the session specified by the provided session ID.
 	 *
-	 * @param message a FIX message
+	 * @param message   a FIX message
 	 * @param sessionID the target SessionID
 	 * @return true is send was successful, false otherwise
 	 * @throws SessionNotFoundException if session could not be found\

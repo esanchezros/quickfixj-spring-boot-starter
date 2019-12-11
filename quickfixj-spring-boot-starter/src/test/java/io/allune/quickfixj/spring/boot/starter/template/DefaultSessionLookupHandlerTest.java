@@ -19,20 +19,20 @@ import quickfix.SessionID;
 @RunWith(PowerMockRunner.class)
 public class DefaultSessionLookupHandlerTest {
 
-    @Test
+	@Test
 	@PrepareForTest(Session.class)
-    public void shouldReturnSessionGivenSessionId() {
-        // Given
-        mockStatic(Session.class);
-        SessionID sessionID = mock(SessionID.class);
-        Session expectedSession = mock(Session.class);
-        when(Session.lookupSession(sessionID)).thenReturn(expectedSession);
-        DefaultSessionLookupHandler defaultSessionLookupHandler = new DefaultSessionLookupHandler();
+	public void shouldReturnSessionGivenSessionId() {
+		// Given
+		mockStatic(Session.class);
+		SessionID sessionID = mock(SessionID.class);
+		Session expectedSession = mock(Session.class);
+		when(Session.lookupSession(sessionID)).thenReturn(expectedSession);
+		DefaultSessionLookupHandler defaultSessionLookupHandler = new DefaultSessionLookupHandler();
 
-        // When
-        Session actualSession = defaultSessionLookupHandler.lookupBySessionID(sessionID);
+		// When
+		Session actualSession = defaultSessionLookupHandler.lookupBySessionID(sessionID);
 
-        // Then
-        assertThat(actualSession).isEqualTo(expectedSession);
-    }
+		// Then
+		assertThat(actualSession).isEqualTo(expectedSession);
+	}
 }

@@ -24,11 +24,11 @@ import quickfix.SessionID;
  */
 public interface SessionLookupHandler {
 
-    /**
-     * Locates a session specified by the provided session ID.
-     *
-     * @param sessionID the session ID
-     * @return the session, if found, or null otherwise
-     */
-    Session lookupBySessionID(SessionID sessionID);
+	/**
+	 * Locates a session specified by the provided session ID.
+	 *
+	 * @param sessionID the session ID
+	 * @return the session, if found, or null otherwise
+	 */
+	Session lookupBySessionID(SessionID sessionID);
 }

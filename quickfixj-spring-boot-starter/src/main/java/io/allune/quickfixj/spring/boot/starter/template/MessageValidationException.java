@@ -24,15 +24,6 @@ package io.allune.quickfixj.spring.boot.starter.template;
 public class MessageValidationException extends QuickFixJException {
 
 	/**
-	 * Construct a new {@code MessageValidationException} with the given message.
-	 *
-	 * @param msg the message
-	 */
-	public MessageValidationException(String msg) {
-		super(msg);
-	}
-
-	/**
 	 * Construct a new instance of {@code MessageValidationException} with the given message and
 	 * exception.
 	 *

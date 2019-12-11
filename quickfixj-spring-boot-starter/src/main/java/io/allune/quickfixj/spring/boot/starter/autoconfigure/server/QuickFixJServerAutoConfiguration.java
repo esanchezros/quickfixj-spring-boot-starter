@@ -100,7 +100,7 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "serverAcceptor")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public Acceptor serverAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
 			SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
@@ -119,7 +119,7 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "serverAcceptor")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
 	public Acceptor serverThreadedAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
 			SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {

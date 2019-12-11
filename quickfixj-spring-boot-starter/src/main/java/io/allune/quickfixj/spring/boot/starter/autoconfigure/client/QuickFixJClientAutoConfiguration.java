@@ -100,7 +100,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
 			SessionSettings clientSessionSettings, LogFactory clientLogFactory,
@@ -116,7 +116,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
 	public Initiator clientThreadedInitiator(Application clientApplication,
 			MessageStoreFactory clientMessageStoreFactory,

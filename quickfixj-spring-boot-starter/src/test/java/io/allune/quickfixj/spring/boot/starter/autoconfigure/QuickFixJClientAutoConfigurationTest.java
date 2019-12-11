@@ -20,12 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.management.ObjectName;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.context.annotation.PropertySource;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
@@ -41,64 +39,75 @@ import quickfix.MessageStoreFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketInitiator;
+import quickfix.ThreadedSocketInitiator;
 
 /**
  * @author Eduardo Sanchez-Ros
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-		properties = {
-				"quickfixj.client.autoStartup=false",
-				"quickfixj.client.config=classpath:quickfixj.cfg",
-				"quickfixj.client.jmx-enabled=true"
-		})
 public class QuickFixJClientAutoConfigurationTest {
 
-	@Autowired
-	private ConnectorManager clientConnectionManager;
-
-	@Autowired
-	private Initiator clientInitiator;
-
-	@Autowired
-	private Application clientApplication;
-
-	@Autowired
-	private MessageStoreFactory clientMessageStoreFactory;
-
-	@Autowired
-	private LogFactory clientLogFactory;
-
-	@Autowired
-	private MessageFactory clientMessageFactory;
-
-	@Autowired
-	private SessionSettings clientSessionSettings;
-
-	@Autowired
-	private ObjectName clientInitiatorMBean;
-
-	@Autowired
-	private QuickFixJTemplate clientQuickFixJTemplate;
-
 	@Test
-	public void testAutoConfiguredBeans() {
+	public void testAutoConfiguredBeansSingleThreadedAcceptor() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfiguration.class);
+		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
 		assertThat(clientConnectionManager.isRunning()).isFalse();
 		assertThat(clientConnectionManager.isAutoStartup()).isFalse();
+
+		Initiator clientInitiator = ctx.getBean(Initiator.class);
 		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
+
+		hasAutoConfiguredBeans(ctx);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansMultiThreadedAcceptor() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedClientInitiatorConfiguration.class);
+		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
+		assertThat(clientConnectionManager.isRunning()).isFalse();
+		assertThat(clientConnectionManager.isAutoStartup()).isFalse();
+
+		Initiator clientInitiator = ctx.getBean(Initiator.class);
+		assertThat(clientInitiator).isInstanceOf(ThreadedSocketInitiator.class);
+
+		hasAutoConfiguredBeans(ctx);
+	}
+
+	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
+		Application clientApplication = ctx.getBean("clientApplication", Application.class);
 		assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
+
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
 		assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
 		assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
+
+		MessageFactory clientMessageFactory = ctx.getBean("clientMessageFactory", MessageFactory.class);
 		assertThat(clientMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+
+		SessionSettings clientSessionSettings = ctx.getBean("clientSessionSettings", SessionSettings.class);
 		assertThat(clientSessionSettings).isNotNull();
+
+		ObjectName clientInitiatorMBean = ctx.getBean("clientInitiatorMBean", ObjectName.class);
 		assertThat(clientInitiatorMBean).isNotNull();
+
+		QuickFixJTemplate clientQuickFixJTemplate = ctx.getBean("clientQuickFixJTemplate", QuickFixJTemplate.class);
 		assertThat(clientQuickFixJTemplate).isNotNull();
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
-	static class TestConfig {
+	@PropertySource("classpath:single-threaded-application.properties")
+	static class SingleThreadedClientInitiatorConfiguration {
+
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:multi-threaded-application.properties")
+	static class MultiThreadedClientInitiatorConfiguration {
 
 	}
 }

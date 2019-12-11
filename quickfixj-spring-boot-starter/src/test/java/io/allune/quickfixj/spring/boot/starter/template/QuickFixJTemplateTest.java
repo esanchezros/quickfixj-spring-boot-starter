@@ -218,7 +218,7 @@ public class QuickFixJTemplateTest {
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
 				.isThrownBy(() -> quickFixJTemplate.send(message))
-				.withMessage("Field with ID 56 not found in message");
+				.withMessageContaining("Field with ID 56 not found in message");
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class QuickFixJTemplateTest {
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
 				.isThrownBy(() -> quickFixJTemplate.send(message))
-				.withMessage("Field with ID 49 not found in message");
+				.withMessageContaining("Field with ID 49 not found in message");
 	}
 
 	@Test
@@ -240,7 +240,7 @@ public class QuickFixJTemplateTest {
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
 				.isThrownBy(() -> quickFixJTemplate.send(message))
-				.withMessage("Field with ID 8 not found in message");
+				.withMessageContaining("Field with ID 8 not found in message");
 	}
 
 	@Test

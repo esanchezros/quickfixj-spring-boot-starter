@@ -140,6 +140,8 @@
 								io/allune/quickfixj/spring/boot/starter/autoconfigure/server/QuickFixJServerMarkerConfiguration.class
 							</exclude>
 							<exclude>io/allune/quickfixj/spring/boot/starter/exception/*.class</exclude>
+							<exclude>io/allune/quickfixj/spring/boot/starter/template/*Exception.class</exclude>
+							<exclude>io/allune/quickfixj/spring/boot/starter/model/*.class</exclude>
 						</excludes>
 					</instrumentation>
 				</configuration>

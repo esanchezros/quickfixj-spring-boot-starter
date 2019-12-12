@@ -193,8 +193,8 @@ public class QuickFixJTemplateTest {
 		mockSessionNotFound();
 
 		// When/Then
-		assertThatExceptionOfType(SessionNotFoundException.class).isThrownBy(() ->
-				quickFixJTemplate.send(message));
+		assertThatExceptionOfType(SessionNotFoundException.class)
+				.isThrownBy(() -> quickFixJTemplate.send(message));
 	}
 
 	@Test
@@ -206,8 +206,41 @@ public class QuickFixJTemplateTest {
 		mockDataDictionaryValidationFailure();
 
 		// When/Then
-		assertThatExceptionOfType(MessageValidationException.class).isThrownBy(() ->
-				quickFixJTemplate.send(message));
+		assertThatExceptionOfType(MessageValidationException.class)
+				.isThrownBy(() -> quickFixJTemplate.send(message));
+	}
+
+	@Test
+	public void shouldThrowFieldNotFoundExceptionWithInvalidTargetCompID() throws FieldNotFound {
+		// Given
+		mockMessageWithInvalidTargetCompIDHeader();
+
+		// When/Then
+		assertThatExceptionOfType(FieldNotFoundException.class)
+				.isThrownBy(() -> quickFixJTemplate.send(message))
+				.withMessageContaining("Field with ID 56 not found in message");
+	}
+
+	@Test
+	public void shouldThrowFieldNotFoundExceptionWithInvalidSenderCompID() throws FieldNotFound {
+		// Given
+		mockMessageWithInvalidSenderCompIDHeader();
+
+		// When/Then
+		assertThatExceptionOfType(FieldNotFoundException.class)
+				.isThrownBy(() -> quickFixJTemplate.send(message))
+				.withMessageContaining("Field with ID 49 not found in message");
+	}
+
+	@Test
+	public void shouldThrowFieldNotFoundExceptionWithInvalidBeginString() throws FieldNotFound {
+		// Given
+		mockMessageWithInvalidBeginStringHeader();
+
+		// When/Then
+		assertThatExceptionOfType(FieldNotFoundException.class)
+				.isThrownBy(() -> quickFixJTemplate.send(message))
+				.withMessageContaining("Field with ID 8 not found in message");
 	}
 
 	@Test
@@ -233,6 +266,24 @@ public class QuickFixJTemplateTest {
 		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
 		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
 		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+	}
+
+	private void mockMessageWithInvalidBeginStringHeader() throws FieldNotFound {
+		mockMessageWithInvalidHeader(BeginString.FIELD);
+	}
+
+	private void mockMessageWithInvalidSenderCompIDHeader() throws FieldNotFound {
+		mockMessageWithInvalidHeader(SenderCompID.FIELD);
+	}
+
+	private void mockMessageWithInvalidTargetCompIDHeader() throws FieldNotFound {
+		mockMessageWithInvalidHeader(TargetCompID.FIELD);
+	}
+
+	private void mockMessageWithInvalidHeader(int field) throws FieldNotFound {
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(field)).willThrow(FieldNotFound.class);
 	}
 
 	private void mockSessionFound() {

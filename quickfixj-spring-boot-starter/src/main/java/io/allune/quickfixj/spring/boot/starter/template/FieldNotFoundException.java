@@ -24,15 +24,6 @@ package io.allune.quickfixj.spring.boot.starter.template;
 public class FieldNotFoundException extends QuickFixJException {
 
 	/**
-	 * Construct a new {@code FieldNotFoundException} with the given message.
-	 *
-	 * @param msg the message
-	 */
-	public FieldNotFoundException(String msg) {
-		super(msg);
-	}
-
-	/**
 	 * Construct a new instance of {@code FieldNotFoundException} with the given message and
 	 * exception.
 	 *

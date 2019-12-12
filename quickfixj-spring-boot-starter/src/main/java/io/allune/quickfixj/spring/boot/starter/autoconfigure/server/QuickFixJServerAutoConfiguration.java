@@ -16,7 +16,6 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 
-import javax.management.JMException;
 import javax.management.ObjectName;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -100,41 +99,41 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "serverAcceptor")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
-	public Acceptor serverAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
-			SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
+	public Acceptor serverAcceptor(
+			Application serverApplication,
+			MessageStoreFactory serverMessageStoreFactory,
+			SessionSettings serverSessionSettings,
+			LogFactory serverLogFactory,
+			MessageFactory serverMessageFactory) throws ConfigError {
 
-		try {
-			return SocketAcceptor.newBuilder()
-					.withApplication(serverApplication)
-					.withMessageStoreFactory(serverMessageStoreFactory)
-					.withSettings(serverSessionSettings)
-					.withLogFactory(serverLogFactory)
-					.withMessageFactory(serverMessageFactory)
-					.build();
-		} catch (ConfigError configError) {
-			throw new ConfigurationException(configError.getMessage(), configError);
-		}
+		return SocketAcceptor.newBuilder()
+				.withApplication(serverApplication)
+				.withMessageStoreFactory(serverMessageStoreFactory)
+				.withSettings(serverSessionSettings)
+				.withLogFactory(serverLogFactory)
+				.withMessageFactory(serverMessageFactory)
+				.build();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "serverAcceptor")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
-	public Acceptor serverThreadedAcceptor(Application serverApplication, MessageStoreFactory serverMessageStoreFactory,
-			SessionSettings serverSessionSettings, LogFactory serverLogFactory, MessageFactory serverMessageFactory) {
+	public Acceptor serverThreadedAcceptor(
+			Application serverApplication,
+			MessageStoreFactory serverMessageStoreFactory,
+			SessionSettings serverSessionSettings,
+			LogFactory serverLogFactory,
+			MessageFactory serverMessageFactory) throws ConfigError {
 
-		try {
-			return ThreadedSocketAcceptor.newBuilder()
-					.withApplication(serverApplication)
-					.withMessageStoreFactory(serverMessageStoreFactory)
-					.withSettings(serverSessionSettings)
-					.withLogFactory(serverLogFactory)
-					.withMessageFactory(serverMessageFactory)
-					.build();
-		} catch (ConfigError configError) {
-			throw new ConfigurationException(configError.getMessage(), configError);
-		}
+		return ThreadedSocketAcceptor.newBuilder()
+				.withApplication(serverApplication)
+				.withMessageStoreFactory(serverMessageStoreFactory)
+				.withSettings(serverSessionSettings)
+				.withLogFactory(serverLogFactory)
+				.withMessageFactory(serverMessageFactory)
+				.build();
 	}
 
 	@Bean
@@ -149,12 +148,12 @@ public class QuickFixJServerAutoConfiguration {
 	@ConditionalOnProperty(prefix = "quickfixj.server", name = "jmx-enabled", havingValue = "true")
 	@ConditionalOnClass(JmxExporter.class)
 	@ConditionalOnSingleCandidate(Acceptor.class)
-	@ConditionalOnMissingBean(name = "serverInitiatorMBean")
-	public ObjectName serverInitiatorMBean(Acceptor serverAcceptor) {
+	@ConditionalOnMissingBean(name = "serverAcceptorMBean")
+	public ObjectName serverAcceptorMBean(Acceptor serverAcceptor) {
 		try {
 			JmxExporter exporter = new JmxExporter();
 			return exporter.register(serverAcceptor);
-		} catch (JMException e) {
+		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
 	}

@@ -17,22 +17,25 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 import javax.management.ObjectName;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.context.annotation.PropertySource;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Acceptor;
 import quickfix.Application;
+import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
@@ -41,64 +44,104 @@ import quickfix.MessageStoreFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketAcceptor;
+import quickfix.ThreadedSocketAcceptor;
 
 /**
  * @author Eduardo Sanchez-Ros
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-		properties = {
-				"quickfixj.server.autoStartup=false",
-				"quickfixj.server.config=classpath:quickfixj.cfg",
-				"quickfixj.server.jmx-enabled=true"
-		})
 public class QuickFixJServerAutoConfigurationTest {
 
-	@Autowired
-	private ConnectorManager serverConnectionManager;
-
-	@Autowired
-	private Acceptor serverAcceptor;
-
-	@Autowired
-	private Application serverApplication;
-
-	@Autowired
-	private MessageStoreFactory serverMessageStoreFactory;
-
-	@Autowired
-	private LogFactory serverLogFactory;
-
-	@Autowired
-	private MessageFactory serverMessageFactory;
-
-	@Autowired
-	private SessionSettings serverSessionSettings;
-
-	@Autowired
-	private ObjectName serverInitiatorMBean;
-
-	@Autowired
-	private QuickFixJTemplate serverQuickFixJTemplate;
-
 	@Test
-	public void testAutoConfiguredBeans() {
+	public void testAutoConfiguredBeansSingleThreadedAcceptor() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerAcceptorConfiguration.class);
+		ConnectorManager serverConnectionManager = ctx.getBean("serverConnectionManager", ConnectorManager.class);
 		assertThat(serverConnectionManager.isRunning()).isFalse();
 		assertThat(serverConnectionManager.isAutoStartup()).isFalse();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
+
+		hasAutoConfiguredBeans(ctx);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansMultiThreadedAcceptor() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedServerAcceptorConfiguration.class);
+		ConnectorManager serverConnectionManager = ctx.getBean("serverConnectionManager", ConnectorManager.class);
+		assertThat(serverConnectionManager.isRunning()).isFalse();
+		assertThat(serverConnectionManager.isAutoStartup()).isFalse();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+		assertThat(serverAcceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+
+		hasAutoConfiguredBeans(ctx);
+	}
+
+	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
+		Application serverApplication = ctx.getBean("serverApplication", Application.class);
 		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
+
+		MessageStoreFactory serverMessageStoreFactory = ctx.getBean("serverMessageStoreFactory", MessageStoreFactory.class);
 		assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
 		assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
+
+		MessageFactory serverMessageFactory = ctx.getBean("serverMessageFactory", MessageFactory.class);
 		assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+
+		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
 		assertThat(serverSessionSettings).isNotNull();
+
+		ObjectName serverInitiatorMBean = ctx.getBean("serverAcceptorMBean", ObjectName.class);
 		assertThat(serverInitiatorMBean).isNotNull();
+
+		QuickFixJTemplate serverQuickFixJTemplate = ctx.getBean("serverQuickFixJTemplate", QuickFixJTemplate.class);
 		assertThat(serverQuickFixJTemplate).isNotNull();
+	}
+
+	@Test
+	public void shouldCreateServerThreadedAcceptor() throws ConfigError {
+		// Given
+		Application application = mock(Application.class);
+		MessageStoreFactory messageStoreFactory = mock(MessageStoreFactory.class);
+		SessionSettings sessionSettings = mock(SessionSettings.class);
+		LogFactory logFactory = mock(LogFactory.class);
+		MessageFactory messageFactory = mock(MessageFactory.class);
+
+		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
+
+		// When
+		Acceptor acceptor = autoConfiguration.serverThreadedAcceptor(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+
+		// Then
+		assertThat(acceptor).isNotNull();
+		assertThat(acceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+	}
+
+	@Test
+	public void shouldThrowConfigurationExceptionCreatingServerAcceptorMBeanGivenNullAcceptor() {
+		// Given
+		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
+
+		// When/Then
+		assertThatExceptionOfType(ConfigurationException.class)
+				.isThrownBy(() -> autoConfiguration.serverAcceptorMBean(null));
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
-	static class TestConfig {
+	@PropertySource("classpath:single-threaded-application.properties")
+	static class SingleThreadedServerAcceptorConfiguration {
+
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:multi-threaded-application.properties")
+	static class MultiThreadedServerAcceptorConfiguration {
 
 	}
 }

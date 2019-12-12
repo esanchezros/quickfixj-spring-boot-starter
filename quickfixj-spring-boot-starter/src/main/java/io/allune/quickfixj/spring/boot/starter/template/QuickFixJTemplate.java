@@ -177,7 +177,7 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 			try {
 				return message.getHeader().getString(fieldTag);
 			} catch (FieldNotFound fieldNotFound) {
-				throw new FieldNotFoundException("Field with ID " + fieldTag + " not found in message");
+				throw new FieldNotFoundException("Field with ID " + fieldTag + " not found in message", fieldNotFound);
 			}
 		}
 	}

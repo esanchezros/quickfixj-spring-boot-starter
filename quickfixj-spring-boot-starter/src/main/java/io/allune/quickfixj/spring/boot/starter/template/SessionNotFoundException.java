@@ -31,15 +31,4 @@ public class SessionNotFoundException extends QuickFixJException {
 	public SessionNotFoundException(String msg) {
 		super(msg);
 	}
-
-	/**
-	 * Construct a new instance of {@code SessionNotFoundException} with the given message and
-	 * exception.
-	 *
-	 * @param msg the message
-	 * @param ex  the exception
-	 */
-	public SessionNotFoundException(String msg, Throwable ex) {
-		super(msg, ex);
-	}
 }

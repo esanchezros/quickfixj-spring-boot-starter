@@ -19,7 +19,8 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Holds all the relevant starter properties which can be configured with
@@ -27,18 +28,20 @@ import lombok.Data;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Data
+@Getter
+@Setter
 @ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
 public class QuickFixJBootProperties {
 
 	public static final String PROPERTY_PREFIX = "quickfixj";
 
-	private Client client = new Client();
+	private Config client = new Config();
 
-	private Server server = new Server();
+	private Config server = new Config();
 
-	@Data
-	public static class Client {
+	@Getter
+	@Setter
+	public static class Config {
 
 		/**
 		 * Whether the {@link ConnectorManager} should get started automatically
@@ -59,29 +62,20 @@ public class QuickFixJBootProperties {
 		 * Whether to register the Jmx MBeans for the client
 		 */
 		private boolean jmxEnabled = false;
+
+		/**
+		 * Configures the concurrent options
+		 */
+		private Concurrent concurrent = new Concurrent();
 	}
 
-	@Data
-	public static class Server {
+	@Getter
+	@Setter
+	public static class Concurrent {
 
 		/**
-		 * Whether the {@link ConnectorManager} should get started automatically
+		 * Whether it should be multithreaded or single threaded
 		 */
-		private boolean autoStartup = true;
-
-		/**
-		 * The phase value of the {@link ConnectorManager}.
-		 */
-		private int phase = Integer.MAX_VALUE;
-
-		/**
-		 * The location of the configuration file to use to initialize QuickFixJ client.
-		 */
-		private String config;
-
-		/**
-		 * Whether to register the Jmx MBeans for the server
-		 */
-		private boolean jmxEnabled = false;
+		private boolean enabled = false;
 	}
 }

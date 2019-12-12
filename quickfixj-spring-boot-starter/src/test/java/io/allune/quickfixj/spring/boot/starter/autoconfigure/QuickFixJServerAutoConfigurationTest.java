@@ -93,7 +93,7 @@ public class QuickFixJServerAutoConfigurationTest {
 		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
 		assertThat(serverSessionSettings).isNotNull();
 
-		ObjectName serverInitiatorMBean = ctx.getBean("serverInitiatorMBean", ObjectName.class);
+		ObjectName serverInitiatorMBean = ctx.getBean("serverAcceptorMBean", ObjectName.class);
 		assertThat(serverInitiatorMBean).isNotNull();
 
 		QuickFixJTemplate serverQuickFixJTemplate = ctx.getBean("serverQuickFixJTemplate", QuickFixJTemplate.class);
@@ -120,13 +120,13 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	@Test
-	public void shouldThrowConfigurationExceptionCreatingServerInitiatorMBeanGivenNullInitiator() {
+	public void shouldThrowConfigurationExceptionCreatingServerAcceptorMBeanGivenNullAcceptor() {
 		// Given
 		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
 
 		// When/Then
 		assertThatExceptionOfType(ConfigurationException.class)
-				.isThrownBy(() -> autoConfiguration.serverInitiatorMBean(null));
+				.isThrownBy(() -> autoConfiguration.serverAcceptorMBean(null));
 	}
 
 	@Configuration

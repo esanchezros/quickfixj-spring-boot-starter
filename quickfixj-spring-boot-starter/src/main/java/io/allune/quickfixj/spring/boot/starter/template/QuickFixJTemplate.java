@@ -38,7 +38,7 @@ import quickfix.field.TargetCompID;
 
 /**
  * Synchronous client to perform requests, exposing a simple, template
- * method API over QuickFixJ client
+ * method API over the QuickFixJ client
  *
  * @author Eduardo Sanchez-Ros
  */

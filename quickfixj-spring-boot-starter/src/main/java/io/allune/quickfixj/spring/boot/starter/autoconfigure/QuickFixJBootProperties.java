@@ -19,7 +19,8 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Holds all the relevant starter properties which can be configured with
@@ -27,7 +28,8 @@ import lombok.Data;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Data
+@Getter
+@Setter
 @ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
 public class QuickFixJBootProperties {
 
@@ -37,7 +39,8 @@ public class QuickFixJBootProperties {
 
 	private Config server = new Config();
 
-	@Data
+	@Getter
+	@Setter
 	public static class Config {
 
 		/**
@@ -66,7 +69,8 @@ public class QuickFixJBootProperties {
 		private Concurrent concurrent = new Concurrent();
 	}
 
-	@Data
+	@Getter
+	@Setter
 	public static class Concurrent {
 
 		/**

@@ -58,7 +58,6 @@ import quickfix.ThreadedSocketAcceptor;
 @Configuration
 @EnableConfigurationProperties(QuickFixJBootProperties.class)
 @ConditionalOnBean(value = QuickFixJServerMarkerConfiguration.Marker.class)
-@Conditional(QuickFixJServerAutoConfiguration.ServerConfigAvailableCondition.class)
 public class QuickFixJServerAutoConfiguration {
 
 	private static final String SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG = "quickfixj.server.config";
@@ -164,15 +163,4 @@ public class QuickFixJServerAutoConfiguration {
 		return new QuickFixJTemplate();
 	}
 
-	/**
-	 * {@link ServerConfigAvailableCondition} that checks if the
-	 * {@code quickfixj.server.config} configuration key is defined.
-	 */
-	static class ServerConfigAvailableCondition extends ResourceCondition {
-
-		ServerConfigAvailableCondition() {
-			super("QuickFixJ Server", SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG,
-					"file:./quickfixj-server.cfg", "classpath:/quickfixj-server.cfg");
-		}
-	}
 }

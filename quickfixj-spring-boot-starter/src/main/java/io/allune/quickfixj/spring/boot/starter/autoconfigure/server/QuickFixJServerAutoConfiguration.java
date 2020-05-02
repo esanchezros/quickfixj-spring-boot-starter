@@ -24,11 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
@@ -162,5 +160,4 @@ public class QuickFixJServerAutoConfiguration {
 	public QuickFixJTemplate serverQuickFixJTemplate() {
 		return new QuickFixJTemplate();
 	}
-
 }

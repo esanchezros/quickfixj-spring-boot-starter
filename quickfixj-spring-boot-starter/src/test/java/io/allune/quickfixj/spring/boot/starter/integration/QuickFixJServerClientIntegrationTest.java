@@ -31,7 +31,7 @@ import quickfix.fix41.OrderCancelRequest;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = QuickFixJServerClientITConfiguration.class)
-public class QuickFixJServerClientIT {
+public class QuickFixJServerClientIntegrationTest {
 
 	@Autowired
 	private QuickFixJTemplate serverQuickFixJTemplate;

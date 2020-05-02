@@ -24,11 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
@@ -58,7 +56,6 @@ import quickfix.ThreadedSocketInitiator;
 @Configuration
 @EnableConfigurationProperties(QuickFixJBootProperties.class)
 @ConditionalOnBean(QuickFixJClientMarkerConfiguration.Marker.class)
-@Conditional(QuickFixJClientAutoConfiguration.ClientConfigAvailableCondition.class)
 public class QuickFixJClientAutoConfiguration {
 
 	private static final String SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG = "quickfixj.client.config";
@@ -75,25 +72,25 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientApplication")
+	@ConditionalOnMissingBean(name = "clientApplication", value = Application.class)
 	public Application clientApplication(ApplicationEventPublisher applicationEventPublisher) {
 		return new EventPublisherApplicationAdapter(applicationEventPublisher);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory", value = MessageStoreFactory.class)
 	public MessageStoreFactory clientMessageStoreFactory() {
 		return new MemoryStoreFactory();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnMissingBean(name = "clientLogFactory", value = LogFactory.class)
 	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
 		return new ScreenLogFactory(clientSessionSettings);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientMessageFactory")
+	@ConditionalOnMissingBean(name = "clientMessageFactory", value = MessageFactory.class)
 	public MessageFactory clientMessageFactory() {
 		return new DefaultMessageFactory();
 	}
@@ -150,7 +147,7 @@ public class QuickFixJClientAutoConfiguration {
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "jmx-enabled", havingValue = "true")
 	@ConditionalOnClass(JmxExporter.class)
 	@ConditionalOnSingleCandidate(Initiator.class)
-	@ConditionalOnMissingBean(name = "clientInitiatorMBean")
+	@ConditionalOnMissingBean(name = "clientInitiatorMBean", value = ObjectName.class)
 	public ObjectName clientInitiatorMBean(Initiator clientInitiator) {
 		try {
 			JmxExporter exporter = new JmxExporter();
@@ -161,20 +158,8 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "clientQuickFixJTemplate")
+	@ConditionalOnMissingBean(name = "clientQuickFixJTemplate", value = QuickFixJTemplate.class)
 	public QuickFixJTemplate clientQuickFixJTemplate() {
 		return new QuickFixJTemplate();
-	}
-
-	/**
-	 * {@link ClientConfigAvailableCondition} that checks if the client configuration file is defined in
-	 * {@code quickfixj.client.config} configuration key or in the default locations.
-	 */
-	static class ClientConfigAvailableCondition extends ResourceCondition {
-
-		ClientConfigAvailableCondition() {
-			super("QuickFixJ Client", SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG,
-					"file:./" + QUICKFIXJ_CLIENT_CONFIG, "classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
-		}
 	}
 }

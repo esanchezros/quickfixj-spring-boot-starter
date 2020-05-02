@@ -24,6 +24,7 @@ import javax.management.ObjectName;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -31,6 +32,7 @@ import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Application;
@@ -52,7 +54,7 @@ import quickfix.ThreadedSocketInitiator;
 public class QuickFixJClientAutoConfigurationTest {
 
 	@Test
-	public void testAutoConfiguredBeansSingleThreadedAcceptor() {
+	public void testAutoConfiguredBeansSingleThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfiguration.class);
 		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
 		assertThat(clientConnectionManager.isRunning()).isFalse();
@@ -65,7 +67,7 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void testAutoConfiguredBeansMultiThreadedAcceptor() {
+	public void testAutoConfiguredBeansMultiThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedClientInitiatorConfiguration.class);
 		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
 		assertThat(clientConnectionManager.isRunning()).isFalse();
@@ -106,6 +108,13 @@ public class QuickFixJClientAutoConfigurationTest {
 				.isThrownBy(() -> autoConfiguration.clientInitiatorMBean(null));
 	}
 
+	@Test
+	public void testAutoConfiguredBeansSingleThreadedInitiatorWithCustomClientSettings() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfigurationWithCustomClientSettings.class);
+		SessionSettings customClientSessionSettings = ctx.getBean("clientSessionSettings", SessionSettings.class);
+		assertThat(customClientSessionSettings.getDefaultProperties().getProperty("SenderCompID")).isEqualTo("CUSTOM-BANZAI");
+	}
+
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
 		Application clientApplication = ctx.getBean("clientApplication", Application.class);
 		assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
@@ -143,5 +152,17 @@ public class QuickFixJClientAutoConfigurationTest {
 	@PropertySource("classpath:multi-threaded-application.properties")
 	static class MultiThreadedClientInitiatorConfiguration {
 
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:single-threaded-application-no-config-defined.properties")
+	static class SingleThreadedClientInitiatorConfigurationWithCustomClientSettings {
+
+		@Bean(name = "clientSessionSettings")
+		public SessionSettings customClientSessionSettings() {
+			return SessionSettingsLocator.loadSettings("classpath:/quickfixj-client-extra.cfg");
+		}
 	}
 }

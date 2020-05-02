@@ -24,6 +24,7 @@ import javax.management.ObjectName;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -31,6 +32,7 @@ import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import quickfix.Acceptor;
@@ -77,29 +79,6 @@ public class QuickFixJServerAutoConfigurationTest {
 		hasAutoConfiguredBeans(ctx);
 	}
 
-	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
-		Application serverApplication = ctx.getBean("serverApplication", Application.class);
-		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
-
-		MessageStoreFactory serverMessageStoreFactory = ctx.getBean("serverMessageStoreFactory", MessageStoreFactory.class);
-		assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
-
-		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
-		assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
-
-		MessageFactory serverMessageFactory = ctx.getBean("serverMessageFactory", MessageFactory.class);
-		assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
-
-		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
-		assertThat(serverSessionSettings).isNotNull();
-
-		ObjectName serverInitiatorMBean = ctx.getBean("serverAcceptorMBean", ObjectName.class);
-		assertThat(serverInitiatorMBean).isNotNull();
-
-		QuickFixJTemplate serverQuickFixJTemplate = ctx.getBean("serverQuickFixJTemplate", QuickFixJTemplate.class);
-		assertThat(serverQuickFixJTemplate).isNotNull();
-	}
-
 	@Test
 	public void shouldCreateServerThreadedAcceptor() throws ConfigError {
 		// Given
@@ -129,6 +108,36 @@ public class QuickFixJServerAutoConfigurationTest {
 				.isThrownBy(() -> autoConfiguration.serverAcceptorMBean(null));
 	}
 
+	@Test
+	public void testAutoConfiguredBeansSingleThreadedAcceptorWithCustomServerSettings() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerAcceptorConfigurationWithCustomClientSettings.class);
+		SessionSettings customClientSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
+		assertThat(customClientSessionSettings.getDefaultProperties().getProperty("SenderCompID")).isEqualTo("CUSTOM-EXEC");
+	}
+
+	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
+		Application serverApplication = ctx.getBean("serverApplication", Application.class);
+		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
+
+		MessageStoreFactory serverMessageStoreFactory = ctx.getBean("serverMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(serverMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
+
+		MessageFactory serverMessageFactory = ctx.getBean("serverMessageFactory", MessageFactory.class);
+		assertThat(serverMessageFactory).isInstanceOf(DefaultMessageFactory.class);
+
+		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
+		assertThat(serverSessionSettings).isNotNull();
+
+		ObjectName serverInitiatorMBean = ctx.getBean("serverAcceptorMBean", ObjectName.class);
+		assertThat(serverInitiatorMBean).isNotNull();
+
+		QuickFixJTemplate serverQuickFixJTemplate = ctx.getBean("serverQuickFixJTemplate", QuickFixJTemplate.class);
+		assertThat(serverQuickFixJTemplate).isNotNull();
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
@@ -144,4 +153,17 @@ public class QuickFixJServerAutoConfigurationTest {
 	static class MultiThreadedServerAcceptorConfiguration {
 
 	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:single-threaded-application-no-config-defined.properties")
+	static class SingleThreadedServerAcceptorConfigurationWithCustomClientSettings {
+
+		@Bean(name = "serverSessionSettings")
+		public SessionSettings serverSessionSettings() {
+			return SessionSettingsLocator.loadSettings("classpath:/quickfixj-server-extra.cfg");
+		}
+	}
+
 }

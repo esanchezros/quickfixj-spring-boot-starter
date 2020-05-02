@@ -24,11 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
@@ -58,7 +56,6 @@ import quickfix.ThreadedSocketAcceptor;
 @Configuration
 @EnableConfigurationProperties(QuickFixJBootProperties.class)
 @ConditionalOnBean(value = QuickFixJServerMarkerConfiguration.Marker.class)
-@Conditional(QuickFixJServerAutoConfiguration.ServerConfigAvailableCondition.class)
 public class QuickFixJServerAutoConfiguration {
 
 	private static final String SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG = "quickfixj.server.config";
@@ -162,17 +159,5 @@ public class QuickFixJServerAutoConfiguration {
 	@ConditionalOnMissingBean(name = "serverQuickFixJTemplate")
 	public QuickFixJTemplate serverQuickFixJTemplate() {
 		return new QuickFixJTemplate();
-	}
-
-	/**
-	 * {@link ServerConfigAvailableCondition} that checks if the
-	 * {@code quickfixj.server.config} configuration key is defined.
-	 */
-	static class ServerConfigAvailableCondition extends ResourceCondition {
-
-		ServerConfigAvailableCondition() {
-			super("QuickFixJ Server", SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG,
-					"file:./quickfixj-server.cfg", "classpath:/quickfixj-server.cfg");
-		}
 	}
 }

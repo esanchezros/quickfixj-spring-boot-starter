@@ -26,6 +26,7 @@
 		<license>
 			<name>Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
@@ -35,6 +36,10 @@
 			<name>Eduardo Sanchez-Ros</name>
 			<email>esanchezros@yahoo.es</email>
 			<organization>Allune Software Ltd.</organization>
+			<roles>
+				<role>Owner</role>
+				<role>Developer</role>
+			</roles>
 		</developer>
 	</developers>
 
@@ -49,6 +54,26 @@
 		<developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+
+	<ciManagement>
+		<system>travis-ci</system>
+		<url>https://travis-ci.org/github/esanchezros/quickfixj-spring-boot-starter</url>
+	</ciManagement>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/esanchezros/quickfixj-spring-boot-starter/issues</url>
+	</issueManagement>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -171,17 +196,6 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 
 	<profiles>
 		<profile>

@@ -16,6 +16,8 @@
 
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 
+import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
+
 import javax.management.ObjectName;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -149,6 +151,7 @@ public class QuickFixJServerAutoConfiguration {
 	public ObjectName serverAcceptorMBean(Acceptor serverAcceptor) {
 		try {
 			JmxExporter exporter = new JmxExporter();
+			exporter.setRegistrationBehavior(REGISTRATION_REPLACE_EXISTING);
 			return exporter.register(serverAcceptor);
 		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);

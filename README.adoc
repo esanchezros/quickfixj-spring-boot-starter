@@ -12,9 +12,14 @@ https://github.com/quickfix-j/quickfixj
 *Examples:*
 https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
 
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-client[Client]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-example-server[Server]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/quickfixj-spring-boot-starter-docker-examples[Docker]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client[QuickfixJ Server and Client applications as Docker containers]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-failover[QuickfixJ Server and Client applications as Docker containers with server failover]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-and-server[QuickfixJ Server and Client application]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-listener[QuickfixJ Client application with Event Listeners]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client[QuickfixJ Client application]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-listener[QuickfixJ Server application with Event Listeners]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickfixJ Server application]
+
 
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for QuickFixJ.
 It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.

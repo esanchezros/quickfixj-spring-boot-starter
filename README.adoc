@@ -7,7 +7,8 @@ image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba904395
 
 = Spring Boot Starter for QuickFixJ (Spring Boot 2)
 
-https://github.com/quickfix-j/quickfixj
+This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFixJ messaging engine for the FIX protocol].
+It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
 
 *Examples:*
 https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
@@ -19,10 +20,6 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client[QuickfixJ Client application]
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-listener[QuickfixJ Server application with Event Listeners]
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickfixJ Server application]
-
-
-This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for QuickFixJ.
-It simplifies the configuration required to create and start an Initiator or Acceptor, and handles the lifecycle of the Connector.
 
 == Getting started
 

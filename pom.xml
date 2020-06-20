@@ -81,7 +81,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<mina.version>2.0.19</mina.version>
-		<quickfixj.version>2.1.0</quickfixj.version>
+		<quickfixj.version>2.2.0</quickfixj.version>
 	</properties>
 
 	<dependencyManagement>

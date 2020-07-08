@@ -3,7 +3,7 @@
     {
       "name": "quickfixj.client.config",
       "type": "java.lang.String",
-      "description": "The location of the configuration file to use to initialize QuickFixJ client."
+      "description": "The location of the configuration file to use to initialize QuickFIX/J client."
     },
     {
       "name": "quickfixj.client.auto-startup",
@@ -26,7 +26,7 @@
     {
       "name": "quickfixj.server.config",
       "type": "java.lang.String",
-      "description": "The location of the configuration file to use to initialize QuickFixJ server."
+      "description": "The location of the configuration file to use to initialize QuickFIX/J server."
     },
     {
       "name": "quickfixj.server.auto-startup",

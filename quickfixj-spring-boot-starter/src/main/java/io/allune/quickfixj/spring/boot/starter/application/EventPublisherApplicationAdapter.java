@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.application;
-
-import java.util.function.Consumer;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 
 import io.allune.quickfixj.spring.boot.starter.model.Create;
 import io.allune.quickfixj.spring.boot.starter.model.FromAdmin;
@@ -28,9 +23,13 @@ import io.allune.quickfixj.spring.boot.starter.model.Logout;
 import io.allune.quickfixj.spring.boot.starter.model.ToAdmin;
 import io.allune.quickfixj.spring.boot.starter.model.ToApp;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import quickfix.Application;
 import quickfix.Message;
 import quickfix.SessionID;
+
+import java.util.function.Consumer;
 
 /**
  * Implements the {@link Application} interface publishing the received payload as a Spring {@link ApplicationEvent} to all

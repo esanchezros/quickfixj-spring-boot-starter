@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
-
-import javax.management.ObjectName;
-import org.junit.Test;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
@@ -35,6 +22,12 @@ import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
+import org.junit.Test;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.ConfigError;
@@ -47,6 +40,12 @@ import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
 import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
+
+import javax.management.ObjectName;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Eduardo Sanchez-Ros

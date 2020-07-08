@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.application;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Duration.FIVE_SECONDS;
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.model.Create;
@@ -41,9 +23,26 @@ import io.allune.quickfixj.spring.boot.starter.model.Logon;
 import io.allune.quickfixj.spring.boot.starter.model.Logout;
 import io.allune.quickfixj.spring.boot.starter.model.ToAdmin;
 import io.allune.quickfixj.spring.boot.starter.model.ToApp;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.test.context.junit4.SpringRunner;
 import quickfix.Application;
 import quickfix.Message;
 import quickfix.SessionID;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.FIVE_SECONDS;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Eduardo Sanchez-Ros

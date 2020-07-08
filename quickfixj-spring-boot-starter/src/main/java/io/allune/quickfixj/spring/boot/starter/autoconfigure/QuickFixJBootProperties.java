@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Holds all the relevant starter properties which can be configured with
@@ -54,7 +52,7 @@ public class QuickFixJBootProperties {
 		private int phase = Integer.MAX_VALUE;
 
 		/**
-		 * The location of the configuration file to use to initialize QuickFixJ client.
+		 * The location of the configuration file to use to initialize QuickFIX/J client.
 		 */
 		private String config;
 

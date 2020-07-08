@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import static io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator.loadSettings;
-import static org.assertj.core.api.Assertions.assertThat;
+import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import quickfix.SessionSettings;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import quickfix.SessionSettings;
+import static io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator.loadSettings;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eduardo Sanchez-Ros

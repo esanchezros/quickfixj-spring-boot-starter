@@ -2,12 +2,12 @@ image:https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter.svg?branch
 image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/2.0.x/graph/badge.svg["codecov",link="https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter"]
 image:https://img.shields.io/badge/maven%20central-v2.6.0-blue.svg["Maven Central",link="https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22quickfixj-spring-boot-starter%22"]
 image:https://img.shields.io/hexpm/l/plug.svg["Apache 2",link="http://www.apache.org/licenses/LICENSE-2.0"]
-image:https://img.shields.io/badge/quickfixj-2.1.0-blue.svg["QuickFixJ 2.1.0", link="https://github.com/quickfix-j/quickfixj"]
+image:https://img.shields.io/badge/quickfixj-2.2.0-blue.svg["QuickFIX/J 2.2.0", link="https://github.com/quickfix-j/quickfixj"]
 image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba9043950["Codacy code quality", link="https://www.codacy.com/app/esanchezros/quickfixj-spring-boot-starter?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
 
-= Spring Boot Starter for QuickFixJ (Spring Boot 2)
+= Spring Boot Starter for QuickFIX/J (Spring Boot 2)
 
-This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFixJ messaging engine for the FIX protocol].
+This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
 
 *Examples:*
@@ -23,7 +23,7 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 
 == Getting started
 
-To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Spring Boot Starter dependency in your project.
+To use the QuickFIX/J Server or QuickFIX/J Client you have to add the QuickFIX/J Spring Boot Starter dependency in your project.
 
 [source,xml]
 ----
@@ -34,7 +34,7 @@ To use the QuickFixJ Server or QuickFixJ Client you have to add the QuickFixJ Sp
 </dependency>
 ----
 
-To enable the actuator endpoints you will also have to add the QuickFixJ Spring Boot Actuator dependency.
+To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
 
 [source,xml]
 ----
@@ -45,9 +45,9 @@ To enable the actuator endpoints you will also have to add the QuickFixJ Spring 
 </dependency>
 ----
 
-=== QuickFixJ Spring Boot Starter - Server
+=== QuickFIX/J Spring Boot Starter - Server
 
-The `@EnableQuickFixJServer` will auto configure a QuickFixJ Server:
+The `@EnableQuickFixJServer` will auto configure a QuickFIX/J Server:
 
 [source,java]
 ----
@@ -79,7 +79,7 @@ The configuration is resolved using the following approach:
 * By the presence of the `quickfixj.server.config` system property
 * By a `quickfixj-server.cfg` in the working directory or at the root of the classpath
 
-==== QuickFixJ Server properties
+==== QuickFIX/J Server properties
 
 [source,properties]
 ----
@@ -90,7 +90,7 @@ quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the a
 quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor
 ----
 
-==== QuickFixJ Server Actuator properties
+==== QuickFIX/J Server Actuator properties
 
 [source,properties]
 ----
@@ -142,9 +142,9 @@ Example usage:
 }
 ----
 
-=== QuickFixJ Spring Boot Starter - Client
+=== QuickFIX/J Spring Boot Starter - Client
 
-The `@EnableQuickFixJClient` will auto configure a QuickFixJ Client:
+The `@EnableQuickFixJClient` will auto configure a QuickFIX/J Client:
 
 [source,java]
 ----
@@ -176,7 +176,7 @@ The configuration is resolved using the following approach:
 * By the presence of the `quickfixj.client.config` system property
 * By a `quickfixj-client.cfg` in the working directory or at the root of the classpath
 
-==== QuickFixJ Client properties
+==== QuickFIX/J Client properties
 
 [source,properties]
 ----
@@ -187,7 +187,7 @@ quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the i
 quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiator or a ThreadedSocketInitiator
 ----
 
-==== QuickFixJ Client Actuator properties
+==== QuickFIX/J Client Actuator properties
 
 [source,properties]
 ----
@@ -240,7 +240,7 @@ Example usage:
 
 === Listening on quickfixj.Application messages
 
-The QuickFixJ Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor) and the Client (Initiator) as `ApplicationEvent`s.
+The QuickFIX/J Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor) and the Client (Initiator) as `ApplicationEvent`s.
 
 If your application is only processing a subset of message types (i.e. `toAdmin`, `toApp`, `onCreate`, etc.) you will need to register an `EventListener` for these, with the appropriate message type as the only parameter for the listener method:
 
@@ -287,7 +287,7 @@ Depending on the value of `RejectMessageOnUnhandledException` in the quickfixj c
 
 === QuickFixJTemplate
 
-The `QuickFixJTemplate` provides a synchronous client to perform requests, exposing a simple, template method API over the QuickFixJ client.
+The `QuickFixJTemplate` provides a synchronous client to perform requests, exposing a simple, template method API over the QuickFIX/J client.
 
 `@EnableQuickFixJServer` provides a `serverQuickFixJTemplate` bean and `@EnableQuickFixJClient` provides a `clientQuickFixJTemplate` bean than can be `Autowired` in the application.
 
@@ -317,6 +317,6 @@ serverQuickFixJTemplate.send(message, sessionID);
 
 === License and Acknowledgement
 
-The QuickFixJ Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].
+The QuickFIX/J Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].
 
 This code includes software developed by http://www.quickfixengine.org/[quickfixengine.org].

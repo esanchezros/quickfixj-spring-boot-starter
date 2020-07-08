@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.connection;
+
+import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import quickfix.ConfigError;
+import quickfix.Connector;
+import quickfix.RuntimeError;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import quickfix.ConfigError;
-import quickfix.Connector;
-import quickfix.RuntimeError;
 
 /**
  * @author Eduardo Sanchez-Ros

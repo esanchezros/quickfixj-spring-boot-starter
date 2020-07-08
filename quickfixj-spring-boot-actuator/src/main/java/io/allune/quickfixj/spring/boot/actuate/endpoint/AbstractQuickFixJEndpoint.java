@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import static quickfix.SessionID.NOT_SET;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-
 import quickfix.ConfigError;
 import quickfix.Connector;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static quickfix.SessionID.NOT_SET;
+
 /**
- * Base class for QuickFixJ {@link @Endpoint}s.
+ * Base class for QuickFIX/J {@link @Endpoint}s.
  *
  * @author Eduardo Sanchez-Ros
  */

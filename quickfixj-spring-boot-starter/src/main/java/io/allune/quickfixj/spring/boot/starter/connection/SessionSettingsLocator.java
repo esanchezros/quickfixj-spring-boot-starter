@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.connection;
-
-import static java.lang.Thread.currentThread;
-import static java.util.Optional.empty;
-
-import java.io.IOException;
-import java.util.Optional;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
+
+import java.io.IOException;
+import java.util.Optional;
+
+import static java.lang.Thread.currentThread;
+import static java.util.Optional.empty;
 
 /**
  * {@link SessionSettings} helper class that attempts to load the settings files from the default locations

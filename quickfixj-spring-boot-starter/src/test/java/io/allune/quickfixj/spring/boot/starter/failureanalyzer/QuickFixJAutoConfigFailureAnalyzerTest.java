@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.springframework.boot.diagnostics.FailureAnalysis;
 
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import org.junit.Test;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -40,8 +38,8 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
 		// When
 		FailureAnalysis analyze = analyzer.analyze(null, exception);
 
-		assertThat(analyze.getAction()).contains("Please configure your QuickFixJ settings");
-		assertThat(analyze.getDescription()).contains("A configuration error has been detected in the QuickFixJ settings provided.");
+		assertThat(analyze.getAction()).contains("Please configure your QuickFIX/J settings");
+		assertThat(analyze.getDescription()).contains("A configuration error has been detected in the QuickFIX/J settings provided.");
 		assertThat(analyze.getCause()).isEqualTo(exception);
 	}
 
@@ -55,8 +53,8 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
 		// When
 		FailureAnalysis analyze = analyzer.analyze(null, exception);
 
-		assertThat(analyze.getAction()).contains("Please provide a QuickFixJ settings file");
-		assertThat(analyze.getDescription()).contains("The QuickFixJ settings file could not be found.");
+		assertThat(analyze.getAction()).contains("Please provide a QuickFIX/J settings file");
+		assertThat(analyze.getDescription()).contains("The QuickFIX/J settings file could not be found.");
 		assertThat(analyze.getCause()).isEqualTo(exception);
 	}
 

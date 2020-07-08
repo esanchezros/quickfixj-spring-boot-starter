@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
-
-import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
-import org.springframework.boot.diagnostics.FailureAnalysis;
 
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * The failure analyzer is responsible to provide readable information of exception which
@@ -37,13 +35,13 @@ public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<
 		String actionMessage = cause.getMessage();
 
 		if (cause instanceof ConfigurationException) {
-			descriptionMessage = "A configuration error has been detected in the QuickFixJ settings provided.";
-			actionMessage = "Please configure your QuickFixJ settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html";
+			descriptionMessage = "A configuration error has been detected in the QuickFIX/J settings provided.";
+			actionMessage = "Please configure your QuickFIX/J settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html";
 		}
 
 		if (cause instanceof SettingsNotFoundException) {
-			descriptionMessage = "The QuickFixJ settings file could not be found.";
-			actionMessage = "Please provide a QuickFixJ settings file on the property 'config' for the client/server section in your configuration file.";
+			descriptionMessage = "The QuickFIX/J settings file could not be found.";
+			actionMessage = "Please provide a QuickFIX/J settings file on the property 'config' for the client/server section in your configuration file.";
 		}
 
 		return new FailureAnalysis(descriptionMessage, actionMessage, cause);

@@ -17,7 +17,7 @@ package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJClientEndpoint;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,7 +41,7 @@ public class QuickFixJClientEndpointAutoConfiguration {
 	@ConditionalOnBean(name = { "clientInitiator", "clientSessionSettings" })
 	@ConditionalOnClass({ Initiator.class, SessionSettings.class })
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
+	@ConditionalOnAvailableEndpoint
 	public QuickFixJClientEndpoint quickfixjClientEndpoint(Initiator clientInitiator, SessionSettings clientSessionSettings) {
 		return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
 	}

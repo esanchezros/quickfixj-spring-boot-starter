@@ -15,24 +15,18 @@
  */
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 /**
- * Holds all the relevant starter properties which can be configured with
- * Spring Boot's application.properties / application.yml configuration files.
+ * Defines which type of {@link quickfix.LogFactory log factory} should be used.
  *
  * @author Eduardo Sanchez-Ros
  */
-@Getter
-@Setter
-@ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
-public class QuickFixJBootProperties {
+public enum LogMethod {
 
-	public static final String PROPERTY_PREFIX = "quickfixj";
+	FILE,
 
-	private ConnectorConfig client = new ConnectorConfig();
+	JDBC,
 
-	private ConnectorConfig server = new ConnectorConfig();
+	SLF4J,
+
+	SCREEN
 }

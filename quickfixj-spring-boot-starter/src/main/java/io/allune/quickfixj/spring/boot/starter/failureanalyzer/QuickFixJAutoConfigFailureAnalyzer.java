@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
 
+import com.google.common.base.Throwables;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
@@ -33,18 +34,28 @@ public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<
 	protected FailureAnalysis analyze(Throwable rootFailure, QuickFixJBaseException cause) {
 		String descriptionMessage = cause.getMessage();
 		String actionMessage = cause.getMessage();
+		String rootCauseMessage = getRootCauseMessage(cause);
 
 		if (cause instanceof ConfigurationException) {
-			descriptionMessage = "A configuration error has been detected in the QuickFIX/J settings provided.";
+			descriptionMessage = "A configuration error has been detected in the QuickFIX/J settings provided: " + rootCauseMessage;
 			actionMessage = "Please configure your QuickFIX/J settings as per the documentation: https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html";
 		}
 
 		if (cause instanceof SettingsNotFoundException) {
-			descriptionMessage = "The QuickFIX/J settings file could not be found.";
+			descriptionMessage = "The QuickFIX/J settings file could not be found: " + rootCauseMessage;
 			actionMessage = "Please provide a QuickFIX/J settings file on the property 'config' for the client/server section in your configuration file.";
 		}
 
 		return new FailureAnalysis(descriptionMessage, actionMessage, cause);
+	}
+
+	private String getRootCauseMessage(QuickFixJBaseException cause) {
+		String rootCauseMessage = "no root cause found";
+		Throwable rootCause = Throwables.getRootCause(cause);
+		if (rootCause != null) {
+			rootCauseMessage = rootCause.getMessage() != null ? rootCause.getMessage() : "";
+		}
+		return rootCauseMessage;
 	}
 
 }

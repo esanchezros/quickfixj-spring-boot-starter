@@ -87,11 +87,13 @@ The configuration is resolved using the following approach:
 
 [source,properties]
 ----
-quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor
-quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up
-quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped
-quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor
-quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor
+quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor configuration file
+quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up (default: `true`)
+quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
+quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor (default: `false`)
+quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor (default: `false` - uses `SocketAcceptor`)
+quickfixj.server.message-store-factory=memory # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
+quickfixj.server.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
 ----
 
 ==== QuickFIX/J Server Actuator properties
@@ -185,10 +187,12 @@ The configuration is resolved using the following approach:
 [source,properties]
 ----
 quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfixj initiator
-quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up
-quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped
-quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the initiator
-quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiator or a ThreadedSocketInitiator
+quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up (default: `true`)
+quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
+quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the initiator (default: `false`)
+quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiator or a ThreadedSocketInitiator (default: `false` - uses `SocketInitiator`)
+quickfixj.client.message-store-factory=memory # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
+quickfixj.client.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
 ----
 
 ==== QuickFIX/J Client Actuator properties

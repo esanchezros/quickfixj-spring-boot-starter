@@ -51,6 +51,8 @@ public class ConnectorManager implements SmartLifecycle {
 	 * Set whether to auto-connect to the remote endpoint after this connector manager
 	 * has been initialized and the Spring context has been refreshed.
 	 * <p>Default is "true".
+	 *
+	 * @param autoStartup Whether the connector should be automatically started
 	 */
 	public void setAutoStartup(boolean autoStartup) {
 		this.autoStartup = autoStartup;
@@ -66,6 +68,8 @@ public class ConnectorManager implements SmartLifecycle {
 
 	/**
 	 * Specify the phase in which this connection manager should be started and stopped.
+	 *
+	 * @param phase The phase number
 	 */
 	public void setPhase(int phase) {
 		this.phase = phase;

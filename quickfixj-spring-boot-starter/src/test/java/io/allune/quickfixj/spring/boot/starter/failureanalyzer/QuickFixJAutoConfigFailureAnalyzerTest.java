@@ -33,13 +33,13 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
 
 		// Given
 		QuickFixJAutoConfigFailureAnalyzer analyzer = new QuickFixJAutoConfigFailureAnalyzer();
-		ConfigurationException exception = new ConfigurationException("Error", new RuntimeException());
+		ConfigurationException exception = new ConfigurationException("Error", new RuntimeException("Error message"));
 
 		// When
 		FailureAnalysis analyze = analyzer.analyze(null, exception);
 
 		assertThat(analyze.getAction()).contains("Please configure your QuickFIX/J settings");
-		assertThat(analyze.getDescription()).contains("A configuration error has been detected in the QuickFIX/J settings provided.");
+		assertThat(analyze.getDescription()).contains("A configuration error has been detected in the QuickFIX/J settings provided: Error message");
 		assertThat(analyze.getCause()).isEqualTo(exception);
 	}
 
@@ -48,13 +48,13 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
 
 		// Given
 		QuickFixJAutoConfigFailureAnalyzer analyzer = new QuickFixJAutoConfigFailureAnalyzer();
-		SettingsNotFoundException exception = new SettingsNotFoundException("Error", new RuntimeException());
+		SettingsNotFoundException exception = new SettingsNotFoundException("Error", new RuntimeException(new RuntimeException("Error message")));
 
 		// When
 		FailureAnalysis analyze = analyzer.analyze(null, exception);
 
 		assertThat(analyze.getAction()).contains("Please provide a QuickFIX/J settings file");
-		assertThat(analyze.getDescription()).contains("The QuickFIX/J settings file could not be found.");
+		assertThat(analyze.getDescription()).contains("The QuickFIX/J settings file could not be found: Error message");
 		assertThat(analyze.getCause()).isEqualTo(exception);
 	}
 

@@ -18,6 +18,7 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration.ThreadedSocketInitiatorConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
@@ -29,15 +30,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import quickfix.Application;
+import quickfix.CachedFileStoreFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
+import quickfix.FileStoreFactory;
 import quickfix.Initiator;
+import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
+import quickfix.NoopStoreFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionSettings;
+import quickfix.SleepycatStoreFactory;
 import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
 
@@ -55,9 +61,9 @@ public class QuickFixJClientAutoConfigurationTest {
 	@Test
 	public void testAutoConfiguredBeansSingleThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfiguration.class);
-		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
-		assertThat(clientConnectionManager.isRunning()).isFalse();
-		assertThat(clientConnectionManager.isAutoStartup()).isFalse();
+		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
+		assertThat(clientConnectorManager.isRunning()).isFalse();
+		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
 
 		Initiator clientInitiator = ctx.getBean(Initiator.class);
 		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
@@ -68,9 +74,9 @@ public class QuickFixJClientAutoConfigurationTest {
 	@Test
 	public void testAutoConfiguredBeansMultiThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedClientInitiatorConfiguration.class);
-		ConnectorManager clientConnectionManager = ctx.getBean("clientConnectionManager", ConnectorManager.class);
-		assertThat(clientConnectionManager.isRunning()).isFalse();
-		assertThat(clientConnectionManager.isAutoStartup()).isFalse();
+		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
+		assertThat(clientConnectorManager.isRunning()).isFalse();
+		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
 
 		Initiator clientInitiator = ctx.getBean(Initiator.class);
 		assertThat(clientInitiator).isInstanceOf(ThreadedSocketInitiator.class);
@@ -87,10 +93,10 @@ public class QuickFixJClientAutoConfigurationTest {
 		LogFactory logFactory = mock(LogFactory.class);
 		MessageFactory messageFactory = mock(MessageFactory.class);
 
-		QuickFixJClientAutoConfiguration autoConfiguration = new QuickFixJClientAutoConfiguration();
+		ThreadedSocketInitiatorConfiguration initiatorConfiguration = new ThreadedSocketInitiatorConfiguration();
 
 		// When
-		Initiator initiator = autoConfiguration.clientThreadedInitiator(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+		Initiator initiator = initiatorConfiguration.clientInitiator(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
 
 		// Then
 		assertThat(initiator).isNotNull();
@@ -112,6 +118,48 @@ public class QuickFixJClientAutoConfigurationTest {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfigurationWithCustomClientSettings.class);
 		SessionSettings customClientSessionSettings = ctx.getBean("clientSessionSettings", SessionSettings.class);
 		assertThat(customClientSessionSettings.getDefaultProperties().getProperty("SenderCompID")).isEqualTo("CUSTOM-BANZAI");
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientCachedFileStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientCachedFileStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(CachedFileStoreFactory.class);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientFileStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientFileStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(FileStoreFactory.class);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientJdbcStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientJdbcStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(JdbcStoreFactory.class);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientMemoryStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientMemoryStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(MemoryStoreFactory.class);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientNoopStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientNoopStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(NoopStoreFactory.class);
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientSleepycatStoreFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientSleepycatStoreFactoryConfiguration.class);
+		MessageStoreFactory clientMessageStoreFactory = ctx.getBean("clientMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(clientMessageStoreFactory).isInstanceOf(SleepycatStoreFactory.class);
 	}
 
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
@@ -140,28 +188,68 @@ public class QuickFixJClientAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
-	@PropertySource("classpath:single-threaded-application.properties")
+	@PropertySource("classpath:client-single-threaded/single-threaded-application.properties")
 	static class SingleThreadedClientInitiatorConfiguration {
-
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
-	@PropertySource("classpath:multi-threaded-application.properties")
+	@PropertySource("classpath:client-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedClientInitiatorConfiguration {
-
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
-	@PropertySource("classpath:single-threaded-application-no-config-defined.properties")
+	@PropertySource("classpath:client-single-threaded/single-threaded-application-no-config-defined.properties")
 	static class SingleThreadedClientInitiatorConfigurationWithCustomClientSettings {
 
 		@Bean(name = "clientSessionSettings")
 		public SessionSettings customClientSessionSettings() {
-			return SessionSettingsLocator.loadSettings("classpath:/quickfixj-client-extra.cfg");
+			return SessionSettingsLocator.loadSettings("classpath:quickfixj-client-extra.cfg");
 		}
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-cachedfile-store-factory.properties")
+	static class ClientCachedFileStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-file-store-factory.properties")
+	static class ClientFileStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-jdbc-store-factory.properties")
+	static class ClientJdbcStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-memory-store-factory.properties")
+	static class ClientMemoryStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-noop-store-factory.properties")
+	static class ClientNoopStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-message-store/client-sleepycat-store-factory.properties")
+	static class ClientSleepycatStoreFactoryConfiguration {
 	}
 }

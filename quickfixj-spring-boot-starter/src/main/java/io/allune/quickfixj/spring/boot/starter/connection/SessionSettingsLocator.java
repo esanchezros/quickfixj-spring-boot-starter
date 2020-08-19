@@ -41,6 +41,12 @@ public class SessionSettingsLocator {
 		//
 	}
 
+	/**
+	 * Loads the {@link SessionSettings} from the provided resource locations
+	 *
+	 * @param locations The resource locations to load the {@link SessionSettings} from
+	 * @return The {@link SessionSettings}
+	 */
 	public static SessionSettings loadSettings(String... locations) {
 
 		try {

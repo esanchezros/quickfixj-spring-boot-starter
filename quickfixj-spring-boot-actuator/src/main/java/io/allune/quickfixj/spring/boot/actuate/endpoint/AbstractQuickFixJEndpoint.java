@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import quickfix.ConfigError;
 import quickfix.Connector;
@@ -28,7 +29,7 @@ import java.util.Properties;
 import static quickfix.SessionID.NOT_SET;
 
 /**
- * Base class for QuickFIX/J {@link @Endpoint}s.
+ * Base class for QuickFIX/J {@link Endpoint}s.
  *
  * @author Eduardo Sanchez-Ros
  */

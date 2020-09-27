@@ -16,6 +16,7 @@
 package io.allune.quickfixj.spring.boot.starter.integration;
 
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,15 +31,23 @@ import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.ClOrdID;
+import quickfix.field.CxlType;
+import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
-import quickfix.fix41.OrderCancelRequest;
+import quickfix.field.TransactTime;
 
+import java.util.List;
+
+import static java.time.LocalDateTime.now;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.TEN_SECONDS;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static quickfix.field.CxlType.PARTIAL_CANCEL;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -77,55 +86,104 @@ public class QuickFixJServerClientIntegrationTest {
 						.stream()
 						.allMatch(sessionID -> Session.lookupSession(sessionID).isLoggedOn())
 		);
-		System.out.println("All sessions logged in");
 	}
 
 	@Test
-	public void shouldSendMessageFromServerToClient() throws Exception {
+	public void shouldSendMessagesFromServerToClient() {
 		// Given
-		OrderCancelRequest message = new OrderCancelRequest(
-				new OrigClOrdID("123"),
-				new ClOrdID("321"),
-				new Symbol("LNUX"),
-				new Side(Side.BUY));
-
-		// When
+		List<Message> messages = getMessages();
 		String senderCompID = "BANZAI";
 		String targetCompID = "EXEC";
-		boolean sent = serverQuickFixJTemplate.send(message, senderCompID, targetCompID);
 
-		// Then
-		assertThat(sent).isTrue();
+		// When
+		messages.forEach(message -> {
+			boolean sent = serverQuickFixJTemplate.send(message, senderCompID, targetCompID);
 
-		ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
-		ArgumentCaptor<SessionID> sessionIDArgumentCaptor = ArgumentCaptor.forClass(SessionID.class);
-		verify(clientApplication).toApp(messageArgumentCaptor.capture(), sessionIDArgumentCaptor.capture());
-
-		assertThat(messageArgumentCaptor.getValue()).isEqualTo(message);
-		assertThat(sessionIDArgumentCaptor.getValue().getSenderCompID()).isEqualTo(senderCompID);
-		assertThat(sessionIDArgumentCaptor.getValue().getTargetCompID()).isEqualTo(targetCompID);
+			// Then
+			assertThat(sent).isTrue();
+			assertMessageSentCorrectly(message, senderCompID, targetCompID, clientApplication);
+			reset(clientApplication);
+		});
 	}
 
 	@Test
-	public void shouldSendMessageFromClientToServer() throws Exception {
+	public void shouldSendMessagesFromClientToServer() {
 		// Given
-		OrderCancelRequest message = new OrderCancelRequest(
+		List<Message> messages = getMessages();
+		String senderCompID = "EXEC";
+		String targetCompID = "BANZAI";
+
+		// When
+		messages.forEach(message -> {
+			boolean sent = clientQuickFixJTemplate.send(message, senderCompID, targetCompID);
+
+			// Then
+			assertThat(sent).isTrue();
+			assertMessageSentCorrectly(message, senderCompID, targetCompID, serverApplication);
+			reset(serverApplication);
+		});
+	}
+
+	private List<Message> getMessages() {
+		quickfix.fix40.OrderCancelRequest orderCancelRequestV40 = new quickfix.fix40.OrderCancelRequest(
+				new OrigClOrdID("123"),
+				new ClOrdID("321"),
+				new CxlType(PARTIAL_CANCEL),
+				new Symbol("LNUX"),
+				new Side(Side.BUY),
+				new OrderQty(1));
+		quickfix.fix41.OrderCancelRequest orderCancelRequestV41 = new quickfix.fix41.OrderCancelRequest(
 				new OrigClOrdID("123"),
 				new ClOrdID("321"),
 				new Symbol("LNUX"),
 				new Side(Side.BUY));
+		quickfix.fix42.OrderCancelRequest orderCancelRequestV42 = new quickfix.fix42.OrderCancelRequest(
+				new OrigClOrdID("123"),
+				new ClOrdID("321"),
+				new Symbol("LNUX"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		quickfix.fix43.OrderCancelRequest orderCancelRequestV43 = new quickfix.fix43.OrderCancelRequest(
+				new OrigClOrdID("123"),
+				new ClOrdID("321"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		orderCancelRequestV43.set(new Symbol("EUR"));
+		quickfix.fix44.OrderCancelRequest orderCancelRequestV44 = new quickfix.fix44.OrderCancelRequest(
+				new OrigClOrdID("123"),
+				new ClOrdID("321"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		orderCancelRequestV44.set(new Symbol("EUR"));
+		quickfix.fix50.OrderCancelRequest orderCancelRequestV50 = new quickfix.fix50.OrderCancelRequest(
+				new OrigClOrdID("123"),
+				new ClOrdID("321"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		quickfix.fix50sp1.OrderCancelRequest orderCancelRequestV50sp1 = new quickfix.fix50sp1.OrderCancelRequest(
+				new ClOrdID("321"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		quickfix.fix50sp2.OrderCancelRequest orderCancelRequestV50sp2 = new quickfix.fix50sp2.OrderCancelRequest(
+				new ClOrdID("321"),
+				new Side(Side.BUY),
+				new TransactTime(now()));
+		return asList(
+				orderCancelRequestV40,
+				orderCancelRequestV41,
+				orderCancelRequestV42,
+				orderCancelRequestV43,
+				orderCancelRequestV44,
+				orderCancelRequestV50,
+				orderCancelRequestV50sp1,
+				orderCancelRequestV50sp2);
+	}
 
-		// When
-		String senderCompID = "EXEC";
-		String targetCompID = "BANZAI";
-		boolean sent = clientQuickFixJTemplate.send(message, senderCompID, targetCompID);
-
-		// Then
-		assertThat(sent).isTrue();
-
+	@SneakyThrows
+	private void assertMessageSentCorrectly(Message message, String senderCompID, String targetCompID, Application application) {
 		ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
 		ArgumentCaptor<SessionID> sessionIDArgumentCaptor = ArgumentCaptor.forClass(SessionID.class);
-		verify(serverApplication).toApp(messageArgumentCaptor.capture(), sessionIDArgumentCaptor.capture());
+		verify(application).toApp(messageArgumentCaptor.capture(), sessionIDArgumentCaptor.capture());
 
 		assertThat(messageArgumentCaptor.getValue()).isEqualTo(message);
 		assertThat(sessionIDArgumentCaptor.getValue().getSenderCompID()).isEqualTo(senderCompID);

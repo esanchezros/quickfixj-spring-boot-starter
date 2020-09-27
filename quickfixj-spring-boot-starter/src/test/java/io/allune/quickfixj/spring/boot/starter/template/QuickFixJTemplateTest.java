@@ -35,6 +35,7 @@ import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,8 +43,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static quickfix.FixVersions.FIX50SP2;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -182,7 +182,6 @@ public class QuickFixJTemplateTest {
 	public void shouldSendMessageWithValidation() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
 		// Given
 		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionIDFound();
 		mockSessionFound();
 		mockDataDictionary();
 
@@ -216,7 +215,6 @@ public class QuickFixJTemplateTest {
 		// Given
 		mockMessage(expectedBeginString, expectedSender, expectedTarget);
 		mockSessionFound();
-		mockSessionIDFound();
 		mockDataDictionaryValidationFailure();
 
 		// When/Then
@@ -271,7 +269,19 @@ public class QuickFixJTemplateTest {
 
 		// Then
 		verify(newSessionLookupHandler).lookupBySessionID(any());
-		verifyZeroInteractions(sessionLookupHandler);
+		verifyNoInteractions(sessionLookupHandler);
+	}
+
+	@Test
+	public void shouldNotThrowMessageValidationExceptionGivenValidationIsDisabled() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
+		// Given
+		mockMessage(expectedBeginString, expectedSender, expectedTarget);
+		mockSessionFound();
+		mockDataDictionaryValidationFailure();
+		quickFixJTemplate.setDoValidation(false);
+
+		// When/Then
+		assertThatCode(() -> quickFixJTemplate.send(message)).doesNotThrowAnyException();
 	}
 
 	private void mockMessage(String expectedBeginString, String expectedSender, String expectedTarget) throws FieldNotFound {
@@ -306,12 +316,6 @@ public class QuickFixJTemplateTest {
 
 	private void mockSessionNotFound() {
 		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(null);
-	}
-
-	private void mockSessionIDFound() {
-		SessionID sessionID = mock(SessionID.class);
-		given(sessionID.getBeginString()).willReturn(FIX50SP2);
-		given(session.getSessionID()).willReturn(sessionID);
 	}
 
 	private void mockDataDictionary() {

@@ -162,16 +162,9 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 	}
 
 	private static ApplVerID getDefaultApplVerID(Session session) {
-		// Get default appl version id from session
-		ApplVerID defaultApplVerId = session.getTargetDefaultApplicationVersionID();
-		if (defaultApplVerId != null) {
-			return defaultApplVerId;
-		}
-
-		// Else default to FIX50SP2 if Begin String in session if FIXT.1.1
 		String beginString = session.getSessionID().getBeginString();
 		if (FixVersions.BEGINSTRING_FIXT11.equals(beginString)) {
-			return new ApplVerID(ApplVerID.FIX50SP2);
+			return session.getSenderDefaultApplicationVersionID();
 		} else {
 			return MessageUtils.toApplVerID(beginString);
 		}

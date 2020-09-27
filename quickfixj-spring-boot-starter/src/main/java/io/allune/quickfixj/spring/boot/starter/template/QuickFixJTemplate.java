@@ -44,16 +44,24 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 
 	private SessionLookupHandler sessionLookupHandler;
 
+	private boolean doValidation;
+
 	public QuickFixJTemplate() {
 		this.sessionLookupHandler = new DefaultSessionLookupHandler();
+		this.doValidation = true;
 	}
 
 	public QuickFixJTemplate(SessionLookupHandler sessionLookupHandler) {
 		this.sessionLookupHandler = sessionLookupHandler;
+		this.doValidation = true;
 	}
 
 	public void setSessionLookupHandler(SessionLookupHandler sessionLookupHandler) {
 		this.sessionLookupHandler = sessionLookupHandler;
+	}
+
+	public void setDoValidation(boolean doValidation) {
+		this.doValidation = doValidation;
 	}
 
 	@Override
@@ -116,10 +124,18 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 			throw new SessionNotFoundException("Session not found: " + sessionID.toString());
 		}
 
+		if (doValidation) {
+			validateMessage(message, sessionID, session);
+		}
+
+		return session.send(message);
+	}
+
+	private void validateMessage(Message message, SessionID sessionID, Session session) {
 		DataDictionaryProvider dataDictionaryProvider = session.getDataDictionaryProvider();
 		if (dataDictionaryProvider != null) {
 			try {
-				ApplVerID applVerID = getApplicationVersionID(session);
+				ApplVerID applVerID = getApplicationVersionID(message, session);
 				DataDictionary applicationDataDictionary = dataDictionaryProvider.getApplicationDataDictionary(applVerID);
 				applicationDataDictionary.validate(message, true);
 			} catch (Exception e) {
@@ -127,14 +143,28 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 				throw new MessageValidationException("Message failed validation: " + e.getMessage(), e);
 			}
 		}
-
-		return session.send(message);
 	}
 
-	private static ApplVerID getApplicationVersionID(Session session) {
+	private static ApplVerID getApplicationVersionID(Message message, Session session) {
+		// If no header return default appl version id
+		if (message.getHeader() == null) {
+			return getDefaultApplVerID(session);
+		}
+
+		String applVerId;
+		try {
+			applVerId = message.getHeader().getString(ApplVerID.FIELD);
+			return new ApplVerID(applVerId);
+		} catch (FieldNotFound fieldNotFound) {
+			return getDefaultApplVerID(session);
+		}
+
+	}
+
+	private static ApplVerID getDefaultApplVerID(Session session) {
 		String beginString = session.getSessionID().getBeginString();
 		if (FixVersions.BEGINSTRING_FIXT11.equals(beginString)) {
-			return new ApplVerID(ApplVerID.FIX50);
+			return session.getSenderDefaultApplicationVersionID();
 		} else {
 			return MessageUtils.toApplVerID(beginString);
 		}

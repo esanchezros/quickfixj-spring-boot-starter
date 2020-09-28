@@ -10,21 +10,6 @@ image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba904395
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
 
-*Examples:*
-https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
-
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client[QuickFIX/J Spring Boot Server and Client applications as Docker containers]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-failover[QuickFIX/J Spring Boot Server and Client applications as Docker containers with server failover]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-database[QuickFIX/J Spring Boot Server and Client applications as Docker containers with database message store]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-and-server[QuickFIX/J Spring Boot Server and Client application]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-listener[QuickFIX/J Spring Boot Client application with Event Listeners]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-with-database[QuickFIX/J Spring Boot Client application with database message store]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client[QuickFIX/J Spring Boot Client application]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-dynamic-sessions[QuickFIX/J Spring Boot Server application with Dynamic Sessions]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-listener[QuickFIX/J Spring Boot Server application with Event Listeners]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-with-database[QuickFIX/J Spring Boot Server application with database message store]
-* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickFIX/J Spring Boot Server application]
-
 == Getting started
 
 To use the QuickFIX/J Server or QuickFIX/J Client you have to add the QuickFIX/J Spring Boot Starter dependency in your project.
@@ -48,6 +33,21 @@ To enable the actuator endpoints you will also have to add the QuickFIX/J Spring
     <version>2.7.1</version>
 </dependency>
 ----
+
+== Examples Projects
+https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-spring-boot-starter-examples]
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client[QuickFIX/J Spring Boot Server and Client applications as Docker containers]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-failover[QuickFIX/J Spring Boot Server and Client applications as Docker containers with server failover]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-database[QuickFIX/J Spring Boot Server and Client applications as Docker containers with database message store]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-and-server[QuickFIX/J Spring Boot Server and Client application]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-listener[QuickFIX/J Spring Boot Client application with Event Listeners]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-with-database[QuickFIX/J Spring Boot Client application with database message store]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client[QuickFIX/J Spring Boot Client application]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-dynamic-sessions[QuickFIX/J Spring Boot Server application with Dynamic Sessions]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-listener[QuickFIX/J Spring Boot Server application with Event Listeners]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-with-database[QuickFIX/J Spring Boot Server application with database message store]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickFIX/J Spring Boot Server application]
 
 === QuickFIX/J Spring Boot Starter - Server
 

@@ -24,6 +24,24 @@
       "defaultValue": false
     },
     {
+      "name": "quickfixj.client.concurrent.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use SocketInitiator or ThreadedSocketInitiator. Default is false (SocketInitiator)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.message-store-factory",
+      "type": "java.lang.String",
+      "description": "The message store factory to use. Possible values: cachedfile, file, jdbc, memory, noop, sleepycat",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.client.log-factory",
+      "type": "java.lang.String",
+      "description": "The log factory to use. Possible values: compositelog, file, jdbc, slf4j, screen",
+      "defaultValue": "screen"
+    },
+    {
       "name": "quickfixj.server.config",
       "type": "java.lang.String",
       "description": "The location of the configuration file to use to initialize QuickFIX/J server."
@@ -45,6 +63,24 @@
       "type": "java.lang.Boolean",
       "description": "Whether to register the Jmx MBeans for the server.",
       "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.concurrent.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use SocketAcceptor or ThreadedSocketAcceptor. Default is false (SocketAcceptor)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.message-store-factory",
+      "type": "java.lang.String",
+      "description": "The message store factory to use. Possible values: cachedfile, file, jdbc, memory, noop, sleepycat",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.server.log-factory",
+      "type": "java.lang.String",
+      "description": "The log factory to use. Possible values: compositelog, file, jdbc, slf4j, screen",
+      "defaultValue": "screen"
     }
   ]
 }

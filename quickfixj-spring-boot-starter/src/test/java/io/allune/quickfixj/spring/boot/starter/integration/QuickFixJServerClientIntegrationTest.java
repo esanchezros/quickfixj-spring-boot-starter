@@ -57,10 +57,7 @@ import static quickfix.field.CxlType.PARTIAL_CANCEL;
 public class QuickFixJServerClientIntegrationTest {
 
 	@Autowired
-	private QuickFixJTemplate serverQuickFixJTemplate;
-
-	@Autowired
-	private QuickFixJTemplate clientQuickFixJTemplate;
+	private QuickFixJTemplate quickFixJTemplate;
 
 	@Autowired
 	private Acceptor serverAcceptor;
@@ -97,7 +94,7 @@ public class QuickFixJServerClientIntegrationTest {
 
 		// When
 		messages.forEach(message -> {
-			boolean sent = serverQuickFixJTemplate.send(message, senderCompID, targetCompID);
+			boolean sent = quickFixJTemplate.send(message, senderCompID, targetCompID);
 
 			// Then
 			assertThat(sent).isTrue();
@@ -115,7 +112,7 @@ public class QuickFixJServerClientIntegrationTest {
 
 		// When
 		messages.forEach(message -> {
-			boolean sent = clientQuickFixJTemplate.send(message, senderCompID, targetCompID);
+			boolean sent = quickFixJTemplate.send(message, senderCompID, targetCompID);
 
 			// Then
 			assertThat(sent).isTrue();

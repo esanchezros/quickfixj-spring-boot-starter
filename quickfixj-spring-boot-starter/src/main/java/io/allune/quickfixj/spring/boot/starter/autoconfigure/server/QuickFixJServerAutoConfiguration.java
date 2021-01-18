@@ -20,7 +20,6 @@ import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProper
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -377,16 +376,5 @@ public class QuickFixJServerAutoConfiguration {
 		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Creates the server's {@link QuickFixJTemplate}
-	 *
-	 * @return The server's {@link QuickFixJTemplate}
-	 */
-	@Bean
-	@ConditionalOnMissingBean(name = "serverQuickFixJTemplate")
-	public QuickFixJTemplate serverQuickFixJTemplate() {
-		return new QuickFixJTemplate();
 	}
 }

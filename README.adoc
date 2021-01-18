@@ -282,12 +282,12 @@ Depending on the value of `RejectMessageOnUnhandledException` in the quickfixj c
 
 The `QuickFixJTemplate` provides a synchronous client to perform requests, exposing a simple, template method API over the QuickFIX/J client.
 
-`@EnableQuickFixJServer` provides a `serverQuickFixJTemplate` bean and `@EnableQuickFixJClient` provides a `clientQuickFixJTemplate` bean than can be `Autowired` in the application.
+The QuickFIX/J Spring Boot Starter provides a `quickFixJTemplate` bean than can be `Autowired` in the application.
 
 [source,java]
 ----
 @Autowire
-private QuickFixJTemplate serverQuickFixJTemplate;
+private QuickFixJTemplate quickFixJTemplate;
 
 ...
 
@@ -304,7 +304,7 @@ OrderCancelRequest message = new OrderCancelRequest(
         new Symbol("LNUX"),
         new Side(Side.BUY));
 
-serverQuickFixJTemplate.send(message, sessionID);
+quickFixJTemplate.send(message, sessionID);
 
 ----
 

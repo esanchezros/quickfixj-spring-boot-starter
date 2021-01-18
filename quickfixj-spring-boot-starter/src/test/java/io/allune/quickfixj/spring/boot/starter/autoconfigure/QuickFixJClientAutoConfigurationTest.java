@@ -181,8 +181,8 @@ public class QuickFixJClientAutoConfigurationTest {
 		ObjectName clientInitiatorMBean = ctx.getBean("clientInitiatorMBean", ObjectName.class);
 		assertThat(clientInitiatorMBean).isNotNull();
 
-		QuickFixJTemplate clientQuickFixJTemplate = ctx.getBean("clientQuickFixJTemplate", QuickFixJTemplate.class);
-		assertThat(clientQuickFixJTemplate).isNotNull();
+		QuickFixJTemplate quickFixJTemplate = ctx.getBean("quickFixJTemplate", QuickFixJTemplate.class);
+		assertThat(quickFixJTemplate).isNotNull();
 	}
 
 	@Configuration

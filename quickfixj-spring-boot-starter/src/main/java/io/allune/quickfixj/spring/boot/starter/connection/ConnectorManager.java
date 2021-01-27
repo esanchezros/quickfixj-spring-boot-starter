@@ -42,6 +42,8 @@ public class ConnectorManager implements SmartLifecycle {
 
 	private boolean running = false;
 
+	private boolean forceDisconnect = false;
+
 	public ConnectorManager(Connector connector) {
 		Assert.notNull(connector, "'connector' must not be null");
 		this.connector = connector;
@@ -84,6 +86,22 @@ public class ConnectorManager implements SmartLifecycle {
 	}
 
 	/**
+	 * Specify whether to wait for sessions to logout before disconnect.
+	 *
+	 * @param forceDisconnect don't wait for logout before disconnect.
+	 */
+	public void setForceDisconnect(boolean forceDisconnect) {
+		this.forceDisconnect = forceDisconnect;
+	}
+
+	/**
+	 * Return whether sessions should be disconnected forcibly
+	 */
+	public boolean isForceDisconnect() {
+		return forceDisconnect;
+	}
+
+	/**
 	 * Start the connector, accepting new connections
 	 */
 	@Override
@@ -112,9 +130,9 @@ public class ConnectorManager implements SmartLifecycle {
 	public void stop() {
 		synchronized (this.lifecycleMonitor) {
 			if (isRunning()) {
-				log.info("stop: Stopping ConnectorManager");
+				log.info("stop: Stopping ConnectorManager. Force disconnect=" + forceDisconnect);
 				try {
-					connector.stop();
+					connector.stop(forceDisconnect);
 				} finally {
 					running = false;
 				}

@@ -64,6 +64,7 @@ public class QuickFixJClientAutoConfigurationTest {
 		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
 		assertThat(clientConnectorManager.isRunning()).isFalse();
 		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
+		assertThat(clientConnectorManager.isForceDisconnect()).isTrue();
 
 		Initiator clientInitiator = ctx.getBean(Initiator.class);
 		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
@@ -77,6 +78,7 @@ public class QuickFixJClientAutoConfigurationTest {
 		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
 		assertThat(clientConnectorManager.isRunning()).isFalse();
 		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
+		assertThat(clientConnectorManager.isForceDisconnect()).isTrue();
 
 		Initiator clientInitiator = ctx.getBean(Initiator.class);
 		assertThat(clientInitiator).isInstanceOf(ThreadedSocketInitiator.class);

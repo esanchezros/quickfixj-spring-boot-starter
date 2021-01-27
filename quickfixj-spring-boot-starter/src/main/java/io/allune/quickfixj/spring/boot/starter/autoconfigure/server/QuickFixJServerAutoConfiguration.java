@@ -353,6 +353,7 @@ public class QuickFixJServerAutoConfiguration {
 		if (properties.getServer() != null) {
 			connectorManager.setAutoStartup(properties.getServer().isAutoStartup());
 			connectorManager.setPhase(properties.getServer().getPhase());
+			connectorManager.setForceDisconnect(properties.getServer().isForceDisconnect());
 		}
 		return connectorManager;
 	}

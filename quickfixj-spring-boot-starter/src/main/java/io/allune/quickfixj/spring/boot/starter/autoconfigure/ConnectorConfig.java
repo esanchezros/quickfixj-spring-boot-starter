@@ -64,6 +64,11 @@ public class ConnectorConfig {
 	private LogMethod logMethod = LogMethod.SCREEN;
 
 	/**
+	 * Configures if sessions should be disconnected forcibly when the connector is stopped
+	 */
+	private boolean forceDisconnect = false;
+
+	/**
 	 * Defines the threading model that the {@link quickfix.Connector} should use.
 	 *
 	 * @author Eduardo Sanchez-Ros

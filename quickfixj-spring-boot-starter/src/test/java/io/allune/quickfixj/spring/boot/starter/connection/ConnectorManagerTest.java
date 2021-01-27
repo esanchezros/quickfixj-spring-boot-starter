@@ -53,7 +53,7 @@ public class ConnectorManagerTest {
 
 		// Then
 		verify(connector).start();
-		verify(connector).stop();
+		verify(connector).stop(false);
 	}
 
 	@Test
@@ -70,8 +70,28 @@ public class ConnectorManagerTest {
 		connectorManager.stop(callback);
 		assertFalse(connectorManager.isRunning());
 
-		verify(connector).stop();
+		verify(connector).stop(false);
 		verify(callback).run();
+	}
+
+	@Test
+	public void shouldStartAndStopForciblyConnector() throws Exception {
+
+		// Given
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		connectorManager.setForceDisconnect(true);
+
+		// When
+		connectorManager.start();
+		assertTrue(connectorManager.isRunning());
+
+		connectorManager.stop();
+		assertFalse(connectorManager.isRunning());
+
+		// Then
+		verify(connector).start();
+		verify(connector).stop(true);
 	}
 
 	@Test

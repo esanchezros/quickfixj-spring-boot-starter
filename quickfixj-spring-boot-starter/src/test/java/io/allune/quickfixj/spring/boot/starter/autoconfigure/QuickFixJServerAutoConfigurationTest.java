@@ -64,6 +64,7 @@ public class QuickFixJServerAutoConfigurationTest {
 		ConnectorManager serverConnectorManager = ctx.getBean("serverConnectorManager", ConnectorManager.class);
 		assertThat(serverConnectorManager.isRunning()).isFalse();
 		assertThat(serverConnectorManager.isAutoStartup()).isFalse();
+		assertThat(serverConnectorManager.isForceDisconnect()).isTrue();
 
 		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
@@ -77,6 +78,7 @@ public class QuickFixJServerAutoConfigurationTest {
 		ConnectorManager serverConnectorManager = ctx.getBean("serverConnectorManager", ConnectorManager.class);
 		assertThat(serverConnectorManager.isRunning()).isFalse();
 		assertThat(serverConnectorManager.isAutoStartup()).isFalse();
+		assertThat(serverConnectorManager.isForceDisconnect()).isTrue();
 
 		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(ThreadedSocketAcceptor.class);

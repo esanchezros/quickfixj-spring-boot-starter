@@ -345,6 +345,7 @@ public class QuickFixJClientAutoConfiguration {
 		if (properties.getClient() != null) {
 			connectorManager.setAutoStartup(properties.getClient().isAutoStartup());
 			connectorManager.setPhase(properties.getClient().getPhase());
+			connectorManager.setForceDisconnect(properties.getClient().isForceDisconnect());
 		}
 		return connectorManager;
 	}

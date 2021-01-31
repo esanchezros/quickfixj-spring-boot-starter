@@ -52,6 +52,11 @@ public class AppServer {
 
 The configuration can be done in the application.properties / application.yml.
 
+[source,properties]
+----
+quickfixj.server.config=classpath:quickfixj-server.cfg
+----
+
 [source,yml]
 ----
 quickfixj:
@@ -74,11 +79,27 @@ The configuration is resolved using the following approach:
 ----
 quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor configuration file
 quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up (default: `true`)
+quickfixj.server.force-disconnect=false # whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`)
 quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
 quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor (default: `false`)
 quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor (default: `false` - uses `SocketAcceptor`)
 quickfixj.server.message-store-factory=memory # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
 quickfixj.server.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+----
+
+[source,yml]
+----
+quickfixj:
+  server:
+    config: classpath:quickfixj-server.cfg
+    auto-startup: true
+    force-disconnect: false
+    phase: 0
+    jmx-enabled: true
+    concurrent:
+      enabled: true
+    message-store-factory: memory
+    log-factory: screen
 ----
 
 ==== QuickFIX/J Server Actuator properties
@@ -87,6 +108,18 @@ quickfixj.server.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (def
 ----
 management.endpoint.quickfixjserver.enabled=true # whether the endpoint is enabled or not
 management.endpoints.web.exposure.include=quickfixjserver # whether the endpoint will be exposed
+----
+
+[source,properties]
+----
+management:
+  endpoint:
+    quickfixjserver:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: quickfixjserver
 ----
 
 Example usage:
@@ -151,6 +184,11 @@ public class AppClient {
 
 The configuration can be done in the application.properties / application.yml.
 
+[source,properties]
+----
+quickfixj.client.config=classpath:quickfixj-client.cfg
+----
+
 [source,yml]
 ----
 quickfixj:
@@ -180,12 +218,39 @@ quickfixj.client.message-store-factory=memory # [cachedfile,file,jdbc,memory,noo
 quickfixj.client.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
 ----
 
+[source,yml]
+----
+quickfixj:
+  client:
+    config: classpath:quickfixj-server.cfg
+    auto-startup: true
+    force-disconnect: false
+    phase: 0
+    jmx-enabled: true
+    concurrent:
+      enabled: true
+    message-store-factory: memory
+    log-factory: screen
+----
+
 ==== QuickFIX/J Client Actuator properties
 
 [source,properties]
 ----
 management.endpoint.quickfixjclient.enabled=true # whether the endpoint is enabled or not
 management.endpoints.web.exposure.include=quickfixjclient # whether the endpoint will be exposed
+----
+
+[source,yml]
+----
+management:
+  endpoint:
+    quickfixjclient:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: quickfixjclient
 ----
 
 Example usage:

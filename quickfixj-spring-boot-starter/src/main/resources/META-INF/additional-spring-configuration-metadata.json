@@ -12,6 +12,12 @@
       "defaultValue": true
     },
     {
+      "name": "quickfixj.client.force-disconnect",
+      "type": "java.lang.Boolean",
+      "description": "Whether logged on sessions should be disconnected forcibly when the connector is stopped.",
+      "defaultValue": false
+    },
+    {
       "name": "quickfixj.client.phase",
       "type": "java.lang.Integer",
       "description": "The spring initialisation phase in which the client will start.",
@@ -51,6 +57,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether the server should get started automatically.",
       "defaultValue": true
+    },
+    {
+      "name": "quickfixj.server.force-disconnect",
+      "type": "java.lang.Boolean",
+      "description": "Whether logged on sessions should be disconnected forcibly when the connector is stopped.",
+      "defaultValue": false
     },
     {
       "name": "quickfixj.server.phase",

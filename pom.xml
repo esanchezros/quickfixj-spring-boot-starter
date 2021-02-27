@@ -69,8 +69,6 @@
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<mina.version>2.0.19</mina.version>
 		<quickfixj.version>2.2.0</quickfixj.version>
 		<awaitility.version>3.1.6</awaitility.version>
 		<guava.version>29.0-jre</guava.version>
@@ -94,12 +92,6 @@
 				<groupId>org.quickfixj</groupId>
 				<artifactId>quickfixj-messages-all</artifactId>
 				<version>${quickfixj.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.mina</groupId>
-				<artifactId>mina-core</artifactId>
-				<version>${mina.version}</version>
 			</dependency>
 
 			<dependency>

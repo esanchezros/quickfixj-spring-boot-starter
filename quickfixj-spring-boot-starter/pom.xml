@@ -66,11 +66,6 @@
 			<artifactId>quickfixj-messages-all</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-		</dependency>
-
 
 		<!-- Test dependencies -->
 		<dependency>

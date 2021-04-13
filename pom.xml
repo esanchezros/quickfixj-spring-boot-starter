@@ -71,7 +71,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>2.2.0</quickfixj.version>
 		<awaitility.version>3.1.6</awaitility.version>
-		<guava.version>29.0-jre</guava.version>
+		<guava.version>30.0-jre</guava.version>
 	</properties>
 
 	<dependencyManagement>

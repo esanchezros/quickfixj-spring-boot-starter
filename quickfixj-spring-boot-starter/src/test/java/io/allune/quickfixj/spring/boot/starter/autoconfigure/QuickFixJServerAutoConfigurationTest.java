@@ -208,8 +208,8 @@ public class QuickFixJServerAutoConfigurationTest {
 	static class SingleThreadedServerAcceptorConfigurationWithCustomClientSettings {
 
 		@Bean(name = "serverSessionSettings")
-		public SessionSettings serverSessionSettings() {
-			return SessionSettingsLocator.loadSettings("classpath:quickfixj-server-extra.cfg");
+		public SessionSettings serverSessionSettings(SessionSettingsLocator sessionSettingsLocator) {
+			return sessionSettingsLocator.loadSettings("classpath:quickfixj-server-extra.cfg");
 		}
 	}
 

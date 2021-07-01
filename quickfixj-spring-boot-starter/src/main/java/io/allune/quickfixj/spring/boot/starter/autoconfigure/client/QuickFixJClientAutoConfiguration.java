@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
 import quickfix.ConfigError;
@@ -74,13 +75,16 @@ public class QuickFixJClientAutoConfiguration {
 	 * Creates the default client's {@link SessionSettings session settings} bean used in the creation of the
 	 * {@link Initiator initiator} connector
 	 *
-	 * @param properties The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
+	 * @param clientSessionSettingsLocator The {@link SessionSettingsLocator} for the client
+	 * @param properties                   The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
 	 * @return The client's {@link SessionSettings session settings} bean
 	 */
 	@Bean(name = "clientSessionSettings")
+	@ConditionalOnClass(SessionSettings.class)
 	@ConditionalOnMissingBean(name = "clientSessionSettings")
-	public SessionSettings clientSessionSettings(QuickFixJBootProperties properties) {
-		return SessionSettingsLocator.loadSettings(properties.getClient().getConfig(),
+	public SessionSettings clientSessionSettings(SessionSettingsLocator clientSessionSettingsLocator, QuickFixJBootProperties properties) {
+		return clientSessionSettingsLocator.loadSettings(
+				properties.getClient().getConfig(),
 				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG),
 				"file:./" + QUICKFIXJ_CLIENT_CONFIG,
 				"classpath:/" + QUICKFIXJ_CLIENT_CONFIG);
@@ -369,5 +373,16 @@ public class QuickFixJClientAutoConfiguration {
 		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Creates the client's {@link SessionSettingsLocator}
+	 *
+	 * @param resourceLoader The {@link ResourceLoader} to use for loading the properties
+	 * @return the client's {@link SessionSettingsLocator}
+	 */
+	@Bean
+	public SessionSettingsLocator clientSessionSettingsLocator(ResourceLoader resourceLoader) {
+		return new SessionSettingsLocator(resourceLoader);
 	}
 }

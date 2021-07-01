@@ -19,6 +19,7 @@ import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundExcepti
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.core.io.DefaultResourceLoader;
 import quickfix.SessionSettings;
 
 import java.io.File;
@@ -26,7 +27,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
-import static io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator.loadSettings;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -39,21 +39,23 @@ public class SessionSettingsLocatorTest {
 
 	@Test
 	public void shouldLoadDefaultFromSystemProperty() throws URISyntaxException {
-		SessionSettings settings = loadSettings("classpath:quickfixj.cfg", null, null, null);
+		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
+		SessionSettings settings = sessionSettingsLocator.loadSettings("classpath:quickfixj.cfg", null, null, null);
 		assertThat(settings).isNotNull();
 
 		URL resource = SessionSettingsLocatorTest.class.getResource("/quickfixj.cfg");
 		File file = Paths.get(resource.toURI()).toFile();
-		settings = loadSettings(null, null, "file://" + file.getAbsolutePath(), null);
+		settings = sessionSettingsLocator.loadSettings(null, null, "file://" + file.getAbsolutePath(), null);
 		assertThat(settings).isNotNull();
 
-		settings = loadSettings(null, null, null, "classpath:quickfixj.cfg");
+		settings = sessionSettingsLocator.loadSettings(null, null, null, "classpath:quickfixj.cfg");
 		assertThat(settings).isNotNull();
 	}
 
 	@Test
 	public void shouldThrowSettingsNotFoundExceptionIfNoneFound() {
+		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
 		thrown.expect(SettingsNotFoundException.class);
-		loadSettings(null, null, null, null);
+		sessionSettingsLocator.loadSettings(null, null, null, null);
 	}
 }

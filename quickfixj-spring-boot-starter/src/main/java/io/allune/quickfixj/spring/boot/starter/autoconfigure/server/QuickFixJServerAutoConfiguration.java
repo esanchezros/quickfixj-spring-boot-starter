@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
@@ -377,5 +378,16 @@ public class QuickFixJServerAutoConfiguration {
 		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Creates the server's {@link SessionSettingsLocator}
+	 *
+	 * @param resourceLoader The {@link ResourceLoader} to use for loading the properties
+	 * @return the server's {@link SessionSettingsLocator}
+	 */
+	@Bean
+	public SessionSettingsLocator serverSessionSettingsLocator(ResourceLoader resourceLoader) {
+		return new SessionSettingsLocator(resourceLoader);
 	}
 }

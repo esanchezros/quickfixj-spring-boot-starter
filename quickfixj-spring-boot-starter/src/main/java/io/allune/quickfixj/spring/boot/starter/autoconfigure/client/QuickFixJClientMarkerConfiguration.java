@@ -30,7 +30,7 @@ public class QuickFixJClientMarkerConfiguration {
 		return new Marker();
 	}
 
-	class Marker {
+	static class Marker {
 		//
 	}
 }

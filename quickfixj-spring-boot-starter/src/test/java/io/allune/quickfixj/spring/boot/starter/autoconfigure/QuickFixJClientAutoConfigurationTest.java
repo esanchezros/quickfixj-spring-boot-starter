@@ -33,6 +33,7 @@ import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
+import quickfix.ExecutorFactory;
 import quickfix.FileStoreFactory;
 import quickfix.Initiator;
 import quickfix.JdbcStoreFactory;
@@ -46,8 +47,12 @@ import quickfix.SessionSettings;
 import quickfix.SleepycatStoreFactory;
 import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
+import quickfix.mina.SessionConnector;
 
 import javax.management.ObjectName;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -73,6 +78,28 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Test
+	public void testAutoConfiguredBeansSingleThreadedExecutorFactoryInitiator() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedExecutorFactoryClientInitiatorConfiguration.class);
+		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
+		assertThat(clientConnectorManager.isRunning()).isFalse();
+		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
+		assertThat(clientConnectorManager.isForceDisconnect()).isTrue();
+
+		Initiator clientInitiator = ctx.getBean(Initiator.class);
+		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
+
+		hasAutoConfiguredBeans(ctx);
+
+		ExecutorFactory clientExecutorFactory = ctx.getBean("clientExecutorFactory", ExecutorFactory.class);
+		assertThat(clientExecutorFactory).isNotNull();
+
+		Executor clientTaskExecutor = ctx.getBean("clientTaskExecutor", Executor.class);
+		assertThat(clientTaskExecutor).isNotNull();
+
+		assertHasExecutors(clientInitiator, clientTaskExecutor);
+	}
+
+	@Test
 	public void testAutoConfiguredBeansMultiThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedClientInitiatorConfiguration.class);
 		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
@@ -87,6 +114,28 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Test
+	public void testAutoConfiguredBeansMultiThreadedExecutorFactoryInitiator() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedExecutorFactoryClientInitiatorConfiguration.class);
+		ConnectorManager clientConnectorManager = ctx.getBean("clientConnectorManager", ConnectorManager.class);
+		assertThat(clientConnectorManager.isRunning()).isFalse();
+		assertThat(clientConnectorManager.isAutoStartup()).isFalse();
+		assertThat(clientConnectorManager.isForceDisconnect()).isTrue();
+
+		Initiator clientInitiator = ctx.getBean(Initiator.class);
+		assertThat(clientInitiator).isInstanceOf(ThreadedSocketInitiator.class);
+
+		hasAutoConfiguredBeans(ctx);
+
+		ExecutorFactory clientExecutorFactory = ctx.getBean("clientExecutorFactory", ExecutorFactory.class);
+		assertThat(clientExecutorFactory).isNotNull();
+
+		Executor clientTaskExecutor = ctx.getBean("clientTaskExecutor", Executor.class);
+		assertThat(clientTaskExecutor).isNotNull();
+
+		assertHasExecutors(clientInitiator, clientTaskExecutor);
+	}
+
+	@Test
 	public void shouldCreateClientThreadedInitiator() throws ConfigError {
 		// Given
 		Application application = mock(Application.class);
@@ -98,7 +147,8 @@ public class QuickFixJClientAutoConfigurationTest {
 		ThreadedSocketInitiatorConfiguration initiatorConfiguration = new ThreadedSocketInitiatorConfiguration();
 
 		// When
-		Initiator initiator = initiatorConfiguration.clientInitiator(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+		Initiator initiator = initiatorConfiguration.clientInitiator(application, messageStoreFactory, sessionSettings,
+				logFactory, messageFactory, Optional.empty());
 
 		// Then
 		assertThat(initiator).isNotNull();
@@ -187,6 +237,32 @@ public class QuickFixJClientAutoConfigurationTest {
 		assertThat(quickFixJTemplate).isNotNull();
 	}
 
+	private void assertHasExecutors(Initiator clientInitiator, Executor taskExecutor) throws NoSuchFieldException, IllegalAccessException {
+		Field longLivedExecutor = getField(SessionConnector.class, "longLivedExecutor");
+		longLivedExecutor.setAccessible(true);
+		Executor actualLongLivedExecutor = (Executor) longLivedExecutor.get(clientInitiator);
+		assertThat(taskExecutor).isEqualTo(actualLongLivedExecutor);
+
+		Field shortLivedExecutor = getField(SessionConnector.class, "shortLivedExecutor");
+		shortLivedExecutor.setAccessible(true);
+		Executor actualShortLivedExecutor = (Executor) shortLivedExecutor.get(clientInitiator);
+		assertThat(taskExecutor).isEqualTo(actualShortLivedExecutor);
+	}
+
+	private static Field getField(Class clazz, String fieldName)
+			throws NoSuchFieldException {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException e) {
+			Class superClass = clazz.getSuperclass();
+			if (superClass == null) {
+				throw e;
+			} else {
+				return getField(superClass, fieldName);
+			}
+		}
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
@@ -197,8 +273,22 @@ public class QuickFixJClientAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
+	@PropertySource("classpath:client-single-threaded/single-threaded-executor-factory-application.properties")
+	static class SingleThreadedExecutorFactoryClientInitiatorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
 	@PropertySource("classpath:client-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedClientInitiatorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource("classpath:client-multi-threaded/multi-threaded-executor-factory-application.properties")
+	static class MultiThreadedExecutorFactoryClientInitiatorConfiguration {
 	}
 
 	@Configuration

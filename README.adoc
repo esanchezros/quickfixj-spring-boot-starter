@@ -77,14 +77,24 @@ The configuration is resolved using the following approach:
 
 [source,properties]
 ----
-quickfixj.server.config=classpath:quickfixj-server.cfg # location of the quickfixj acceptor configuration file
-quickfixj.server.auto-startup=true # whether to auto-connect to the remote endpoint at start up (default: `true`)
-quickfixj.server.force-disconnect=false # whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`)
-quickfixj.server.phase=0 # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
-quickfixj.server.jmx-enabled=true # whether to register the jmx mbeans for the acceptor (default: `false`)
-quickfixj.server.concurrent.enabled=true # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor (default: `false` - uses `SocketAcceptor`)
-quickfixj.server.message-store-factory=memory # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
-quickfixj.server.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+quickfixj.server.config=classpath:quickfixj-server.cfg              # location of the quickfixj acceptor configuration file
+quickfixj.server.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
+quickfixj.server.force-disconnect=false                             # whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`)
+quickfixj.server.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
+quickfixj.server.jmx-enabled=true                                   # whether to register the jmx mbeans for the acceptor (default: `false`)
+quickfixj.server.message-store-factory=memory                       # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
+quickfixj.server.log-factory=screen                                 # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+
+quickfixj.server.concurrent.enabled=true                            # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor (default: `false` - uses `SocketAcceptor`)
+quickfixj.server.concurrent.useDefaultExecutorFactory=true          # whether to use a default ExecutorFactory to create the SocketAcceptor (default: `false`)
+quickfixj.server.concurrent.queueCapacity=Integer.MAX_VALUE         # when using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)
+quickfixj.server.concurrent.corePoolSize=8                          # when using the default ExecutorFactory, the Executor's core pool size (default: `8`)
+quickfixj.server.concurrent.maxPoolSize=Integer.MAX_VALUE           # when using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)
+quickfixj.server.concurrent.allowCoreThreadTimeOut=true             # when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)
+quickfixj.server.concurrent.keepAliveSeconds=60                     # when using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)
+quickfixj.server.concurrent.waitForTasksToCompleteOnShutdown=false  # when using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)
+quickfixj.server.concurrent.awaitTerminationSeconds=0                # when using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)
+quickfixj.server.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-" # when using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)
 ----
 
 [source,yml]
@@ -98,6 +108,15 @@ quickfixj:
     jmx-enabled: true
     concurrent:
       enabled: true
+      useDefaultExecutorFactory: true
+      queueCapacity: Integer.MAX_VALUE
+      corePoolSize: 8
+      maxPoolSize: Integer.MAX_VALUE
+      allowCoreThreadTimeOut: true
+      keepAliveSeconds: 60
+      waitForTasksToCompleteOnShutdown: false
+      awaitTerminationMillis: 0
+      threadNamePrefix: "QuickFixJ Spring Boot Starter thread-"
     message-store-factory: memory
     log-factory: screen
 ----
@@ -209,13 +228,24 @@ The configuration is resolved using the following approach:
 
 [source,properties]
 ----
-quickfixj.client.config=classpath:quickfixj-client.cfg # location of the quickfixj initiator
-quickfixj.client.auto-startup=true # whether to auto-connect to the remote endpoint at start up (default: `true`)
-quickfixj.client.phase=0 # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
-quickfixj.client.jmx-enabled=true # whether to register the jmx mbeans for the initiator (default: `false`)
-quickfixj.client.concurrent.enabled=true # whether to use a simple SocketInitiator or a ThreadedSocketInitiator (default: `false` - uses `SocketInitiator`)
-quickfixj.client.message-store-factory=memory # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
-quickfixj.client.log-factory=screen # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+quickfixj.client.config=classpath:quickfixj-client.cfg              # location of the quickfixj initiator
+quickfixj.client.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
+quickfixj.client.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
+quickfixj.client.jmx-enabled=true                                   # whether to register the jmx mbeans for the initiator (default: `false`)
+quickfixj.client.message-store-factory=memory                       # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
+quickfixj.client.log-factory=screen                                 # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+
+quickfixj.client.concurrent.enabled=true                            # whether to use a simple SocketInitiator or a ThreadedSocketInitiator (default: `false` - uses `SocketInitiator`)
+quickfixj.client.concurrent.useDefaultExecutorFactory=true          # whether to use a default ExecutorFactory to create the SocketInitiator (default: `false`)
+quickfixj.client.concurrent.queueCapacity=Integer.MAX_VALUE         # when using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)
+quickfixj.client.concurrent.corePoolSize=8                          # when using the default ExecutorFactory, the Executor's core pool size (default: `8`)
+quickfixj.client.concurrent.maxPoolSize=Integer.MAX_VALUE           # when using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)
+quickfixj.client.concurrent.allowCoreThreadTimeOut=true             # when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)
+quickfixj.client.concurrent.keepAliveSeconds=60                     # when using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)
+quickfixj.client.concurrent.waitForTasksToCompleteOnShutdown=false  # when using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)
+quickfixj.client.concurrent.awaitTerminationSeconds=0                # when using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)
+quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-" # when using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)
+
 ----
 
 [source,yml]
@@ -229,6 +259,15 @@ quickfixj:
     jmx-enabled: true
     concurrent:
       enabled: true
+      useDefaultExecutorFactory: true
+      queueCapacity: Integer.MAX_VALUE
+      corePoolSize: 8
+      maxPoolSize: Integer.MAX_VALUE
+      allowCoreThreadTimeOut: true
+      keepAliveSeconds: 60
+      waitForTasksToCompleteOnShutdown: false
+      awaitTerminationMillis: 0
+      threadNamePrefix: "QuickFixJ Spring Boot Starter thread-"
     message-store-factory: memory
     log-factory: screen
 ----

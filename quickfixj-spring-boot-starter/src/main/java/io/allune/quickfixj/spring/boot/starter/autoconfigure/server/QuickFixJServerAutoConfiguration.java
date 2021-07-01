@@ -75,13 +75,15 @@ public class QuickFixJServerAutoConfiguration {
 	 * Creates the default server's {@link SessionSettings session settings} bean used in the creation of the
 	 * {@link Acceptor acceptor} connector
 	 *
-	 * @param properties The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
+	 * @param serverSessionSettingsLocator The {@link SessionSettingsLocator} for the server
+	 * @param properties                   The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
 	 * @return The server's {@link SessionSettings session settings} bean
 	 */
-	@Bean
+	@Bean(name = "serverSessionSettings")
 	@ConditionalOnMissingBean(name = "serverSessionSettings")
-	public SessionSettings serverSessionSettings(QuickFixJBootProperties properties) {
-		return SessionSettingsLocator.loadSettings(properties.getServer().getConfig(),
+	public SessionSettings serverSessionSettings(SessionSettingsLocator serverSessionSettingsLocator, QuickFixJBootProperties properties) {
+		return serverSessionSettingsLocator.loadSettings(
+				properties.getServer().getConfig(),
 				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
 				"file:./" + QUICKFIXJ_SERVER_CONFIG,
 				"classpath:/" + QUICKFIXJ_SERVER_CONFIG);

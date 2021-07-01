@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
@@ -74,13 +75,15 @@ public class QuickFixJServerAutoConfiguration {
 	 * Creates the default server's {@link SessionSettings session settings} bean used in the creation of the
 	 * {@link Acceptor acceptor} connector
 	 *
-	 * @param properties The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
+	 * @param serverSessionSettingsLocator The {@link SessionSettingsLocator} for the server
+	 * @param properties                   The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
 	 * @return The server's {@link SessionSettings session settings} bean
 	 */
-	@Bean
+	@Bean(name = "serverSessionSettings")
 	@ConditionalOnMissingBean(name = "serverSessionSettings")
-	public SessionSettings serverSessionSettings(QuickFixJBootProperties properties) {
-		return SessionSettingsLocator.loadSettings(properties.getServer().getConfig(),
+	public SessionSettings serverSessionSettings(SessionSettingsLocator serverSessionSettingsLocator, QuickFixJBootProperties properties) {
+		return serverSessionSettingsLocator.loadSettings(
+				properties.getServer().getConfig(),
 				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
 				"file:./" + QUICKFIXJ_SERVER_CONFIG,
 				"classpath:/" + QUICKFIXJ_SERVER_CONFIG);
@@ -377,5 +380,16 @@ public class QuickFixJServerAutoConfiguration {
 		} catch (Exception e) {
 			throw new ConfigurationException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Creates the server's {@link SessionSettingsLocator}
+	 *
+	 * @param resourceLoader The {@link ResourceLoader} to use for loading the properties
+	 * @return the server's {@link SessionSettingsLocator}
+	 */
+	@Bean
+	public SessionSettingsLocator serverSessionSettingsLocator(ResourceLoader resourceLoader) {
+		return new SessionSettingsLocator(resourceLoader);
 	}
 }

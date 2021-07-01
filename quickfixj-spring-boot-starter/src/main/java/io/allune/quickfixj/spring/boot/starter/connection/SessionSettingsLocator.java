@@ -18,15 +18,14 @@ package io.allune.quickfixj.spring.boot.starter.connection;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import static java.lang.Thread.currentThread;
 import static java.util.Optional.empty;
 
 /**
@@ -37,8 +36,10 @@ import static java.util.Optional.empty;
 @Slf4j
 public class SessionSettingsLocator {
 
-	private SessionSettingsLocator() {
-		//
+	private final ResourceLoader resourceLoader;
+
+	public SessionSettingsLocator(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 	/**
@@ -47,15 +48,13 @@ public class SessionSettingsLocator {
 	 * @param locations The resource locations to load the {@link SessionSettings} from
 	 * @return The {@link SessionSettings}
 	 */
-	public static SessionSettings loadSettings(String... locations) {
+	public SessionSettings loadSettings(String... locations) {
 
 		try {
 			for (String location : locations) {
 				Optional<Resource> resource = load(location);
-
 				if (resource.isPresent()) {
 					log.info("Loading settings from '{}'", location);
-
 					return new SessionSettings(resource.get().getInputStream());
 				}
 			}
@@ -66,14 +65,12 @@ public class SessionSettingsLocator {
 		}
 	}
 
-	private static Optional<Resource> load(String location) {
+	private Optional<Resource> load(String location) {
 		if (location == null) {
 			return empty();
 		}
 
-		ClassLoader classLoader = currentThread().getContextClassLoader();
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(classLoader);
-
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(resourceLoader);
 		Resource resource = resolver.getResource(location);
 		return resource.exists() ? Optional.of(resource) : empty();
 	}

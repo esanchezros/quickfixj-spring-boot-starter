@@ -32,10 +32,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
+import quickfix.ExecutorFactory;
 import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
 import quickfix.Initiator;
@@ -54,6 +56,8 @@ import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
 
 import javax.management.ObjectName;
+import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
 
@@ -98,6 +102,7 @@ public class QuickFixJClientAutoConfiguration {
 	 * @return The default client's {@link Application application} bean
 	 */
 	@Bean
+	@ConditionalOnClass(Application.class)
 	@ConditionalOnMissingBean(name = "clientApplication")
 	public Application clientApplication(ApplicationEventPublisher applicationEventPublisher) {
 		return new EventPublisherApplicationAdapter(applicationEventPublisher);
@@ -107,7 +112,10 @@ public class QuickFixJClientAutoConfiguration {
 	 * Grouping the creation of the client's {@link MessageStoreFactory}
 	 */
 	@Configuration
-	static class MessageStoreFactoryConfiguration {
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "cachedfile")
+	static class CachedFileMessageStoreFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link CachedFileStoreFactory} if
@@ -117,12 +125,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "cachedfile")
-		public MessageStoreFactory clientCachedFileStoreFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory(SessionSettings clientSessionSettings) {
 			return new CachedFileStoreFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "file")
+	static class FileMessageStoreFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link FileStoreFactory} if
@@ -132,12 +145,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "file")
-		public MessageStoreFactory clientFileStoreFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory(SessionSettings clientSessionSettings) {
 			return new FileStoreFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "jdbc")
+	static class JdbcMessageStoreFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link JdbcStoreFactory} if
@@ -147,12 +165,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "jdbc")
-		public MessageStoreFactory clientJdbcStoreFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory(SessionSettings clientSessionSettings) {
 			return new JdbcStoreFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "memory", matchIfMissing = true)
+	static class MemoryMessageStoreFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link MemoryStoreFactory} if
@@ -161,13 +184,17 @@ public class QuickFixJClientAutoConfiguration {
 		 *
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "memory", matchIfMissing = true)
-		public MessageStoreFactory clientMemoryStoreFactory() {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory() {
 			return new MemoryStoreFactory();
 		}
+	}
 
+	@Configuration
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "noop")
+	static class NoopMessageStoreFactoryConfiguration {
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link NoopStoreFactory} if
 		 * {@code quickfixj.client.message-store-factory} is set to {@code noop}, used in the creation of the
@@ -175,12 +202,17 @@ public class QuickFixJClientAutoConfiguration {
 		 *
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "noop")
-		public MessageStoreFactory clientNoopStoreFactory() {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory() {
 			return new NoopStoreFactory();
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(MessageStoreFactory.class)
+	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "sleepycat")
+	static class SleepycatMessageStoreFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link MessageStoreFactory} of type {@link SleepycatStoreFactory} if
@@ -190,19 +222,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link MessageStoreFactory}
 		 */
-		@Bean(name = "clientMessageStoreFactory")
-		@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "sleepycat")
-		public MessageStoreFactory clientSleepycatStoreFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public MessageStoreFactory clientMessageStoreFactory(SessionSettings clientSessionSettings) {
 			return new SleepycatStoreFactory(clientSessionSettings);
 		}
 	}
 
-	/**
-	 * Grouping the creation of the client's {@link LogFactory}
-	 */
 	@Configuration
-	static class LogFactoryConfiguration {
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "file")
+	static class FileLogFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link LogFactory} of type {@link FileLogFactory} if
@@ -212,12 +242,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link LogFactory}
 		 */
-		@Bean(name = "clientLogFactory")
-		@ConditionalOnMissingBean(name = "clientLogFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "file")
-		public LogFactory clientFileLogFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
 			return new FileLogFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "jdbc")
+	static class JdbcLogFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link LogFactory} of type {@link JdbcLogFactory} if
@@ -227,12 +262,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link LogFactory}
 		 */
-		@Bean(name = "clientLogFactory")
-		@ConditionalOnMissingBean(name = "clientLogFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "jdbc")
-		public LogFactory clientJdbcLogFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
 			return new JdbcLogFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "slf4j")
+	static class Slf4jLogFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link LogFactory} of type {@link SLF4JLogFactory} if
@@ -242,12 +282,17 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link LogFactory}
 		 */
-		@Bean(name = "clientLogFactory")
-		@ConditionalOnMissingBean(name = "clientLogFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "slf4j")
-		public LogFactory clientSlf4jLogFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
 			return new SLF4JLogFactory(clientSessionSettings);
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "screen", matchIfMissing = true)
+	static class ScreenLogFactoryConfiguration {
 
 		/**
 		 * Creates the client's {@link LogFactory} of type {@link ScreenLogFactory} if
@@ -257,10 +302,8 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings The client's {@link SessionSettings session settings} bean
 		 * @return The client's {@link LogFactory}
 		 */
-		@Bean(name = "clientLogFactory")
-		@ConditionalOnMissingBean(name = "clientLogFactory")
-		@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "screen", matchIfMissing = true)
-		public LogFactory clientScreenLogFactory(SessionSettings clientSessionSettings) {
+		@Bean
+		public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
 			return new ScreenLogFactory(clientSessionSettings);
 		}
 	}
@@ -271,12 +314,16 @@ public class QuickFixJClientAutoConfiguration {
 	 * @return The default client's {@link MessageFactory application} bean
 	 */
 	@Bean
+	@ConditionalOnClass(MessageFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageFactory")
 	public MessageFactory clientMessageFactory() {
 		return new DefaultMessageFactory();
 	}
 
 	@Configuration
+	@ConditionalOnClass(Initiator.class)
+	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public static class SocketInitiatorConfiguration {
 
 		/**
@@ -287,26 +334,34 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings     The client's {@link SessionSettings}
 		 * @param clientLogFactory          The client's {@link LogFactory}
 		 * @param clientMessageFactory      The client's {@link MessageFactory}
+		 * @param clientExecutorFactory     Optional client's {@link ExecutorFactory}
 		 * @return The client's {@link Initiator}
 		 * @throws ConfigError exception thrown when a configuration error is detected
 		 */
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
-		public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
-		                                 SessionSettings clientSessionSettings, LogFactory clientLogFactory, MessageFactory clientMessageFactory) throws ConfigError {
+		public Initiator clientInitiator(Application clientApplication,
+		                                 MessageStoreFactory clientMessageStoreFactory,
+		                                 SessionSettings clientSessionSettings,
+		                                 LogFactory clientLogFactory,
+		                                 MessageFactory clientMessageFactory,
+		                                 Optional<ExecutorFactory> clientExecutorFactory) throws ConfigError {
 
-			return SocketInitiator.newBuilder()
+			SocketInitiator socketInitiator = SocketInitiator.newBuilder()
 					.withApplication(clientApplication)
 					.withMessageStoreFactory(clientMessageStoreFactory)
 					.withSettings(clientSessionSettings)
 					.withLogFactory(clientLogFactory)
 					.withMessageFactory(clientMessageFactory)
 					.build();
+			clientExecutorFactory.ifPresent(socketInitiator::setExecutorFactory);
+			return socketInitiator;
 		}
 	}
 
 	@Configuration
+	@ConditionalOnClass(Initiator.class)
+	@ConditionalOnMissingBean(name = "clientInitiator")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
 	public static class ThreadedSocketInitiatorConfiguration {
 
 		/**
@@ -317,30 +372,69 @@ public class QuickFixJClientAutoConfiguration {
 		 * @param clientSessionSettings     The client's {@link SessionSettings}
 		 * @param clientLogFactory          The client's {@link LogFactory}
 		 * @param clientMessageFactory      The client's {@link MessageFactory}
+		 * @param clientExecutorFactory     Optional client's {@link ExecutorFactory}
 		 * @return The client's {@link Initiator}
 		 * @throws ConfigError exception thrown when a configuration error is detected
 		 */
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
-		public Initiator clientInitiator(Application clientApplication, MessageStoreFactory clientMessageStoreFactory,
-		                                 SessionSettings clientSessionSettings, LogFactory clientLogFactory, MessageFactory clientMessageFactory) throws ConfigError {
+		public Initiator clientInitiator(Application clientApplication,
+		                                 MessageStoreFactory clientMessageStoreFactory,
+		                                 SessionSettings clientSessionSettings,
+		                                 LogFactory clientLogFactory,
+		                                 MessageFactory clientMessageFactory,
+		                                 Optional<ExecutorFactory> clientExecutorFactory) throws ConfigError {
 
-			return ThreadedSocketInitiator.newBuilder()
+			ThreadedSocketInitiator socketInitiator = ThreadedSocketInitiator.newBuilder()
 					.withApplication(clientApplication)
 					.withMessageStoreFactory(clientMessageStoreFactory)
 					.withSettings(clientSessionSettings)
 					.withLogFactory(clientLogFactory)
 					.withMessageFactory(clientMessageFactory)
 					.build();
+			clientExecutorFactory.ifPresent(socketInitiator::setExecutorFactory);
+			return socketInitiator;
 		}
+	}
+
+	@Bean
+	@ConditionalOnClass(ExecutorFactory.class)
+	@ConditionalOnMissingBean(name = "clientExecutorFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	public ExecutorFactory clientExecutorFactory(Executor clientTaskExecutor) {
+		return new ExecutorFactory() {
+			@Override
+			public Executor getLongLivedExecutor() {
+				return clientTaskExecutor;
+			}
+
+			@Override
+			public Executor getShortLivedExecutor() {
+				return clientTaskExecutor;
+			}
+		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(name = "clientTaskExecutor")
+	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	public Executor clientTaskExecutor(QuickFixJBootProperties properties) {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setQueueCapacity(properties.getClient().getConcurrent().getQueueCapacity());
+		executor.setCorePoolSize(properties.getClient().getConcurrent().getCorePoolSize());
+		executor.setMaxPoolSize(properties.getClient().getConcurrent().getMaxPoolSize());
+		executor.setAllowCoreThreadTimeOut(properties.getClient().getConcurrent().isAllowCoreThreadTimeOut());
+		executor.setKeepAliveSeconds(properties.getClient().getConcurrent().getKeepAliveSeconds());
+		executor.setWaitForTasksToCompleteOnShutdown(properties.getClient().getConcurrent().isWaitForTasksToCompleteOnShutdown());
+		executor.setAwaitTerminationSeconds(properties.getClient().getConcurrent().getAwaitTerminationSeconds());
+		executor.setThreadNamePrefix(properties.getClient().getConcurrent().getThreadNamePrefix());
+		return executor;
 	}
 
 	/**
 	 * Creates the client's {@link ConnectorManager}
 	 *
-	 * @param clientInitiator   The client's {@link Initiator}
-	 * @param properties        The {@link QuickFixJBootProperties} properties
+	 * @param clientInitiator The client's {@link Initiator}
+	 * @param properties      The {@link QuickFixJBootProperties} properties
 	 * @return The client's {@link ConnectorManager}
 	 */
 	@Bean

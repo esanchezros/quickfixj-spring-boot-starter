@@ -30,7 +30,7 @@ public class QuickFixJServerMarkerConfiguration {
 		return new Marker();
 	}
 
-	class Marker {
+	static class Marker {
 		//
 	}
 }

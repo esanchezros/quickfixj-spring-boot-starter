@@ -34,6 +34,7 @@ import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
+import quickfix.ExecutorFactory;
 import quickfix.FileStoreFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
@@ -46,8 +47,12 @@ import quickfix.SessionSettings;
 import quickfix.SleepycatStoreFactory;
 import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
+import quickfix.mina.SessionConnector;
 
 import javax.management.ObjectName;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -73,6 +78,28 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	@Test
+	public void testAutoConfiguredBeansSingleThreadedExecutorFactoryAcceptor() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedExecutorFactoryServerAcceptorConfiguration.class);
+		ConnectorManager serverConnectorManager = ctx.getBean("serverConnectorManager", ConnectorManager.class);
+		assertThat(serverConnectorManager.isRunning()).isFalse();
+		assertThat(serverConnectorManager.isAutoStartup()).isFalse();
+		assertThat(serverConnectorManager.isForceDisconnect()).isTrue();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
+
+		hasAutoConfiguredBeans(ctx);
+
+		ExecutorFactory serverExecutorFactory = ctx.getBean("serverExecutorFactory", ExecutorFactory.class);
+		assertThat(serverExecutorFactory).isNotNull();
+
+		Executor serverTaskExecutor = ctx.getBean("serverTaskExecutor", Executor.class);
+		assertThat(serverTaskExecutor).isNotNull();
+
+		assertHasExecutors(serverAcceptor, serverTaskExecutor);
+	}
+
+	@Test
 	public void testAutoConfiguredBeansMultiThreadedAcceptor() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedServerAcceptorConfiguration.class);
 		ConnectorManager serverConnectorManager = ctx.getBean("serverConnectorManager", ConnectorManager.class);
@@ -87,6 +114,28 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	@Test
+	public void testAutoConfiguredBeansMultiThreadedExecutorFactoryAcceptor() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedExecutorFactoryServerAcceptorConfiguration.class);
+		ConnectorManager serverConnectorManager = ctx.getBean("serverConnectorManager", ConnectorManager.class);
+		assertThat(serverConnectorManager.isRunning()).isFalse();
+		assertThat(serverConnectorManager.isAutoStartup()).isFalse();
+		assertThat(serverConnectorManager.isForceDisconnect()).isTrue();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+		assertThat(serverAcceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+
+		hasAutoConfiguredBeans(ctx);
+
+		ExecutorFactory serverExecutorFactory = ctx.getBean("serverExecutorFactory", ExecutorFactory.class);
+		assertThat(serverExecutorFactory).isNotNull();
+
+		Executor serverTaskExecutor = ctx.getBean("serverTaskExecutor", Executor.class);
+		assertThat(serverTaskExecutor).isNotNull();
+
+		assertHasExecutors(serverAcceptor, serverTaskExecutor);
+	}
+
+	@Test
 	public void shouldCreateServerThreadedAcceptor() throws ConfigError {
 		// Given
 		Application application = mock(Application.class);
@@ -98,7 +147,8 @@ public class QuickFixJServerAutoConfigurationTest {
 		ThreadedSocketAcceptorConfiguration acceptorConfiguration = new ThreadedSocketAcceptorConfiguration();
 
 		// When
-		Acceptor acceptor = acceptorConfiguration.serverAcceptor(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+		Acceptor acceptor = acceptorConfiguration.serverAcceptor(application, messageStoreFactory, sessionSettings,
+				logFactory, messageFactory, Optional.empty());
 
 		// Then
 		assertThat(acceptor).isNotNull();
@@ -187,6 +237,32 @@ public class QuickFixJServerAutoConfigurationTest {
 		assertThat(quickFixJTemplate).isNotNull();
 	}
 
+	private void assertHasExecutors(Acceptor serverAcceptor, Executor taskExecutor) throws NoSuchFieldException, IllegalAccessException {
+		Field longLivedExecutor = getField(SessionConnector.class, "longLivedExecutor");
+		longLivedExecutor.setAccessible(true);
+		Executor actualLongLivedExecutor = (Executor) longLivedExecutor.get(serverAcceptor);
+		assertThat(taskExecutor).isEqualTo(actualLongLivedExecutor);
+
+		Field shortLivedExecutor = getField(SessionConnector.class, "shortLivedExecutor");
+		shortLivedExecutor.setAccessible(true);
+		Executor actualShortLivedExecutor = (Executor) shortLivedExecutor.get(serverAcceptor);
+		assertThat(taskExecutor).isEqualTo(actualShortLivedExecutor);
+	}
+
+	private static Field getField(Class clazz, String fieldName)
+			throws NoSuchFieldException {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException e) {
+			Class superClass = clazz.getSuperclass();
+			if (superClass == null) {
+				throw e;
+			} else {
+				return getField(superClass, fieldName);
+			}
+		}
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
@@ -197,8 +273,22 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
+	@PropertySource("classpath:server-single-threaded/single-threaded-executor-factory-application.properties")
+	static class SingleThreadedExecutorFactoryServerAcceptorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
 	@PropertySource("classpath:server-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedServerAcceptorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:server-multi-threaded/multi-threaded-executor-factory-application.properties")
+	static class MultiThreadedExecutorFactoryServerAcceptorConfiguration {
 	}
 
 	@Configuration

@@ -23,6 +23,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import quickfix.ConfigError;
 import quickfix.SessionSettings;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -49,7 +50,6 @@ public class SessionSettingsLocator {
 	 * @return The {@link SessionSettings}
 	 */
 	public SessionSettings loadSettings(String... locations) {
-
 		try {
 			for (String location : locations) {
 				Optional<Resource> resource = load(location);
@@ -61,6 +61,14 @@ public class SessionSettingsLocator {
 
 			throw new SettingsNotFoundException("Settings file not found");
 		} catch (RuntimeException | ConfigError | IOException e) {
+			throw new SettingsNotFoundException(e.getMessage(), e);
+		}
+	}
+
+	public SessionSettings loadSettingsFromString(String configString) {
+		try {
+			return new SessionSettings(new ByteArrayInputStream(configString.getBytes()));
+		} catch (RuntimeException | ConfigError e) {
 			throw new SettingsNotFoundException(e.getMessage(), e);
 		}
 	}

@@ -15,8 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -25,8 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Getter
-@Setter
+@Data
 @ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
 public class QuickFixJBootProperties {
 

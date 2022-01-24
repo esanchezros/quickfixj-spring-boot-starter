@@ -59,6 +59,7 @@ import javax.management.ObjectName;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
 
 /**
@@ -86,7 +87,13 @@ public class QuickFixJClientAutoConfiguration {
 	@Bean(name = "clientSessionSettings")
 	@ConditionalOnClass(SessionSettings.class)
 	@ConditionalOnMissingBean(name = "clientSessionSettings")
-	public SessionSettings clientSessionSettings(SessionSettingsLocator clientSessionSettingsLocator, QuickFixJBootProperties properties) {
+	public SessionSettings clientSessionSettings(
+			SessionSettingsLocator clientSessionSettingsLocator, QuickFixJBootProperties properties
+	) {
+		if (isNotEmpty(properties.getClient().getConfigString())) {
+			return clientSessionSettingsLocator.loadSettingsFromString(properties.getClient().getConfigString());
+		}
+
 		return clientSessionSettingsLocator.loadSettings(
 				properties.getClient().getConfig(),
 				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG),

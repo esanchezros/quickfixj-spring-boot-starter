@@ -36,6 +36,7 @@ import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
 import quickfix.FileStoreFactory;
+import quickfix.FixVersions;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
@@ -43,6 +44,7 @@ import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.NoopStoreFactory;
 import quickfix.ScreenLogFactory;
+import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.SleepycatStoreFactory;
 import quickfix.SocketAcceptor;
@@ -51,11 +53,15 @@ import quickfix.mina.SessionConnector;
 
 import javax.management.ObjectName;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -97,6 +103,34 @@ public class QuickFixJServerAutoConfigurationTest {
 		assertThat(serverTaskExecutor).isNotNull();
 
 		assertHasExecutors(serverAcceptor, serverTaskExecutor);
+	}
+
+
+	@Test
+	public void testAutoConfiguredBeansSingleConfigString() throws ConfigError {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerConfigStringConfiguration.class);
+		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
+		assertThat(serverSessionSettings).isNotNull();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
+		List<SessionID> expectedSessionIDs = asList(
+				new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
+		);
+
+		expectedSessionIDs.forEach(expectedSessionID -> {
+			try {
+				Properties sessionProperties = serverSessionSettings.getSessionProperties(expectedSessionID);
+				assertThat(sessionProperties).isNotNull();
+			} catch (ConfigError e) {
+				fail("SessionID " + expectedSessionID + " not found");
+			}
+		});
 	}
 
 	@Test
@@ -273,8 +307,15 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
-	@PropertySource("classpath:server-single-threaded/single-threaded-executor-factory-application.properties")
+	@PropertySource("classpath:server-single-threaded/single-threaded-application-executor-factory.properties")
 	static class SingleThreadedExecutorFactoryServerAcceptorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource("classpath:server-single-threaded/single-threaded-application-config-string.properties")
+	static class SingleThreadedServerConfigStringConfiguration {
 	}
 
 	@Configuration
@@ -287,7 +328,7 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
-	@PropertySource("classpath:server-multi-threaded/multi-threaded-executor-factory-application.properties")
+	@PropertySource("classpath:server-multi-threaded/multi-threaded-application-executor-factory.properties")
 	static class MultiThreadedExecutorFactoryServerAcceptorConfiguration {
 	}
 

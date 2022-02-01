@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 the original author or authors.
+ * Copyright 2017-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJClientEndpoint;
+import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -25,7 +26,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import quickfix.DefaultSessionScheduleFactory;
 import quickfix.Initiator;
+import quickfix.SessionScheduleFactory;
 import quickfix.SessionSettings;
 
 /**
@@ -38,11 +41,31 @@ import quickfix.SessionSettings;
 public class QuickFixJClientEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(name = { "clientInitiator", "clientSessionSettings" })
-	@ConditionalOnClass({ Initiator.class, SessionSettings.class })
+	@ConditionalOnBean(name = {"clientInitiator", "clientSessionSettings"})
+	@ConditionalOnClass({Initiator.class, SessionSettings.class})
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public QuickFixJClientEndpoint quickfixjClientEndpoint(Initiator clientInitiator, SessionSettings clientSessionSettings) {
+	public QuickFixJClientEndpoint quickfixjClientEndpoint(
+			Initiator clientInitiator, SessionSettings clientSessionSettings
+	) {
 		return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
+	}
+
+	@Bean
+	@ConditionalOnBean(name = {"clientInitiator", "clientSessionSettings"})
+	@ConditionalOnClass({Initiator.class, SessionSettings.class})
+	@ConditionalOnMissingBean
+	public QuickFixJSessionHealthIndicator quickfixjClientSessionHealthIndicator(
+			Initiator clientInitiator,
+			SessionScheduleFactory sessionSchedule,
+			SessionSettings clientSessionSettings
+	) {
+		return new QuickFixJSessionHealthIndicator(clientInitiator, sessionSchedule, clientSessionSettings);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SessionScheduleFactory sessionSchedule() {
+		return new DefaultSessionScheduleFactory();
 	}
 }

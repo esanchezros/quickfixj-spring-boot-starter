@@ -16,6 +16,7 @@
 package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
+import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -26,6 +27,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import quickfix.Acceptor;
+import quickfix.DefaultSessionScheduleFactory;
+import quickfix.SessionScheduleFactory;
 import quickfix.SessionSettings;
 
 /**
@@ -38,11 +41,29 @@ import quickfix.SessionSettings;
 public class QuickFixJServerEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(name = { "serverAcceptor", "serverSessionSettings" })
-	@ConditionalOnClass({ Acceptor.class, SessionSettings.class })
+	@ConditionalOnBean(name = {"serverAcceptor", "serverSessionSettings"})
+	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	public QuickFixJServerEndpoint quickfixjServerEndpoint(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
 		return new QuickFixJServerEndpoint(serverAcceptor, serverSessionSettings);
+	}
+
+	@Bean
+	@ConditionalOnBean(name = {"serverAcceptor", "serverSessionSettings"})
+	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
+	@ConditionalOnMissingBean
+	public QuickFixJSessionHealthIndicator quickfixjServerSessionHealthIndicator(
+			Acceptor serverAcceptor,
+			SessionScheduleFactory sessionSchedule,
+			SessionSettings clientSessionSettings
+	) {
+		return new QuickFixJSessionHealthIndicator(serverAcceptor, sessionSchedule, clientSessionSettings);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SessionScheduleFactory sessionSchedule() {
+		return new DefaultSessionScheduleFactory();
 	}
 }

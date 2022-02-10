@@ -107,8 +107,35 @@ public class QuickFixJServerAutoConfigurationTest {
 
 
 	@Test
-	public void testAutoConfiguredBeansSingleConfigString() throws ConfigError {
+	public void testAutoConfiguredBeansSingleConfigString() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerConfigStringConfiguration.class);
+		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
+		assertThat(serverSessionSettings).isNotNull();
+
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
+		List<SessionID> expectedSessionIDs = asList(
+				new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
+		);
+
+		expectedSessionIDs.forEach(expectedSessionID -> {
+			try {
+				Properties sessionProperties = serverSessionSettings.getSessionProperties(expectedSessionID);
+				assertThat(sessionProperties).isNotNull();
+			} catch (ConfigError e) {
+				fail("SessionID " + expectedSessionID + " not found");
+			}
+		});
+	}
+
+	@Test
+	public void testAutoConfiguredBeansSingleConfigStringYaml() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerConfigStringYamlConfiguration.class);
 		SessionSettings serverSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
 		assertThat(serverSessionSettings).isNotNull();
 
@@ -316,6 +343,14 @@ public class QuickFixJServerAutoConfigurationTest {
 	@EnableQuickFixJServer
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-config-string.properties")
 	static class SingleThreadedServerConfigStringConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJServer
+	@PropertySource(value = "classpath:server-single-threaded/single-threaded-application-config-string.yml",
+			factory = YamlPropertySourceFactory.class)
+	static class SingleThreadedServerConfigStringYamlConfiguration {
 	}
 
 	@Configuration

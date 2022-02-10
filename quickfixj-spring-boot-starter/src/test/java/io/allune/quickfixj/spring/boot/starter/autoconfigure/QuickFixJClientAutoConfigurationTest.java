@@ -69,6 +69,20 @@ import static org.mockito.Mockito.mock;
  */
 public class QuickFixJClientAutoConfigurationTest {
 
+	private static Field getField(Class clazz, String fieldName)
+			throws NoSuchFieldException {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException e) {
+			Class superClass = clazz.getSuperclass();
+			if (superClass == null) {
+				throw e;
+			} else {
+				return getField(superClass, fieldName);
+			}
+		}
+	}
+
 	@Test
 	public void testAutoConfiguredBeansSingleThreadedInitiator() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientInitiatorConfiguration.class);
@@ -106,8 +120,35 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void testAutoConfiguredBeansSingleConfigString() throws ConfigError {
+	public void testAutoConfiguredBeansSingleConfigString() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientConfigStringConfiguration.class);
+		SessionSettings clientSessionSettings = ctx.getBean("clientSessionSettings", SessionSettings.class);
+		assertThat(clientSessionSettings).isNotNull();
+
+		Initiator clientInitiator = ctx.getBean(Initiator.class);
+		assertThat(clientInitiator).isInstanceOf(SocketInitiator.class);
+		List<SessionID> expectedSessionIDs = asList(
+				new SessionID(FixVersions.BEGINSTRING_FIX40, "BANZAI", "EXEC"),
+				new SessionID(FixVersions.BEGINSTRING_FIX41, "BANZAI", "EXEC"),
+				new SessionID(FixVersions.BEGINSTRING_FIX42, "BANZAI", "EXEC"),
+				new SessionID(FixVersions.BEGINSTRING_FIX43, "BANZAI", "EXEC"),
+				new SessionID(FixVersions.BEGINSTRING_FIX44, "BANZAI", "EXEC"),
+				new SessionID(FixVersions.BEGINSTRING_FIXT11, "BANZAI", "EXEC")
+		);
+
+		expectedSessionIDs.forEach(expectedSessionID -> {
+			try {
+				Properties sessionProperties = clientSessionSettings.getSessionProperties(expectedSessionID);
+				assertThat(sessionProperties).isNotNull();
+			} catch (ConfigError e) {
+				fail("SessionID " + expectedSessionID + " not found");
+			}
+		});
+	}
+
+	@Test
+	public void testAutoConfiguredBeansSingleConfigStringYaml() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedClientConfigStringYamlConfiguration.class);
 		SessionSettings clientSessionSettings = ctx.getBean("clientSessionSettings", SessionSettings.class);
 		assertThat(clientSessionSettings).isNotNull();
 
@@ -282,20 +323,6 @@ public class QuickFixJClientAutoConfigurationTest {
 		assertThat(taskExecutor).isEqualTo(actualShortLivedExecutor);
 	}
 
-	private static Field getField(Class clazz, String fieldName)
-			throws NoSuchFieldException {
-		try {
-			return clazz.getDeclaredField(fieldName);
-		} catch (NoSuchFieldException e) {
-			Class superClass = clazz.getSuperclass();
-			if (superClass == null) {
-				throw e;
-			} else {
-				return getField(superClass, fieldName);
-			}
-		}
-	}
-
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
@@ -315,6 +342,14 @@ public class QuickFixJClientAutoConfigurationTest {
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-single-threaded/single-threaded-application-config-string.properties")
 	static class SingleThreadedClientConfigStringConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@EnableQuickFixJClient
+	@PropertySource(value = "classpath:client-single-threaded/single-threaded-application-config-string.yml",
+			factory = YamlPropertySourceFactory.class)
+	static class SingleThreadedClientConfigStringYamlConfiguration {
 	}
 
 	@Configuration

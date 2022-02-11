@@ -36,7 +36,7 @@ public class SessionSettingsLocatorTest {
 		SessionSettings settings = sessionSettingsLocator.loadSettings("classpath:quickfixj.cfg", null, null, null);
 		assertThat(settings).isNotNull();
 
-		File file = new File(SessionSettingsLocatorTest.class.getClass().getResource("/quickfixj.cfg").getFile());
+		File file = new File(SessionSettingsLocatorTest.class.getResource("/quickfixj.cfg").getFile());
 		settings = sessionSettingsLocator.loadSettings(null, null, "file:///" + file.getAbsolutePath(), null);
 		assertThat(settings).isNotNull();
 

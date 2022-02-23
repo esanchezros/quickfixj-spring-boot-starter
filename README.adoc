@@ -23,17 +23,6 @@ To use the QuickFIX/J Server or QuickFIX/J Client you have to add the QuickFIX/J
 </dependency>
 ----
 
-To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
-
-[source,xml]
-----
-<dependency>
-    <groupId>io.allune</groupId>
-    <artifactId>quickfixj-spring-boot-actuator</artifactId>
-    <version>2.11.0</version>
-</dependency>
-----
-
 === QuickFIX/J Spring Boot Starter - Server (Acceptor)
 
 The `@EnableQuickFixJServer` will auto configure a QuickFIX/J Server:
@@ -48,20 +37,6 @@ public class AppServer {
         SpringApplication.run(AppServer.class, args);
     }
 }
-----
-
-The configuration can be done in the application.properties / application.yml.
-
-[source,properties]
-----
-quickfixj.server.config=classpath:quickfixj-server.cfg
-----
-
-[source,yml]
-----
-quickfixj:
-  server:
-    config: classpath:quickfixj-server.cfg
 ----
 
 Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-server.cfg]
@@ -79,6 +54,7 @@ The configuration is resolved using the following approach:
 [source,properties]
 ----
 quickfixj.server.config=classpath:quickfixj-server.cfg              # location of the quickfixj acceptor configuration file
+quickfixj.server.configString=[default]  \r\n\...                   # the content of the QuickFIX/J acceptor configuration file
 quickfixj.server.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
 quickfixj.server.force-disconnect=false                             # whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`)
 quickfixj.server.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
@@ -213,6 +189,19 @@ quickfixj:
 
 ==== QuickFIX/J Server Actuator properties
 
+To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.allune</groupId>
+    <artifactId>quickfixj-spring-boot-actuator</artifactId>
+    <version>2.11.0</version>
+</dependency>
+----
+
+And enable the QuickFix/J Server endpoint in Spring:
+
 [source,properties]
 ----
 management.endpoint.quickfixjserver.enabled=true # whether the endpoint is enabled or not
@@ -291,20 +280,6 @@ public class AppClient {
 }
 ----
 
-The configuration can be done in the application.properties / application.yml.
-
-[source,properties]
-----
-quickfixj.client.config=classpath:quickfixj-client.cfg
-----
-
-[source,yml]
-----
-quickfixj:
-  client:
-    config: classpath:quickfixj-client.cfg
-----
-
 Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-client.cfg]
 file to configure the FIX sessions.
 The configuration is resolved using the following approach:
@@ -320,6 +295,7 @@ The configuration is resolved using the following approach:
 [source,properties]
 ----
 quickfixj.client.config=classpath:quickfixj-client.cfg              # location of the quickfixj initiator
+quickfixj.client.configString=[default]  \r\n\...                   # the content of the QuickFIX/J initiator configuration file
 quickfixj.client.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
 quickfixj.client.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
 quickfixj.client.jmx-enabled=true                                   # whether to register the jmx mbeans for the initiator (default: `false`)
@@ -343,7 +319,7 @@ quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thre
 ----
 quickfixj:
   client:
-    config: classpath:quickfixj-server.cfg
+    config: classpath:quickfixj-client.cfg
     auto-startup: true
     force-disconnect: false
     phase: 0
@@ -451,6 +427,19 @@ quickfixj:
 ----
 
 ==== QuickFIX/J Client Actuator properties
+
+To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.allune</groupId>
+    <artifactId>quickfixj-spring-boot-actuator</artifactId>
+    <version>2.11.0</version>
+</dependency>
+----
+
+And enable the QuickFix/J Client endpoint in Spring:
 
 [source,properties]
 ----

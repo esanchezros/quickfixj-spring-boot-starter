@@ -461,7 +461,7 @@ management:
 
 Example usage:
 
-    http://localhost:8080/actuator/quickfixjclient
+    http://localhost:8081/actuator/quickfixjclient
 
 [source,json]
 ----

@@ -39,7 +39,7 @@ public class AppServer {
 }
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-server.cfg]
+Additionally you need to add a https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[quickfixj-server.cfg]
 file to configure the FIX sessions.
 The configuration is resolved using the following approach:
 

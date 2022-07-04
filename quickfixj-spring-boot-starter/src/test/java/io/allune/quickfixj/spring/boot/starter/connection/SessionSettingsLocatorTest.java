@@ -15,15 +15,15 @@
  */
 package io.allune.quickfixj.spring.boot.starter.connection;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.DefaultResourceLoader;
+import quickfix.SessionSettings;
 
 import java.io.File;
 
-import org.junit.Test;
-import org.springframework.core.io.DefaultResourceLoader;
-
-import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import quickfix.SessionSettings;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -44,9 +44,10 @@ public class SessionSettingsLocatorTest {
 		assertThat(settings).isNotNull();
 	}
 
-	@Test(expected = SettingsNotFoundException.class)
+	@Test
 	public void shouldThrowSettingsNotFoundExceptionIfNoneFound() {
 		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
-		sessionSettingsLocator.loadSettings(null, null, null, null);
+		assertThatThrownBy(() -> sessionSettingsLocator.loadSettings(null, null, null, null))
+				.isInstanceOf(SettingsNotFoundException.class);
 	}
 }

@@ -15,13 +15,12 @@
  */
 package io.allune.quickfixj.spring.boot.starter.template;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import quickfix.DataDictionary;
 import quickfix.DataDictionaryProvider;
 import quickfix.FieldNotFound;
@@ -42,16 +41,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * @author Eduardo Sanchez-Ros
  */
+@ExtendWith(MockitoExtension.class)
 public class QuickFixJTemplateTest {
-
-	@Rule
-	public MockitoRule mockitoRule = MockitoJUnit.rule();
 
 	@Mock
 	private SessionLookupHandler sessionLookupHandler;
@@ -78,7 +76,7 @@ public class QuickFixJTemplateTest {
 
 	private String expectedQualifier;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		expectedBeginString = "FIX.4.1";
 		expectedSender = "Sender";
@@ -91,8 +89,12 @@ public class QuickFixJTemplateTest {
 	public void shouldSendMessage() throws FieldNotFound {
 		// Given
 
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget);
 		given(session.send(message)).willReturn(true);
@@ -109,8 +111,12 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldSendMessageWithQualifier() throws FieldNotFound {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget, expectedQualifier);
 		given(session.send(message)).willReturn(true);
@@ -127,8 +133,12 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldSendMessageWithSenderAndTarget() throws FieldNotFound {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget);
 		given(session.send(message)).willReturn(true);
@@ -145,8 +155,12 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldSendMessageWithSenderAndTargetAndQualifier() throws FieldNotFound {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget, expectedQualifier);
 		given(session.send(message)).willReturn(true);
@@ -163,8 +177,11 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldSendMessageWithSessionID() throws FieldNotFound {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget, expectedQualifier);
 		given(session.send(message)).willReturn(true);
@@ -181,9 +198,14 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldSendMessageWithValidation() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
-		mockDataDictionary();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
+		given(session.getDataDictionaryProvider()).willReturn(dataDictionaryProvider);
+		given(dataDictionaryProvider.getApplicationDataDictionary(any())).willReturn(applicationDataDictionary);
 
 		SessionID expectedSessionID = new SessionID(expectedBeginString, expectedSender, expectedTarget);
 		given(session.send(message)).willReturn(true);
@@ -202,8 +224,12 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldThrowSessionNotFoundException() throws FieldNotFound {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionNotFound();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(null);
 
 		// When/Then
 		assertThatExceptionOfType(SessionNotFoundException.class)
@@ -213,9 +239,15 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldThrowMessageValidationException() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
-		mockDataDictionaryValidationFailure();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
+		given(session.getDataDictionaryProvider()).willReturn(dataDictionaryProvider);
+		given(dataDictionaryProvider.getApplicationDataDictionary(any())).willReturn(applicationDataDictionary);
+		willThrow(IncorrectDataFormat.class).given(applicationDataDictionary).validate(any(), eq(true));
 
 		// When/Then
 		assertThatExceptionOfType(MessageValidationException.class)
@@ -225,7 +257,11 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldThrowFieldNotFoundExceptionWithInvalidTargetCompID() throws FieldNotFound {
 		// Given
-		mockMessageWithInvalidTargetCompIDHeader();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willThrow(FieldNotFound.class);
 
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
@@ -236,7 +272,10 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldThrowFieldNotFoundExceptionWithInvalidSenderCompID() throws FieldNotFound {
 		// Given
-		mockMessageWithInvalidSenderCompIDHeader();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(header.getString(SenderCompID.FIELD)).willThrow(FieldNotFound.class);
 
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
@@ -247,7 +286,9 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldThrowFieldNotFoundExceptionWithInvalidBeginString() throws FieldNotFound {
 		// Given
-		mockMessageWithInvalidBeginStringHeader();
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(BeginString.FIELD)).willThrow(FieldNotFound.class);
 
 		// When/Then
 		assertThatExceptionOfType(FieldNotFoundException.class)
@@ -262,7 +303,11 @@ public class QuickFixJTemplateTest {
 		given(newSessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 		quickFixJTemplate.setSessionLookupHandler(newSessionLookupHandler);
 
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
 
 		// When
 		quickFixJTemplate.send(message);
@@ -275,57 +320,20 @@ public class QuickFixJTemplateTest {
 	@Test
 	public void shouldNotThrowMessageValidationExceptionGivenValidationIsDisabled() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
 		// Given
-		mockMessage(expectedBeginString, expectedSender, expectedTarget);
-		mockSessionFound();
-		mockDataDictionaryValidationFailure();
-		quickFixJTemplate.setDoValidation(false);
-
-		// When/Then
-		assertThatCode(() -> quickFixJTemplate.send(message)).doesNotThrowAnyException();
-	}
-
-	private void mockMessage(String expectedBeginString, String expectedSender, String expectedTarget) throws FieldNotFound {
 		Message.Header header = mock(Message.Header.class);
 		given(message.getHeader()).willReturn(header);
 		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
 		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
 		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
-	}
-
-	private void mockMessageWithInvalidBeginStringHeader() throws FieldNotFound {
-		mockMessageWithInvalidHeader(BeginString.FIELD);
-	}
-
-	private void mockMessageWithInvalidSenderCompIDHeader() throws FieldNotFound {
-		mockMessageWithInvalidHeader(SenderCompID.FIELD);
-	}
-
-	private void mockMessageWithInvalidTargetCompIDHeader() throws FieldNotFound {
-		mockMessageWithInvalidHeader(TargetCompID.FIELD);
-	}
-
-	private void mockMessageWithInvalidHeader(int field) throws FieldNotFound {
-		Message.Header header = mock(Message.Header.class);
-		given(message.getHeader()).willReturn(header);
-		given(header.getString(field)).willThrow(FieldNotFound.class);
-	}
-
-	private void mockSessionFound() {
 		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
-	}
+		quickFixJTemplate.setDoValidation(false);
 
-	private void mockSessionNotFound() {
-		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(null);
-	}
+		// When/Then
+		assertThatCode(() -> quickFixJTemplate.send(message)).doesNotThrowAnyException();
 
-	private void mockDataDictionary() {
-		given(session.getDataDictionaryProvider()).willReturn(dataDictionaryProvider);
-		given(dataDictionaryProvider.getApplicationDataDictionary(any())).willReturn(applicationDataDictionary);
-	}
-
-	private void mockDataDictionaryValidationFailure() throws IncorrectDataFormat, FieldNotFound, IncorrectTagValue {
-		mockDataDictionary();
-		willThrow(IncorrectDataFormat.class).given(applicationDataDictionary).validate(any(), eq(true));
+		verify(session, never()).getDataDictionaryProvider();
+		verify(dataDictionaryProvider, never()).getApplicationDataDictionary(any());
+		verify(applicationDataDictionary, never()).validate(any());
 	}
 
 	private void assertSessionID(SessionID expectedSessionID) {

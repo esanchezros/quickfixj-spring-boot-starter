@@ -23,15 +23,13 @@ import io.allune.quickfixj.spring.boot.starter.model.Logon;
 import io.allune.quickfixj.spring.boot.starter.model.Logout;
 import io.allune.quickfixj.spring.boot.starter.model.ToAdmin;
 import io.allune.quickfixj.spring.boot.starter.model.ToApp;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.springframework.test.context.junit4.SpringRunner;
 import quickfix.Application;
 import quickfix.Message;
 import quickfix.SessionID;
@@ -47,7 +45,6 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Eduardo Sanchez-Ros
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(
 		properties = {
 				"quickfixj.client.autoStartup=false",
@@ -61,7 +58,7 @@ public class EventPublisherApplicationAdapterTest {
 
 	private static List<Object> receivedEvents = new ArrayList<>();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		receivedEvents.clear();
 	}

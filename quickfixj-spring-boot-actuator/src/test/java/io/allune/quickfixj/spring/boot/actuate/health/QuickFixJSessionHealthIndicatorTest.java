@@ -15,14 +15,13 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.health;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import quickfix.ConfigError;
@@ -59,10 +58,8 @@ import static quickfix.SessionHelper.unregisterSession;
  * @author Eduardo Sanchez-Ros
  */
 @SuppressWarnings("SameParameterValue")
+@ExtendWith(MockitoExtension.class)
 public class QuickFixJSessionHealthIndicatorTest {
-
-	@Rule
-	public MockitoRule rule = MockitoJUnit.rule();
 
 	private static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone("UTC");
 
@@ -85,7 +82,7 @@ public class QuickFixJSessionHealthIndicatorTest {
 	private Locale defaultLocale;
 	private SessionID sessionID;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mockSystemTimeSource = new MockSystemTimeSource();
 		SystemTime.setTimeSource(mockSystemTimeSource);
@@ -100,7 +97,7 @@ public class QuickFixJSessionHealthIndicatorTest {
 		registerSession(session);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		SystemTime.setTimeSource(null);
 		Locale.setDefault(defaultLocale);

@@ -17,13 +17,11 @@ package io.allune.quickfixj.spring.boot.starter.integration;
 
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.Initiator;
@@ -52,7 +50,6 @@ import static quickfix.field.CxlType.PARTIAL_CANCEL;
 /**
  * @author Eduardo Sanchez-Ros
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = QuickFixJServerClientITConfiguration.class)
 public class QuickFixJServerClientIntegrationTest {
 
@@ -71,7 +68,7 @@ public class QuickFixJServerClientIntegrationTest {
 	@Autowired
 	private Application clientApplication;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		await().atMost(TEN_SECONDS).until(() ->
 				serverAcceptor.getSessions()

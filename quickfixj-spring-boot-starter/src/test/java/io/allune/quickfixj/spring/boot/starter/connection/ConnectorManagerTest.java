@@ -16,15 +16,13 @@
 package io.allune.quickfixj.spring.boot.starter.connection;
 
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import quickfix.ConfigError;
 import quickfix.Connector;
 import quickfix.RuntimeError;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -33,9 +31,6 @@ import static org.mockito.Mockito.verify;
  * @author Eduardo Sanchez-Ros
  */
 public class ConnectorManagerTest {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void shouldStartAndStopConnector() throws Exception {
@@ -46,10 +41,10 @@ public class ConnectorManagerTest {
 
 		// When
 		connectorManager.start();
-		assertTrue(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isTrue();
 
 		connectorManager.stop();
-		assertFalse(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isFalse();
 
 		// Then
 		verify(connector).start();
@@ -63,12 +58,12 @@ public class ConnectorManagerTest {
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 
 		connectorManager.start();
-		assertTrue(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isTrue();
 		verify(connector).start();
 
 		Runnable callback = mock(Runnable.class);
 		connectorManager.stop(callback);
-		assertFalse(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isFalse();
 
 		verify(connector).stop(false);
 		verify(callback).run();
@@ -84,10 +79,10 @@ public class ConnectorManagerTest {
 
 		// When
 		connectorManager.start();
-		assertTrue(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isTrue();
 
 		connectorManager.stop();
-		assertFalse(connectorManager.isRunning());
+		assertThat(connectorManager.isRunning()).isFalse();
 
 		// Then
 		verify(connector).start();
@@ -101,9 +96,9 @@ public class ConnectorManagerTest {
 		willThrow(ConfigError.class).given(connector).start();
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-		thrown.expect(ConfigurationException.class);
-		connectorManager.start();
-		assertFalse(connectorManager.isRunning());
+		assertThatThrownBy(connectorManager::start)
+				.isInstanceOf(ConfigurationException.class);
+		assertThat(connectorManager.isRunning()).isFalse();
 
 		verify(connector).start();
 	}
@@ -115,9 +110,9 @@ public class ConnectorManagerTest {
 		willThrow(RuntimeError.class).given(connector).start();
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 
-		thrown.expect(ConfigurationException.class);
-		connectorManager.start();
-		assertFalse(connectorManager.isRunning());
+		assertThatThrownBy(connectorManager::start)
+				.isInstanceOf(ConfigurationException.class);
+		assertThat(connectorManager.isRunning()).isFalse();
 
 		verify(connector).start();
 	}

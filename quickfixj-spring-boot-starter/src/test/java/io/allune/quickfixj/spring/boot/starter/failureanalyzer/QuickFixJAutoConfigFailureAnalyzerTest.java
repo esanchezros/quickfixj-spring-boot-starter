@@ -18,7 +18,7 @@ package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;

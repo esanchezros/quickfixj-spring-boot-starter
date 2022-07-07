@@ -17,7 +17,7 @@ package quickfix;
 
 import io.allune.quickfixj.spring.boot.starter.template.DefaultSessionLookupHandler;
 import io.allune.quickfixj.spring.boot.starter.template.UnitTestApplication;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 

@@ -9,7 +9,7 @@
 
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-starter-parent</artifactId>
-	<version>2.13.0</version>
+	<version>2.13.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Boot Starter for QuickFIX/J</name>
@@ -41,7 +41,7 @@
 		<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 		<connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>
 		<developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
-		<tag>2.13.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<ciManagement>

@@ -19,12 +19,12 @@ import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
 import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import quickfix.Acceptor;
@@ -54,7 +54,7 @@ public class QuickFixJServerEndpointAutoConfiguration {
 	@ConditionalOnBean(name = {"serverAcceptor", "serverSessionSettings"})
 	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "quickfixj.server.health", name = "enabled", havingValue = "true")
+	@ConditionalOnEnabledHealthIndicator("quickfixjserver")
 	public QuickFixJSessionHealthIndicator quickfixjServerSessionHealthIndicator(
 			Acceptor serverAcceptor,
 			SessionScheduleFactory sessionSchedule,

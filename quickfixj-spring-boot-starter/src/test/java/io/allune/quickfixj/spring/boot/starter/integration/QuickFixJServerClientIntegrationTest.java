@@ -42,7 +42,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Duration.TEN_SECONDS;
+import static org.awaitility.Durations.TEN_SECONDS;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static quickfix.field.CxlType.PARTIAL_CANCEL;

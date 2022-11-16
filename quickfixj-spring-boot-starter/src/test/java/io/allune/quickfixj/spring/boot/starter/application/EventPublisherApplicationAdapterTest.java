@@ -39,7 +39,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Duration.FIVE_SECONDS;
+import static org.awaitility.Durations.FIVE_SECONDS;
 import static org.mockito.Mockito.mock;
 
 /**

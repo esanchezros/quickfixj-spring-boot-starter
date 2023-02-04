@@ -3,7 +3,7 @@ image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/mas
 image:https://img.shields.io/badge/maven%20central-v2.14.0-blue.svg["Maven Central",link="https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22quickfixj-spring-boot-starter%22"]
 image:https://img.shields.io/hexpm/l/plug.svg["Apache 2",link="http://www.apache.org/licenses/LICENSE-2.0"]
 image:https://img.shields.io/badge/quickfixj-2.3.1-blue.svg["QuickFIX/J 2.3.1", link="https://github.com/quickfix-j/quickfixj"]
-image:https://api.codacy.com/project/badge/Grade/3fda9a73471c40e781617cfba9043950["Codacy code quality", link="https://www.codacy.com/app/esanchezros/quickfixj-spring-boot-starter?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
+image:https://app.codacy.com/project/badge/Grade/1c6bf92b53324a45ba587e061dc6547d["Codacy code quality", link="https://www.codacy.com/gh/esanchezros/quickfixj-spring-boot-starter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
 
 = Spring Boot Starter for QuickFIX/J (Spring Boot 2)
 

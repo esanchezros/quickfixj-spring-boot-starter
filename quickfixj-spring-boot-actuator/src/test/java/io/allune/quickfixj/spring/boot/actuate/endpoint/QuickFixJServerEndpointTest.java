@@ -48,7 +48,7 @@ public class QuickFixJServerEndpointTest extends AbstractEndpointTests {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJServer
-	@PropertySource("classpath:application.properties")
+	@PropertySource("classpath:application-server.properties")
 	public static class TestConfig {
 
 	}

@@ -1,0 +1,216 @@
+{
+  "properties": [
+    {
+      "name": "quickfixj.client.config",
+      "type": "java.lang.String",
+      "description": "The location of the configuration file to use to initialize QuickFIX/J client."
+    },
+    {
+      "name": "quickfixj.client.configString",
+      "type": "java.lang.String",
+      "description": "The content of the QuickFIX/J initiator configuration file."
+    },
+    {
+      "name": "quickfixj.client.auto-startup",
+      "type": "java.lang.Boolean",
+      "description": "Whether the client should get started automatically.",
+      "defaultValue": true
+    },
+    {
+      "name": "quickfixj.client.force-disconnect",
+      "type": "java.lang.Boolean",
+      "description": "Whether logged on sessions should be disconnected forcibly when the connector is stopped.",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.phase",
+      "type": "java.lang.Integer",
+      "description": "The spring initialisation phase in which the client will start.",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to register the Jmx MBeans for the client.",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.concurrent.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use SocketInitiator or ThreadedSocketInitiator. Default is false (SocketInitiator)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.message-store-factory",
+      "type": "java.lang.String",
+      "description": "The message store factory to use. Possible values: cachedfile, file, jdbc, memory, noop, sleepycat",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.client.log-factory",
+      "type": "java.lang.String",
+      "description": "The log factory to use. Possible values: compositelog, file, jdbc, slf4j, screen",
+      "defaultValue": "screen"
+    },
+    {
+      "name": "quickfixj.client.concurrent.useDefaultExecutorFactory",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use a default ExecutorFactory to create the SocketInitiator (default: `false`)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.concurrent.queueCapacity",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.concurrent.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's core pool size (default: `8`)",
+      "defaultValue": 8
+    },
+    {
+      "name": "quickfixj.client.concurrent.maxPoolSize",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.concurrent.allowCoreThreadTimeOut",
+      "type": "java.lang.Boolean",
+      "description": "when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)",
+      "defaultValue": true
+    },
+    {
+      "name": "quickfixj.client.concurrent.keepAliveSeconds",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)",
+      "defaultValue": 60
+    },
+    {
+      "name": "quickfixj.client.concurrent.waitForTasksToCompleteOnShutdown",
+      "type": "java.lang.Boolean",
+      "description": "When using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.client.concurrent.awaitTerminationSeconds",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)",
+      "defaultValue": 0
+    },
+    {
+      "name": "quickfixj.client.concurrent.threadNamePrefix",
+      "type": "java.lang.String",
+      "description": "When using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)",
+      "defaultValue": "QuickFixJ Spring Boot Starter thread-"
+    },
+    {
+      "name": "quickfixj.server.config",
+      "type": "java.lang.String",
+      "description": "The location of the configuration file to use to initialize QuickFIX/J server."
+    },
+    {
+      "name": "quickfixj.server.configString",
+      "type": "java.lang.String",
+      "description": "The content of the QuickFIX/J acceptor configuration file."
+    },
+    {
+      "name": "quickfixj.server.auto-startup",
+      "type": "java.lang.Boolean",
+      "description": "Whether the server should get started automatically.",
+      "defaultValue": true
+    },
+    {
+      "name": "quickfixj.server.force-disconnect",
+      "type": "java.lang.Boolean",
+      "description": "Whether logged on sessions should be disconnected forcibly when the connector is stopped.",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.phase",
+      "type": "java.lang.Integer",
+      "description": "The spring initialisation phase in which the server will start.",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.jmx-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to register the Jmx MBeans for the server.",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.message-store-factory",
+      "type": "java.lang.String",
+      "description": "The message store factory to use. Possible values: cachedfile, file, jdbc, memory, noop, sleepycat",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.server.log-factory",
+      "type": "java.lang.String",
+      "description": "The log factory to use. Possible values: compositelog, file, jdbc, slf4j, screen",
+      "defaultValue": "screen"
+    },
+    {
+      "name": "quickfixj.server.concurrent.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use SocketAcceptor or ThreadedSocketAcceptor. Default is false (SocketAcceptor)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.concurrent.useDefaultExecutorFactory",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use a default ExecutorFactory to create the SocketAcceptor (default: `false`)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.concurrent.queueCapacity",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.concurrent.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's core pool size (default: `8`)",
+      "defaultValue": 8
+    },
+    {
+      "name": "quickfixj.server.concurrent.maxPoolSize",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.concurrent.allowCoreThreadTimeOut",
+      "type": "java.lang.Boolean",
+      "description": "when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)",
+      "defaultValue": true
+    },
+    {
+      "name": "quickfixj.server.concurrent.keepAliveSeconds",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)",
+      "defaultValue": 60
+    },
+    {
+      "name": "quickfixj.server.concurrent.waitForTasksToCompleteOnShutdown",
+      "type": "java.lang.Boolean",
+      "description": "When using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)",
+      "defaultValue": false
+    },
+    {
+      "name": "quickfixj.server.concurrent.awaitTerminationSeconds",
+      "type": "java.lang.Integer",
+      "description": "When using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)",
+      "defaultValue": 0
+    },
+    {
+      "name": "quickfixj.server.concurrent.threadNamePrefix",
+      "type": "java.lang.String",
+      "description": "When using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)",
+      "defaultValue": "QuickFixJ Spring Boot Starter thread-"
+    }
+  ]
+}

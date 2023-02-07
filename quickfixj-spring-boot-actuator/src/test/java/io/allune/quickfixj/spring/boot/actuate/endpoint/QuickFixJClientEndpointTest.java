@@ -48,7 +48,7 @@ public class QuickFixJClientEndpointTest extends AbstractEndpointTests {
 	@Configuration
 	@EnableAutoConfiguration
 	@EnableQuickFixJClient
-	@PropertySource("classpath:application.properties")
+	@PropertySource("classpath:application-client.properties")
 	public static class TestConfig {
 
 	}

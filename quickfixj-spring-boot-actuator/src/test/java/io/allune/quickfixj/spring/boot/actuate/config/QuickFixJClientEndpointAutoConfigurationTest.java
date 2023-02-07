@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
 		properties = {
 				"quickfixj.client.autoStartup=false",
-				"quickfixj.client.config=classpath:quickfixj.cfg",
+				"quickfixj.client.config=classpath:quickfixj-client.cfg",
 				"quickfixj.client.jmx-enabled=true"
 		})
-
+@ActiveProfiles("client")
 public class QuickFixJClientEndpointAutoConfigurationTest {
 
 	@Autowired

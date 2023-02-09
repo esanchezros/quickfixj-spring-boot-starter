@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.4</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
 
 	<groupId>io.allune</groupId>
-	<artifactId>quickfixj-spring-boot-starter-parent</artifactId>
+	<artifactId>quickfixj-spring-boot</artifactId>
 	<version>2.14.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -18,8 +12,11 @@
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<modules>
-		<module>quickfixj-spring-boot-starter</module>
+		<module>quickfixj-spring-boot-dependencies</module>
+		<module>quickfixj-spring-boot-context</module>
+		<module>quickfixj-spring-boot-autoconfigure</module>
 		<module>quickfixj-spring-boot-actuator</module>
+		<module>quickfixj-spring-boot-starter</module>
 	</modules>
 
 	<licenses>
@@ -69,9 +66,6 @@
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<quickfixj.version>2.3.1</quickfixj.version>
-		<awaitility.version>4.2.0</awaitility.version>
-		<guava.version>31.1-jre</guava.version>
 
 		<!-- Plugins -->
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
@@ -80,32 +74,22 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Spring Boot -->
 			<dependency>
-				<groupId>io.allune</groupId>
-				<artifactId>quickfixj-spring-boot-starter</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.quickfixj</groupId>
-				<artifactId>quickfixj-core</artifactId>
-				<version>${quickfixj.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.quickfixj</groupId>
-				<artifactId>quickfixj-messages-all</artifactId>
-				<version>${quickfixj.version}</version>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.7.4</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
-			<!-- Test -->
 			<dependency>
-				<groupId>org.awaitility</groupId>
-				<artifactId>awaitility</artifactId>
-				<version>${awaitility.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
+				<groupId>io.allune</groupId>
+				<artifactId>quickfixj-spring-boot-dependencies</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -187,11 +171,12 @@
 					<properties>
 						<!-- Values to be substituted in template -->
 						<inceptionYear>2017</inceptionYear>
-						<currentYear>2022</currentYear>
+						<currentYear>2023</currentYear>
 					</properties>
 					<strictCheck>true</strictCheck>
 					<includes>
 						<include>src/**/*.java</include>
+						<include>src/**/pom.xml</include>
 					</includes>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>

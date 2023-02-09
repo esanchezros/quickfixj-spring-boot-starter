@@ -4,13 +4,10 @@
 
 	<parent>
 		<groupId>io.allune</groupId>
-		<artifactId>quickfixj-spring-boot-starter-parent</artifactId>
+		<artifactId>quickfixj-spring-boot</artifactId>
 		<version>2.14.1-SNAPSHOT</version>
 	</parent>
-
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
-	<packaging>jar</packaging>
-
 	<name>Spring Boot Starter for QuickFIX/J :: Starter</name>
 	<description>Spring Boot Starter for QuickFIX/J</description>
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
@@ -23,73 +20,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<groupId>io.allune</groupId>
+			<artifactId>quickfixj-spring-boot-context</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-
-		<!-- QuickFIX/J dependencies -->
-		<dependency>
-			<groupId>org.quickfixj</groupId>
-			<artifactId>quickfixj-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.quickfixj</groupId>
-			<artifactId>quickfixj-messages-all</artifactId>
-		</dependency>
-
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.awaitility</groupId>
-			<artifactId>awaitility</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
+			<groupId>io.allune</groupId>
+			<artifactId>quickfixj-spring-boot-autoconfigure</artifactId>
 		</dependency>
 	</dependencies>
 </project>

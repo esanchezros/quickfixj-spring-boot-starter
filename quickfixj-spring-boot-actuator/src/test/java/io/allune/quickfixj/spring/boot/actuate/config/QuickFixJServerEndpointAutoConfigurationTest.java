@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
 		properties = {
 				"quickfixj.server.autoStartup=false",
-				"quickfixj.server.config=classpath:quickfixj.cfg",
+				"quickfixj.server.config=classpath:quickfixj-server.cfg",
 				"quickfixj.server.jmx-enabled=true"
 		})
-
+@ActiveProfiles("server")
 public class QuickFixJServerEndpointAutoConfigurationTest {
 
 	@Autowired

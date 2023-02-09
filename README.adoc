@@ -5,14 +5,14 @@ image:https://img.shields.io/hexpm/l/plug.svg["Apache 2",link="http://www.apache
 image:https://img.shields.io/badge/quickfixj-2.3.1-blue.svg["QuickFIX/J 2.3.1", link="https://github.com/quickfix-j/quickfixj"]
 image:https://app.codacy.com/project/badge/Grade/1c6bf92b53324a45ba587e061dc6547d["Codacy code quality", link="https://www.codacy.com/gh/esanchezros/quickfixj-spring-boot-starter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
 
-= Spring Boot Starter for QuickFIX/J (Spring Boot 2)
+= Spring Boot Starter for QuickFIX/J (Spring Boot 2 and Spring Boot 3)
 
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
 
 == Getting started
 
-To use the QuickFIX/J Server or QuickFIX/J Client you have to add the QuickFIX/J Spring Boot Starter dependency in your project.
+To use the QuickFIX/J Server or QuickFIX/J Client you need to add the QuickFIX/J Spring Boot Starter dependency in your project.
 
 [source,xml]
 ----
@@ -23,9 +23,21 @@ To use the QuickFIX/J Server or QuickFIX/J Client you have to add the QuickFIX/J
 </dependency>
 ----
 
-=== QuickFIX/J Spring Boot Starter - Server (Acceptor)
+== QuickFIX/J Spring Boot Starter - Server (Acceptor)
 
-The `@EnableQuickFixJServer` will auto configure a QuickFIX/J Server:
+There are two options to configure a QuickFIX/J Server.
+
+=== EnableQuickFixJServer annotation
+Adding the `@EnableQuickFixJServer` annotation in your project will configure an Actuator with all the default QuickFix/J components:
+
+* A `MessageStoreFactory` of type `MemoryStoreFactory`.
+* A `LogFactory` of type `ScreenLogFactory`.
+* An `Acceptor` of type `SocketAcceptor`.
+* An `Application` of type `EventPublisherApplicationAdapter`.
+
+All these QuickFix/J components can be configured via properties or by overriding the beans. If you choose to provide your own implementation for any of these components, you need to specify `spring.main.allow-bean-definition-overriding=true`. This annotation will be *deprecated* in future releases.
+
+For example:
 
 [source,java]
 ----
@@ -36,42 +48,161 @@ public class AppServer {
     public static void main(String[] args) {
         SpringApplication.run(AppServer.class, args);
     }
+
+	@Bean
+	public Application clientApplication() {
+		return new ClientApplicationAdapter(); // Provide your own implementation here
+	}
+
+	@Bean
+	public Initiator clientInitiator(
+			Application clientApplication,
+			MessageStoreFactory clientMessageStoreFactory,
+			SessionSettings clientSessionSettings,
+			LogFactory clientLogFactory,
+			MessageFactory clientMessageFactory) throws ConfigError {
+
+		return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
+				clientLogFactory, clientMessageFactory);
+	}
+
+	@Bean
+	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+		return new FileLogFactory(clientSessionSettings);
+	}
 }
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[quickfixj-server.cfg]
-file to configure the FIX sessions.
-The configuration is resolved using the following approach:
+=== Enabling QuickFix/J Server through a property
 
-* By a QuickFIX/J acceptor configuration string defined by the `quickfixj.server.configString` property
+Enabling the autoconfiguration of QuickFix/J Server can be done through a property. It autoconfigures an Actuator with all the same default QuickFix/J components as `@EnableQuickFixJServer`.
+
+[cols="3*", options="header"]
+|===
+|property
+|example
+|description
+
+|quickfixj.server.enabled
+|true
+|Enables QuickFix/J Server autoconfiguration.
+|===
+
+=== Configuring the QuickFix/J Server
+
+Additionally, you need to follow the https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[configuration guide]
+to configure the FIX sessions. The configuration is resolved using the following approach:
+
+* By a QuickFIX/J configuration string defined by the `quickfixj.server.configString` property
 * By the presence of a `quickfix.SessionSettings` bean named `serverSessionSettings`
 * By a configuration file defined by the `quickfixj.server.config` property
 * By the presence of the `quickfixj.server.config` system property
 * By a `quickfixj-server.cfg` in the working directory or at the root of the classpath
 
-==== QuickFIX/J Server properties
+=== QuickFIX/J Server properties
+
+[cols="3*", options="header"]
+|===
+|Property
+|Example
+|Description
+
+|quickfixj.server.config
+|classpath:quickfixj-server.cfg
+|Location of the QuickFix/J configuration file.
+
+|quickfixj.server.configString
+|[default]  \r\n\... (see below for an example)
+|The content of the QuickFIX/J configuration file. This property takes precedence over `quickfixj.server.config`.
+
+|quickfixj.server.auto-startup
+|true
+|Whether to autostart the connection manager at start up (default: `true`).
+
+|quickfixj.server.force-disconnect
+|false
+|Whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`).
+
+|quickfixj.server.phase
+|0
+|Phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`).
+
+|quickfixj.server.jmx-enabled
+|true
+|Whether to register the jmx mbeans for the acceptor (default: `false`).
+
+|quickfixj.server.message-store-factory
+|memory
+|Type of `MessageStoreFactory` to create. Supported values: `cachedfile`, `file`, `jdbc`, `memory`, `noop`, `sleepycat` (default: `memory`).
+
+|quickfixj.server.log-factory
+|screen
+|Type of `LogFactory` to create. Supported values: `compositelog`, `file`, `jdbc`, `slf4j`, `screen` (default: `screen`).
+
+|quickfixj.server.concurrent.enabled
+|true
+|Whether to use a simple `SocketAcceptor` or a `ThreadedSocketAcceptor` (default: `false` - uses `SocketAcceptor`).
+
+|quickfixj.server.concurrent.useDefaultExecutorFactory
+|true
+|Whether to use a default `ExecutorFactory` to create the `Acceptor` (default: `false`).
+
+|quickfixj.server.concurrent.queueCapacity
+|`Integer.MAX_VALUE`
+|When using the default `ExecutorFactory`, the Executor's queue capacity (default: `Integer.MAX_VALUE`).
+
+|quickfixj.server.concurrent.corePoolSize
+|8
+|When using the default `ExecutorFactory`, the Executor's core pool size (default: `8`).
+
+|quickfixj.server.concurrent.maxPoolSize
+|`Integer.MAX_VALUE`
+|When using the default `ExecutorFactory`, the Executor's max pool size (default: `Integer.MAX_VALUE`).
+
+|quickfixj.server.concurrent.allowCoreThreadTimeOut
+|true
+|When using the default `ExecutorFactory`, whether to allow core thread timeout on the Executor (default: `true`).
+
+|quickfixj.server.concurrent.keepAliveSeconds
+|60
+|When using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`).
+
+|quickfixj.server.concurrent.waitForTasksToCompleteOnShutdown
+|false
+|When using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`).
+
+|quickfixj.server.concurrent.awaitTerminationSeconds
+|0
+|When using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`).
+
+|quickfixj.server.concurrent.threadNamePrefix
+|QuickFixJ Spring Boot Starter thread-
+|When using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`).
+|===
+
+For example:
 
 [source,properties]
 ----
-quickfixj.server.config=classpath:quickfixj-server.cfg              # location of the quickfixj acceptor configuration file
-quickfixj.server.configString=[default]  \r\n\...                   # the content of the QuickFIX/J acceptor configuration file
-quickfixj.server.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
-quickfixj.server.force-disconnect=false                             # whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`)
-quickfixj.server.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
-quickfixj.server.jmx-enabled=true                                   # whether to register the jmx mbeans for the acceptor (default: `false`)
-quickfixj.server.message-store-factory=memory                       # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
-quickfixj.server.log-factory=screen                                 # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+quickfixj.server.config=classpath:quickfixj-server.cfg
+quickfixj.server.configString=[default]  \r\n\... (see below for an example)
+quickfixj.server.auto-startup=true
+quickfixj.server.force-disconnect=false
+quickfixj.server.phase=0
+quickfixj.server.jmx-enabled=true
+quickfixj.server.message-store-factory=memory
+quickfixj.server.log-factory=screen
 
-quickfixj.server.concurrent.enabled=true                            # whether to use a simple SocketAcceptor or a ThreadedSocketAcceptor (default: `false` - uses `SocketAcceptor`)
-quickfixj.server.concurrent.useDefaultExecutorFactory=true          # whether to use a default ExecutorFactory to create the SocketAcceptor (default: `false`)
-quickfixj.server.concurrent.queueCapacity=Integer.MAX_VALUE         # when using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)
-quickfixj.server.concurrent.corePoolSize=8                          # when using the default ExecutorFactory, the Executor's core pool size (default: `8`)
-quickfixj.server.concurrent.maxPoolSize=Integer.MAX_VALUE           # when using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)
-quickfixj.server.concurrent.allowCoreThreadTimeOut=true             # when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)
-quickfixj.server.concurrent.keepAliveSeconds=60                     # when using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)
-quickfixj.server.concurrent.waitForTasksToCompleteOnShutdown=false  # when using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)
-quickfixj.server.concurrent.awaitTerminationSeconds=0                # when using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)
-quickfixj.server.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-" # when using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)
+quickfixj.server.concurrent.enabled=true
+quickfixj.server.concurrent.useDefaultExecutorFactory=true
+quickfixj.server.concurrent.queueCapacity=Integer.MAX_VALUE
+quickfixj.server.concurrent.corePoolSize=8
+quickfixj.server.concurrent.maxPoolSize=Integer.MAX_VALUE
+quickfixj.server.concurrent.allowCoreThreadTimeOut=true
+quickfixj.server.concurrent.keepAliveSeconds=60
+quickfixj.server.concurrent.waitForTasksToCompleteOnShutdown=false
+quickfixj.server.concurrent.awaitTerminationSeconds=0
+quickfixj.server.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-"
 ----
 
 [source,yml]
@@ -98,7 +229,7 @@ quickfixj:
     log-factory: screen
 ----
 
-==== QuickFIX/J acceptor configuration file in properties and yaml files
+=== QuickFIX/J configuration file in properties and yaml files
 
 Using the `quickfixj.server.configString` property:
 
@@ -187,7 +318,7 @@ quickfixj:
       SocketAcceptPort=9881
 ----
 
-==== QuickFIX/J Server Actuator properties
+=== QuickFIX/J Server Actuator properties
 
 To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
 
@@ -264,7 +395,7 @@ Example usage:
 }
 ----
 
-==== QuickFIX/J Server Health Endpoint
+=== QuickFIX/J Server Health Endpoint
 
 The QuickFIX/J Spring Boot Starter provides with a `HealthIndicator` that checks if the sessions are logged on when they should be (i.e. within market hours) and shows the expected schedule for each session.
 For example:
@@ -296,9 +427,21 @@ management:
       enabled: true
 ----
 
-=== QuickFIX/J Spring Boot Starter - Client (Initiator)
+== QuickFIX/J Spring Boot Starter - Client (Initiator)
 
-The `@EnableQuickFixJClient` will auto configure a QuickFIX/J Client:
+There are two options to configure a QuickFIX/J Client.
+
+=== EnableQuickFixJClient annotation
+Adding the `@EnableQuickFixJClient` annotation in your project will configure an Initiator with all the default QuickFix/J components:
+
+* A `MessageStoreFactory` of type `MemoryStoreFactory`.
+* A `LogFactory` of type `ScreenLogFactory`.
+* An `Initiator` of type `SocketInitiator`.
+* An `Application` of type `EventPublisherApplicationAdapter`.
+
+All these QuickFix/J components can be configured via properties or by overriding the beans. If you choose to provide your own implementation for any of these components, you need to specify `spring.main.allow-bean-definition-overriding=true`. This annotation will be *deprecated* in future releases.
+
+For example:
 
 [source,java]
 ----
@@ -309,42 +452,156 @@ public class AppClient {
     public static void main(String[] args) {
         SpringApplication.run(AppClient.class, args);
     }
+
+    @Bean
+	public Application clientApplication() {
+		return new ClientApplicationAdapter(); // Provide your own implementation here
+	}
+
+	@Bean
+	public Initiator clientInitiator(
+			Application clientApplication,
+			MessageStoreFactory clientMessageStoreFactory,
+			SessionSettings clientSessionSettings,
+			LogFactory clientLogFactory,
+			MessageFactory clientMessageFactory) throws ConfigError {
+
+		return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
+				clientLogFactory, clientMessageFactory);
+	}
+
+	@Bean
+	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+		return new FileLogFactory(clientSessionSettings);
+	}
 }
 ----
 
-Additionally you need to add a https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[quickfixj-client.cfg]
-file to configure the FIX sessions.
-The configuration is resolved using the following approach:
+=== Enabling QuickFix/J Client through a property
 
-* By a QuickFIX/J initiator configuration string defined by the `quickfixj.client.configString` property
+Enabling the autoconfiguration of QuickFix/J Client can be done through a property. It autoconfigures an Initiator with all the same default QuickFix/J components as `@EnableQuickFixJClient`.
+
+[cols="3*", options="header"]
+|===
+|property
+|example
+|description
+
+|quickfixj.client.enabled
+|true
+|Enables QuickFix/J Client autoconfiguration.
+|===
+
+=== Configuring the QuickFix/J Client
+
+Additionally you need to follow the https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[configuration guide]
+to configure the FIX sessions. The configuration is resolved using the following approach:
+
+* By a QuickFIX/J configuration string defined by the `quickfixj.client.configString` property
 * By the presence of a `quickfix.SessionSettings` bean named `clientSessionSettings`
 * By a configuration file defined by the `quickfixj.client.config` property
 * By the presence of the `quickfixj.client.config` system property
 * By a `quickfixj-client.cfg` in the working directory or at the root of the classpath
 
-==== QuickFIX/J Client properties
+=== QuickFIX/J Client properties
+
+[cols="3*", options="header"]
+|===
+|Property
+|Example
+|Description
+
+|quickfixj.client.config
+|classpath:quickfixj-client.cfg
+|Location of the QuickFix/J configuration file.
+
+|quickfixj.client.configString
+|[default]  \r\n\... (see below for an example)
+|The content of the QuickFIX/J configuration file. This property takes precedence over `quickfixj.client.config`.
+
+|quickfixj.client.auto-startup
+|true
+|Whether to autostart the connection manager at start up (default: `true`).
+
+|quickfixj.client.phase
+|0
+|Phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`).
+
+|quickfixj.client.jmx-enabled
+|true
+|Whether to register the jmx mbeans for the initiator (default: `false`).
+
+|quickfixj.client.message-store-factory
+|memory
+|Type of `MessageStoreFactory` to create. Supported values: `cachedfile`, `file`, `jdbc`, `memory`, `noop`, `sleepycat` (default: `memory`).
+
+|quickfixj.client.log-factory
+|screen
+|Type of `LogFactory` to create. Supported values: `compositelog`, `file`, `jdbc`, `slf4j`, `screen` (default: `screen`).
+
+|quickfixj.client.concurrent.enabled
+|true
+|Whether to use a simple `SocketInitiator` or a `ThreadedSocketInitiator` (default: `false` - uses `SocketInitiator`).
+
+|quickfixj.client.concurrent.useDefaultExecutorFactory
+|true
+|Whether to use a default `ExecutorFactory` to create the `Initiator` (default: `false`).
+
+|quickfixj.client.concurrent.queueCapacity
+|`Integer.MAX_VALUE`
+|When using the default `ExecutorFactory`, the Executor's queue capacity (default: `Integer.MAX_VALUE`).
+
+|quickfixj.client.concurrent.corePoolSize
+|8
+|When using the default `ExecutorFactory`, the Executor's core pool size (default: `8`).
+
+|quickfixj.client.concurrent.maxPoolSize
+|`Integer.MAX_VALUE`
+|When using the default `ExecutorFactory`, the Executor's max pool size (default: `Integer.MAX_VALUE`).
+
+|quickfixj.client.concurrent.allowCoreThreadTimeOut
+|true
+|When using the default `ExecutorFactory`, whether to allow core thread timeout on the Executor (default: `true`).
+
+|quickfixj.client.concurrent.keepAliveSeconds
+|60
+|When using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`).
+
+|quickfixj.client.concurrent.waitForTasksToCompleteOnShutdown
+|false
+|When using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`).
+
+|quickfixj.client.concurrent.awaitTerminationSeconds
+|0
+|When using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`).
+
+|quickfixj.client.concurrent.threadNamePrefix
+|QuickFixJ Spring Boot Starter thread-
+|When using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`).
+|===
+
+For example:
 
 [source,properties]
 ----
-quickfixj.client.config=classpath:quickfixj-client.cfg              # location of the quickfixj initiator
-quickfixj.client.configString=[default]  \r\n\...                   # the content of the QuickFIX/J initiator configuration file
-quickfixj.client.auto-startup=true                                  # whether to auto-connect to the remote endpoint at start up (default: `true`)
-quickfixj.client.phase=0                                            # phase in which this connection manager should be started and stopped (default: `Integer.MAX_VALUE`)
-quickfixj.client.jmx-enabled=true                                   # whether to register the jmx mbeans for the initiator (default: `false`)
-quickfixj.client.message-store-factory=memory                       # [cachedfile,file,jdbc,memory,noop,sleepycat] (default: `memory`)
-quickfixj.client.log-factory=screen                                 # [compositelog,file,jdbc,slf4j,screen] (default: `screen`)
+quickfixj.client.config=classpath:quickfixj-client.cfg
+quickfixj.client.configString=[default]  \r\n\... (see below for an example)
+quickfixj.client.auto-startup=true
+quickfixj.client.phase=0
+quickfixj.client.jmx-enabled=true
+quickfixj.client.message-store-factory=memory
+quickfixj.client.log-factory=screen
 
-quickfixj.client.concurrent.enabled=true                            # whether to use a simple SocketInitiator or a ThreadedSocketInitiator (default: `false` - uses `SocketInitiator`)
-quickfixj.client.concurrent.useDefaultExecutorFactory=true          # whether to use a default ExecutorFactory to create the SocketInitiator (default: `false`)
-quickfixj.client.concurrent.queueCapacity=Integer.MAX_VALUE         # when using the default ExecutorFactory, the Executor's queue capacity (default: `Integer.MAX_VALUE`)
-quickfixj.client.concurrent.corePoolSize=8                          # when using the default ExecutorFactory, the Executor's core pool size (default: `8`)
-quickfixj.client.concurrent.maxPoolSize=Integer.MAX_VALUE           # when using the default ExecutorFactory, the Executor's max pool size (default: `Integer.MAX_VALUE`)
-quickfixj.client.concurrent.allowCoreThreadTimeOut=true             # when using the default ExecutorFactory, whether to allow core thread timeout on the Executor (default: `true`)
-quickfixj.client.concurrent.keepAliveSeconds=60                     # when using the default ExecutorFactory, the Executor's keep alive in seconds (default: `60`)
-quickfixj.client.concurrent.waitForTasksToCompleteOnShutdown=false  # when using the default ExecutorFactory, whether to wait for tasks to complete on shutdown on the Executor (default: `false`)
-quickfixj.client.concurrent.awaitTerminationSeconds=0                # when using the default ExecutorFactory, the Executor's await termination in seconds (default: `0`)
-quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-" # when using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)
-
+quickfixj.client.concurrent.enabled=true
+quickfixj.client.concurrent.useDefaultExecutorFactory=true
+quickfixj.client.concurrent.queueCapacity=Integer.MAX_VALUE
+quickfixj.client.concurrent.corePoolSize=8
+quickfixj.client.concurrent.maxPoolSize=Integer.MAX_VALUE
+quickfixj.client.concurrent.allowCoreThreadTimeOut=true
+quickfixj.client.concurrent.keepAliveSeconds=60
+quickfixj.client.concurrent.waitForTasksToCompleteOnShutdown=false
+quickfixj.client.concurrent.awaitTerminationSeconds=0
+quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thread-"
 ----
 
 [source,yml]
@@ -371,7 +628,7 @@ quickfixj:
     log-factory: screen
 ----
 
-==== QuickFIX/J initiator configuration file in properties and yaml files
+=== QuickFIX/J configuration file in properties and yaml files
 
 Using the `quickfixj.client.configString` property:
 
@@ -458,7 +715,7 @@ quickfixj:
       SocketConnectPort=9881
 ----
 
-==== QuickFIX/J Client Actuator properties
+=== QuickFIX/J Client Actuator properties
 
 To enable the actuator endpoints you will also have to add the QuickFIX/J Spring Boot Actuator dependency.
 
@@ -534,7 +791,7 @@ Example usage:
 }
 ----
 
-==== QuickFIX/J Client Health Endpoint
+=== QuickFIX/J Client Health Endpoint
 
 The QuickFIX/J Spring Boot Starter provides with a `HealthIndicator` that checks if the sessions are logged on when they should be (i.e. within market hours) and shows the expected schedule for each session.
 For example:
@@ -566,9 +823,9 @@ management:
       enabled: true
 ----
 
-=== Listening on quickfixj.Application messages
+== Listening on quickfixj.Application messages
 
-The QuickFIX/J Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface which publishes the messages received by the Server (Acceptor) and the Client (Initiator) as `ApplicationEvent`s.
+The QuickFIX/J Spring Boot Starter provides a default implementation for the `quickfixj.Application` interface, the `EventPublisherApplicationAdapter`, which publishes the messages received by the Server (Acceptor) and the Client (Initiator) as `ApplicationEvent`s. The `EventPublisherApplicationAdapter` is provided by default, it's not meant to be used on `high throughput environments`.
 
 If your application is only processing a subset of message types (i.e. `toAdmin`, `toApp`, `onCreate`, etc.) you will need to register an `EventListener` for these, with the appropriate message type as the only parameter for the listener method:
 
@@ -613,7 +870,7 @@ public void listenToApp(ToApp toApp) {
 In case the `EventListener` method throws an exception, this exception will be propagated up the `quickfix.Session#next()` method.
 Depending on the value of `RejectMessageOnUnhandledException` in the quickfixj configuration file, the message will be redelivered or dismissed.
 
-=== QuickFixJTemplate
+== QuickFixJTemplate
 
 The `QuickFixJTemplate` provides a synchronous client to perform requests, exposing a simple, template method API over the QuickFIX/J client.
 
@@ -658,7 +915,7 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-with-database[QuickFIX/J Spring Boot Server application with database message store]
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickFIX/J Spring Boot Server application]
 
-=== License and Acknowledgement
+== License and Acknowledgement
 
 The QuickFIX/J Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].
 

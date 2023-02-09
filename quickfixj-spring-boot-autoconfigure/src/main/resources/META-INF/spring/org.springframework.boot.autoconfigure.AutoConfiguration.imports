@@ -1,0 +1,3 @@
+io.allune.quickfixj.autoconfigure.server.QuickFixJServerAutoConfiguration
+io.allune.quickfixj.autoconfigure.client.QuickFixJClientAutoConfiguration
+io.allune.quickfixj.autoconfigure.template.QuickFixJTemplateAutoConfiguration

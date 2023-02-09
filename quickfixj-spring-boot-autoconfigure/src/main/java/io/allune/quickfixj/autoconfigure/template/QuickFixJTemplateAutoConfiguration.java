@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.starter.autoconfigure.template;
+package io.allune.quickfixj.autoconfigure.template;
 
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,7 +28,7 @@ import quickfix.Session;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 public class QuickFixJTemplateAutoConfiguration {
 

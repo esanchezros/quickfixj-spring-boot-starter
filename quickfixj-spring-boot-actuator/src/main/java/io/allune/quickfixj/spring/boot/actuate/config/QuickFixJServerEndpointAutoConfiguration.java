@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
 import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerAutoConfiguration;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -38,7 +38,7 @@ import quickfix.SessionSettings;
  * @author Eduardo Sanchez-Ros
  */
 @Configuration
-@AutoConfigureAfter(QuickFixJServerAutoConfiguration.class)
+@AutoConfigureAfter(QuickFixJServerConfiguration.class)
 public class QuickFixJServerEndpointAutoConfiguration {
 
 	@Bean

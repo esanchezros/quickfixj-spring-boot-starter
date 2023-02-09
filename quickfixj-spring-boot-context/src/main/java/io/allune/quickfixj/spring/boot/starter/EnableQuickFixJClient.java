@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package io.allune.quickfixj.spring.boot.starter;
 
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientMarkerConfiguration;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientConfiguration;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.template.QuickFixJTemplateConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -29,12 +30,13 @@ import java.lang.annotation.Target;
  * connection's lifecycle and processes messages for all sessions
  *
  * @author Eduardo Sanchez-Ros
- * @deprecated use auto-configuration instead
+ * @deprecated use auto-configuration instead, by setting quickfixj.client.enabled=true in the properties file.
+ * The EnableQuickFixJClient annotation will be removed in a future release.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(QuickFixJClientMarkerConfiguration.class)
+@Import({QuickFixJClientConfiguration.class, QuickFixJTemplateConfiguration.class})
 @Deprecated
 public @interface EnableQuickFixJClient {
 

@@ -1,6 +1,12 @@
 {
   "properties": [
     {
+      "name": "quickfixj.client.enabled",
+      "description": "Enables QuickFix/J Client (Initiator) integration.",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
+    },
+    {
       "name": "quickfixj.client.config",
       "type": "java.lang.String",
       "description": "The location of the configuration file to use to initialize QuickFIX/J client."
@@ -105,6 +111,12 @@
       "type": "java.lang.String",
       "description": "When using the default ExecutorFactory, the Executor's thread name prefix (default: `QuickFixJ Spring Boot Starter thread-`)",
       "defaultValue": "QuickFixJ Spring Boot Starter thread-"
+    },
+    {
+      "name": "quickfixj.server.enabled",
+      "description": "Enables QuickFix/J Server (Acceptor) integration.",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
     },
     {
       "name": "quickfixj.server.config",

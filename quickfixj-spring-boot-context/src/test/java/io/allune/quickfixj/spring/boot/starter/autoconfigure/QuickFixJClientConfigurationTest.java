@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.autoconfigure;
+package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,7 +65,7 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJClientAutoConfigurationTest {
+public class QuickFixJClientConfigurationTest {
 
 	private static Field getField(Class clazz, String fieldName)
 			throws NoSuchFieldException {
@@ -223,7 +222,7 @@ public class QuickFixJClientAutoConfigurationTest {
 		LogFactory logFactory = mock(LogFactory.class);
 		MessageFactory messageFactory = mock(MessageFactory.class);
 
-		QuickFixJClientAutoConfiguration.ThreadedSocketInitiatorConfiguration initiatorConfiguration = new QuickFixJClientAutoConfiguration.ThreadedSocketInitiatorConfiguration();
+		QuickFixJClientConfiguration.ThreadedSocketInitiatorConfiguration initiatorConfiguration = new QuickFixJClientConfiguration.ThreadedSocketInitiatorConfiguration();
 
 		// When
 		Initiator initiator = initiatorConfiguration.clientInitiator(application, messageStoreFactory, sessionSettings,
@@ -237,7 +236,7 @@ public class QuickFixJClientAutoConfigurationTest {
 	@Test
 	public void shouldThrowConfigurationExceptionCreatingClientInitiatorMBeanGivenNullInitiator() {
 		// Given
-		QuickFixJClientAutoConfiguration autoConfiguration = new QuickFixJClientAutoConfiguration();
+		QuickFixJClientConfiguration autoConfiguration = new QuickFixJClientConfiguration();
 
 		// When/Then
 		assertThatExceptionOfType(ConfigurationException.class)
@@ -336,28 +335,24 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-single-threaded/single-threaded-application.properties")
 	static class SingleThreadedClientInitiatorConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-single-threaded/single-threaded-application-executor-factory.properties")
 	static class SingleThreadedExecutorFactoryClientInitiatorConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-single-threaded/single-threaded-application-config-string.properties")
 	static class SingleThreadedClientConfigStringConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource(value = "classpath:client-single-threaded/single-threaded-application-config-string.yml",
 			factory = YamlPropertySourceFactory.class)
@@ -365,21 +360,18 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedClientInitiatorConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-multi-threaded/multi-threaded-application-executor-factory.properties")
 	static class MultiThreadedExecutorFactoryClientInitiatorConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-single-threaded/single-threaded-application-no-config-defined.properties")
 	static class SingleThreadedClientInitiatorConfigurationWithCustomClientSettings {
@@ -391,42 +383,36 @@ public class QuickFixJClientAutoConfigurationTest {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-cachedfile-store-factory.properties")
 	static class ClientCachedFileStoreFactoryConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-file-store-factory.properties")
 	static class ClientFileStoreFactoryConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-jdbc-store-factory.properties")
 	static class ClientJdbcStoreFactoryConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-memory-store-factory.properties")
 	static class ClientMemoryStoreFactoryConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-noop-store-factory.properties")
 	static class ClientNoopStoreFactoryConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration
 	@EnableQuickFixJClient
 	@PropertySource("classpath:client-message-store/client-sleepycat-store-factory.properties")
 	static class ClientSleepycatStoreFactoryConfiguration {

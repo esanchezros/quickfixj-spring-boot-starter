@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -68,9 +67,8 @@ import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
  */
 @Configuration
 @EnableConfigurationProperties(QuickFixJBootProperties.class)
-@ConditionalOnBean(QuickFixJClientMarkerConfiguration.Marker.class)
 @Deprecated
-public class QuickFixJClientAutoConfiguration {
+public class QuickFixJClientConfiguration {
 
 	private static final String SYSTEM_VARIABLE_QUICKFIXJ_CLIENT_CONFIG = "quickfixj.client.config";
 

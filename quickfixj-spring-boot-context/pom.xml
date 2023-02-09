@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 
 	<name>Spring Boot Starter for QuickFIX/J :: Context</name>
-	<description>Spring Boot Starter for QuickFIX/J</description>
+	<description>Spring Boot Starter Context for QuickFIX/J</description>
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<properties>

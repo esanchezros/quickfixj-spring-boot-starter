@@ -21,6 +21,7 @@ import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -66,7 +67,7 @@ import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(ConnectorManager.class)
 @ConditionalOnMissingBean(name = "clientConnectorManager")
 @ConditionalOnProperty(name = "quickfixj.client.enabled", havingValue = "true")

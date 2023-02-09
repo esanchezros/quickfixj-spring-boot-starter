@@ -4,7 +4,7 @@
 
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot-dependencies</artifactId>
-	<version>2.15.0</version>
+	<version>2.15.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Boot Starter for QuickFix/J :: Dependencies</name>

@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.starter.autoconfigure;
+package io.allune.quickfixj.spring.boot.starter.configuration;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Defines which type of {@link quickfix.MessageStoreFactory message store factory} should be used.
+ * Holds all the relevant starter properties which can be configured with
+ * Spring Boot's application.properties / application.yml configuration files.
  *
  * @author Eduardo Sanchez-Ros
  */
-public enum MessageStoreMethod {
+@Data
+@ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
+public class QuickFixJBootProperties {
 
-	CACHAEDFILE,
+	public static final String PROPERTY_PREFIX = "quickfixj";
 
-	FILE,
+	private ConnectorConfig client = new ConnectorConfig();
 
-	JDBC,
-
-	MEMORY,
-
-	NOOP,
-
-	SLEEPYCAT
+	private ConnectorConfig server = new ConnectorConfig();
 }

@@ -17,16 +17,16 @@ package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
 import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerConfiguration;
+import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import quickfix.Acceptor;
 import quickfix.DefaultSessionScheduleFactory;
 import quickfix.SessionScheduleFactory;
@@ -37,7 +37,7 @@ import quickfix.SessionSettings;
  *
  * @author Eduardo Sanchez-Ros
  */
-@Configuration
+@AutoConfiguration
 @AutoConfigureAfter(QuickFixJServerConfiguration.class)
 public class QuickFixJServerEndpointAutoConfiguration {
 

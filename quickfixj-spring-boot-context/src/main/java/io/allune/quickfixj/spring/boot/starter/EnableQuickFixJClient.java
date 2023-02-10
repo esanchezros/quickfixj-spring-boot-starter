@@ -15,8 +15,8 @@
  */
 package io.allune.quickfixj.spring.boot.starter;
 
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.client.QuickFixJClientConfiguration;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.template.QuickFixJTemplateConfiguration;
+import io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientConfiguration;
+import io.allune.quickfixj.spring.boot.starter.configuration.template.QuickFixJTemplateConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

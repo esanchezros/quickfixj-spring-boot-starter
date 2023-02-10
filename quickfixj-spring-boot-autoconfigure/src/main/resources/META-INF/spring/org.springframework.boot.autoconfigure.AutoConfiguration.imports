@@ -1,3 +1,3 @@
-io.allune.quickfixj.autoconfigure.server.QuickFixJServerAutoConfiguration
-io.allune.quickfixj.autoconfigure.client.QuickFixJClientAutoConfiguration
-io.allune.quickfixj.autoconfigure.template.QuickFixJTemplateAutoConfiguration
+io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration
+io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientAutoConfiguration
+io.allune.quickfixj.spring.boot.starter.configuration.template.QuickFixJTemplateAutoConfiguration

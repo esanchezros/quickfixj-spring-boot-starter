@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.autoconfigure.client;
+package io.allune.quickfixj.spring.boot.starter.configuration.client;
 
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.configuration.QuickFixJBootProperties;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;

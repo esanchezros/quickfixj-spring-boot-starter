@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.starter.autoconfigure;
+package io.allune.quickfixj.spring.boot.starter.configuration;
 
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
+import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
-import io.allune.quickfixj.spring.boot.starter.autoconfigure.server.QuickFixJServerConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
@@ -57,6 +56,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import static io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration.ThreadedSocketAcceptorConfiguration;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -66,7 +66,21 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Eduardo Sanchez-Ros
  */
-public class QuickFixJServerConfigurationTest {
+public class QuickFixJServerAutoConfigurationTest {
+
+	private static Field getField(Class clazz, String fieldName)
+			throws NoSuchFieldException {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException e) {
+			Class superClass = clazz.getSuperclass();
+			if (superClass == null) {
+				throw e;
+			} else {
+				return getField(superClass, fieldName);
+			}
+		}
+	}
 
 	@Test
 	public void testAutoConfiguredBeansSingleThreadedAcceptor() {
@@ -210,7 +224,7 @@ public class QuickFixJServerConfigurationTest {
 		LogFactory logFactory = mock(LogFactory.class);
 		MessageFactory messageFactory = mock(MessageFactory.class);
 
-		QuickFixJServerConfiguration.ThreadedSocketAcceptorConfiguration acceptorConfiguration = new QuickFixJServerConfiguration.ThreadedSocketAcceptorConfiguration();
+		ThreadedSocketAcceptorConfiguration acceptorConfiguration = new ThreadedSocketAcceptorConfiguration();
 
 		// When
 		Acceptor acceptor = acceptorConfiguration.serverAcceptor(application, messageStoreFactory, sessionSettings,
@@ -224,7 +238,7 @@ public class QuickFixJServerConfigurationTest {
 	@Test
 	public void shouldThrowConfigurationExceptionCreatingServerAcceptorMBeanGivenNullAcceptor() {
 		// Given
-		QuickFixJServerConfiguration autoConfiguration = new QuickFixJServerConfiguration();
+		QuickFixJServerAutoConfiguration autoConfiguration = new QuickFixJServerAutoConfiguration();
 
 		// When/Then
 		assertThatExceptionOfType(ConfigurationException.class)
@@ -312,7 +326,8 @@ public class QuickFixJServerConfigurationTest {
 		ctx.stop();
 	}
 
-	private void assertHasExecutors(Acceptor serverAcceptor, Executor taskExecutor) throws NoSuchFieldException, IllegalAccessException {
+	private void assertHasExecutors(Acceptor serverAcceptor, Executor taskExecutor)
+			throws NoSuchFieldException, IllegalAccessException {
 		Field longLivedExecutor = getField(SessionConnector.class, "longLivedExecutor");
 		longLivedExecutor.setAccessible(true);
 		Executor actualLongLivedExecutor = (Executor) longLivedExecutor.get(serverAcceptor);
@@ -324,44 +339,26 @@ public class QuickFixJServerConfigurationTest {
 		assertThat(taskExecutor).isEqualTo(actualShortLivedExecutor);
 	}
 
-	private static Field getField(Class clazz, String fieldName)
-			throws NoSuchFieldException {
-		try {
-			return clazz.getDeclaredField(fieldName);
-		} catch (NoSuchFieldException e) {
-			Class superClass = clazz.getSuperclass();
-			if (superClass == null) {
-				throw e;
-			} else {
-				return getField(superClass, fieldName);
-			}
-		}
-	}
-
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-single-threaded/single-threaded-application.properties")
 	static class SingleThreadedServerAcceptorConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-executor-factory.properties")
 	static class SingleThreadedExecutorFactoryServerAcceptorConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-config-string.properties")
 	static class SingleThreadedServerConfigStringConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource(value = "classpath:server-single-threaded/single-threaded-application-config-string.yml",
 			factory = YamlPropertySourceFactory.class)
 	static class SingleThreadedServerConfigStringYamlConfiguration {
@@ -369,70 +366,59 @@ public class QuickFixJServerConfigurationTest {
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedServerAcceptorConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-multi-threaded/multi-threaded-application-executor-factory.properties")
 	static class MultiThreadedExecutorFactoryServerAcceptorConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-no-config-defined.properties")
 	static class SingleThreadedServerAcceptorConfigurationWithCustomClientSettings {
 
 		@Bean(name = "serverSessionSettings")
-		public SessionSettings serverSessionSettings(
-				SessionSettingsLocator serverSessionSettingsLocator
-		) {
+		public SessionSettings serverSessionSettings(SessionSettingsLocator serverSessionSettingsLocator) {
 			return serverSessionSettingsLocator.loadSettings("classpath:quickfixj-server-extra.cfg");
 		}
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-cachedfile-store-factory.properties")
 	static class ServerCachedFileStoreFactoryConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-file-store-factory.properties")
 	static class ServerFileStoreFactoryConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-jdbc-store-factory.properties")
 	static class ServerJdbcStoreFactoryConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-memory-store-factory.properties")
 	static class ServerMemoryStoreFactoryConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-noop-store-factory.properties")
 	static class ServerNoopStoreFactoryConfiguration {
 	}
 
 	@Configuration
 	@EnableAutoConfiguration
-	@EnableQuickFixJServer
 	@PropertySource("classpath:server-message-store/server-sleepycat-store-factory.properties")
 	static class ServerSleepycatStoreFactoryConfiguration {
 	}

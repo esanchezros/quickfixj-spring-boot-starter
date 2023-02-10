@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.starter.autoconfigure;
+package io.allune.quickfixj.spring.boot.starter.configuration;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import lombok.Data;

@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.autoconfigure.template;
+package io.allune.quickfixj.spring.boot.starter.configuration.template;
 
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import quickfix.Session;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link QuickFixJTemplate}.
+ * {@link Configuration configuration} for {@link QuickFixJTemplate}.
  *
  * @author Eduardo Sanchez-Ros
  */
-@AutoConfiguration
+@Configuration
 @ConditionalOnClass(Session.class)
-public class QuickFixJTemplateAutoConfiguration {
+@Deprecated
+public class QuickFixJTemplateConfiguration {
 
 	/**
 	 * Creates a {@link QuickFixJTemplate}

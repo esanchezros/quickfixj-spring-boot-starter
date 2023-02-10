@@ -1,0 +1,2 @@
+io.allune.quickfixj.spring.boot.actuate.config.QuickFixJClientEndpointAutoConfiguration
+io.allune.quickfixj.spring.boot.actuate.config.QuickFixJServerEndpointAutoConfiguration

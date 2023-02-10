@@ -54,10 +54,9 @@
 			<groupId>org.quickfixj</groupId>
 			<artifactId>quickfixj-core</artifactId>
 		</dependency>
-<!--		TODO ??NEEDED??-->
 		<dependency>
 			<groupId>io.allune</groupId>
-			<artifactId>quickfixj-spring-boot-starter</artifactId>
+			<artifactId>quickfixj-spring-boot-context</artifactId>
 		</dependency>
 
 		<!-- Test -->

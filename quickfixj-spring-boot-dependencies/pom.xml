@@ -8,7 +8,8 @@
 	<packaging>pom</packaging>
 
 	<name>Spring Boot Starter for QuickFix/J :: Dependencies</name>
-	<description>Spring Cloud AWS Dependencies</description>
+	<description>Spring Boot Starter Dependencies for QuickFIX/J</description>
+	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>

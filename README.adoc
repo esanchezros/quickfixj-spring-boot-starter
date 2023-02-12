@@ -1,4 +1,4 @@
-image:https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter.svg?branch=main["Build Status", link="https://travis-ci.org/esanchezros/quickfixj-spring-boot-starter"]
+image:https://dl.circleci.com/status-badge/img/gh/esanchezros/quickfixj-spring-boot-starter/tree/main.svg?style=shield["CircleCI", link="https://dl.circleci.com/status-badge/redirect/gh/esanchezros/quickfixj-spring-boot-starter/tree/main"]
 image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/main/graph/badge.svg["codecov",link="https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter"]
 image:https://img.shields.io/badge/maven%20central-v2.15.0-blue.svg["Maven Central",link="https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22quickfixj-spring-boot-starter%22"]
 image:https://img.shields.io/hexpm/l/plug.svg["Apache 2",link="http://www.apache.org/licenses/LICENSE-2.0"]

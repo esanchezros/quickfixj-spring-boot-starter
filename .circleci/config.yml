@@ -2,6 +2,9 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@3.2.3
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -25,12 +28,16 @@ jobs:
       # Then run your tests!
       - run:
           name: Test
-          command: mvn test
+          command: mvn verify
+      - run:
+          name: Cobertura
+          command: mvn cobertura:cobertura
+      - codecov/upload
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+  build-quickfixj-starter: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test

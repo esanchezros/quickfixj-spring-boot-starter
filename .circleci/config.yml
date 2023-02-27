@@ -23,17 +23,10 @@ jobs:
       - checkout
       # Use mvn clean and package as the standard maven build phase
       - run:
-          name: Install dependencies
-          command: mvn install -DskipTests=true -B -V
-      - run:
-          name: Run tests and collect coverage
-          command: mvn -B test
+          name: Build project
+          command: mvn clean install -B -V
       - codecov/upload:
-          file: "./quickfixj-spring-boot-actuator/target/site/jacoco/jacoco.xml"
-      - codecov/upload:
-          file: "./quickfixj-spring-boot-autoconfigure/target/site/jacoco/jacoco.xml"
-      - codecov/upload:
-          file: "./home/circleci/project/quickfixj-spring-boot-context/target/site/jacoco/jacoco.xml"
+          file: "*/target/site/jacoco/jacoco.xml"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

@@ -24,7 +24,7 @@ jobs:
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Install dependencies
-          command: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+          command: mvn install -DskipTests=true -B -V
       - run:
           name: Run tests and collect coverage
           command: mvn -B test

@@ -23,15 +23,11 @@ jobs:
       - checkout
       # Use mvn clean and package as the standard maven build phase
       - run:
-          name: Build
-          command: mvn -B -DskipTests clean package
-      # Then run your tests!
+          name: Install dependencies
+          command: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       - run:
-          name: Test
-          command: mvn verify
-      - run:
-          name: Cobertura
-          command: mvn cobertura:cobertura
+          name: Run tests and collect coverage
+          command: mvn -B test
       - codecov/upload
 
 # Invoke jobs via workflows

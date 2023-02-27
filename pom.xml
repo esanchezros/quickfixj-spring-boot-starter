@@ -132,34 +132,56 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-					<check />
-					<instrumentation>
-						<excludes>
-							<exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJClient.class</exclude>
-							<exclude>io/allune/quickfixj/spring/boot/starter/EnableQuickFixJServer.class</exclude>
-							<exclude>
-								io/allune/quickfixj/spring/boot/starter/autoconfigure/QuickFixJBootProperties.class
-							</exclude>
-							<exclude>
-								io/allune/quickfixj/spring/boot/starter/autoconfigure/client/QuickFixJClientMarkerConfiguration.class
-							</exclude>
-							<exclude>
-								io/allune/quickfixj/spring/boot/starter/autoconfigure/server/QuickFixJServerMarkerConfiguration.class
-							</exclude>
-							<exclude>io/allune/quickfixj/spring/boot/starter/exception/*.class</exclude>
-							<exclude>io/allune/quickfixj/spring/boot/starter/template/*Exception.class</exclude>
-							<exclude>io/allune/quickfixj/spring/boot/starter/model/*.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.8</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+							<propertyName>maven.surefire.argLine</propertyName>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-integration.exec</destFile>
+							<propertyName>maven.failsafe.argLine</propertyName>
+							<append>true</append>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>report</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>merge</goal>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- merge config -->
+							<destFile>${project.build.directory}/jacoco.exec</destFile>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+							<!-- report config -->
+							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.mycila</groupId>

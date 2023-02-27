@@ -28,7 +28,8 @@ jobs:
       - run:
           name: Run tests and collect coverage
           command: mvn -B test
-      - codecov/upload
+      - codecov/upload:
+          file: 'target/site/jacoco/*.xml'
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

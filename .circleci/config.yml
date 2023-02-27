@@ -26,7 +26,7 @@ jobs:
           name: Build project
           command: mvn clean install -B -V
       - codecov/upload:
-          file: "*/target/site/jacoco/jacoco.xml"
+          file: '*/target/site/jacoco/jacoco.xml'
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

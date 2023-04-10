@@ -49,27 +49,27 @@ public class AppServer {
         SpringApplication.run(AppServer.class, args);
     }
 
-	@Bean
-	public Application clientApplication() {
-		return new ClientApplicationAdapter(); // Provide your own implementation here
-	}
+    @Bean
+    public Application clientApplication() {
+        return new ClientApplicationAdapter(); // Provide your own implementation here
+    }
 
-	@Bean
-	public Initiator clientInitiator(
-			Application clientApplication,
-			MessageStoreFactory clientMessageStoreFactory,
-			SessionSettings clientSessionSettings,
-			LogFactory clientLogFactory,
-			MessageFactory clientMessageFactory) throws ConfigError {
+    @Bean
+    public Initiator clientInitiator(
+            Application clientApplication,
+            MessageStoreFactory clientMessageStoreFactory,
+            SessionSettings clientSessionSettings,
+            LogFactory clientLogFactory,
+            MessageFactory clientMessageFactory
+    ) throws ConfigError {
+        return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
+                clientLogFactory, clientMessageFactory);
+    }
 
-		return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
-				clientLogFactory, clientMessageFactory);
-	}
-
-	@Bean
-	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
-		return new FileLogFactory(clientSessionSettings);
-	}
+    @Bean
+    public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+        return new FileLogFactory(clientSessionSettings);
+    }
 }
 ----
 
@@ -454,26 +454,26 @@ public class AppClient {
     }
 
     @Bean
-	public Application clientApplication() {
-		return new ClientApplicationAdapter(); // Provide your own implementation here
-	}
+    public Application clientApplication() {
+        return new ClientApplicationAdapter(); // Provide your own implementation here
+    }
 
-	@Bean
-	public Initiator clientInitiator(
-			Application clientApplication,
-			MessageStoreFactory clientMessageStoreFactory,
-			SessionSettings clientSessionSettings,
-			LogFactory clientLogFactory,
-			MessageFactory clientMessageFactory) throws ConfigError {
+    @Bean
+    public Initiator clientInitiator(
+            Application clientApplication,
+            MessageStoreFactory clientMessageStoreFactory,
+            SessionSettings clientSessionSettings,
+            LogFactory clientLogFactory,
+            MessageFactory clientMessageFactory
+    ) throws ConfigError {
+        return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
+                clientLogFactory, clientMessageFactory);
+    }
 
-		return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
-				clientLogFactory, clientMessageFactory);
-	}
-
-	@Bean
-	public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
-		return new FileLogFactory(clientSessionSettings);
-	}
+    @Bean
+    public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+        return new FileLogFactory(clientSessionSettings);
+    }
 }
 ----
 

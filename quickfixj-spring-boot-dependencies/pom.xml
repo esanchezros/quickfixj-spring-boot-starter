@@ -20,7 +20,7 @@
 
 		<quickfixj.version>2.3.1</quickfixj.version>
 		<awaitility.version>4.2.0</awaitility.version>
-		<guava.version>31.1-jre</guava.version>
+		<guava.version>32.0.0-jre</guava.version>
 	</properties>
 
 	<licenses>

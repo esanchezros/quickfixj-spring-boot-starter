@@ -25,6 +25,7 @@ import quickfix.SessionSettings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static quickfix.SessionID.NOT_SET;
 
@@ -46,7 +47,7 @@ public class AbstractQuickFixJEndpoint {
 
 	@ReadOperation
 	public Map<String, Properties> readProperties() {
-		Map<String, Properties> reports = new HashMap<>();
+		Map<String, Properties> reports = new ConcurrentHashMap<>();
 		connector.getSessions().forEach(sessionId -> {
 			try {
 				Properties p = new Properties();

@@ -28,6 +28,7 @@ import quickfix.SessionSettings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuickFixJSessionHealthIndicator extends AbstractHealthIndicator {
 
@@ -37,7 +38,7 @@ public class QuickFixJSessionHealthIndicator extends AbstractHealthIndicator {
 
 	private final SessionSettings sessionSettings;
 
-	private final Map<SessionID, SessionSchedule> sessionScheduleMap = new HashMap<>();
+	private final Map<SessionID, SessionSchedule> sessionScheduleMap = new ConcurrentHashMap<>();
 
 	public QuickFixJSessionHealthIndicator(
 			Connector connector,

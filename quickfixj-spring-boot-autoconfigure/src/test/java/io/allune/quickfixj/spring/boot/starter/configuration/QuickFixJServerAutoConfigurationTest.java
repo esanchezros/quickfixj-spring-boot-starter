@@ -15,8 +15,8 @@
  */
 package io.allune.quickfixj.spring.boot.starter.configuration;
 
-import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
@@ -30,17 +30,21 @@ import org.springframework.context.annotation.PropertySource;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
+import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
+import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
 import quickfix.FixVersions;
+import quickfix.JdbcLogFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.NoopStoreFactory;
+import quickfix.SLF4JLogFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
@@ -69,7 +73,7 @@ import static org.mockito.Mockito.mock;
 public class QuickFixJServerAutoConfigurationTest {
 
 	private static Field getField(Class clazz, String fieldName)
-			throws NoSuchFieldException {
+		throws NoSuchFieldException {
 		try {
 			return clazz.getDeclaredField(fieldName);
 		} catch (NoSuchFieldException e) {
@@ -120,7 +124,6 @@ public class QuickFixJServerAutoConfigurationTest {
 		ctx.stop();
 	}
 
-
 	@Test
 	public void testAutoConfiguredBeansSingleConfigString() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerConfigStringConfiguration.class);
@@ -130,12 +133,12 @@ public class QuickFixJServerAutoConfigurationTest {
 		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
 		List<SessionID> expectedSessionIDs = asList(
-				new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
+			new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
 		);
 
 		expectedSessionIDs.forEach(expectedSessionID -> {
@@ -158,12 +161,12 @@ public class QuickFixJServerAutoConfigurationTest {
 		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
 		List<SessionID> expectedSessionIDs = asList(
-				new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
-				new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
+			new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
+			new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
 		);
 
 		expectedSessionIDs.forEach(expectedSessionID -> {
@@ -228,7 +231,7 @@ public class QuickFixJServerAutoConfigurationTest {
 
 		// When
 		Acceptor acceptor = acceptorConfiguration.serverAcceptor(application, messageStoreFactory, sessionSettings,
-				logFactory, messageFactory, Optional.empty());
+			logFactory, messageFactory, Optional.empty());
 
 		// Then
 		assertThat(acceptor).isNotNull();
@@ -242,14 +245,14 @@ public class QuickFixJServerAutoConfigurationTest {
 
 		// When/Then
 		assertThatExceptionOfType(ConfigurationException.class)
-				.isThrownBy(() -> autoConfiguration.serverAcceptorMBean(null));
+			.isThrownBy(() -> autoConfiguration.serverAcceptorMBean(null));
 	}
 
 	@Test
 	public void testAutoConfiguredBeansSingleThreadedAcceptorWithCustomServerSettings() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerAcceptorConfigurationWithCustomClientSettings.class);
-		SessionSettings customClientSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
-		assertThat(customClientSessionSettings.getDefaultProperties().getProperty("SenderCompID")).isEqualTo("CUSTOM-EXEC");
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerAcceptorConfigurationWithCustomServerSettings.class);
+		SessionSettings customServerSessionSettings = ctx.getBean("serverSessionSettings", SessionSettings.class);
+		assertThat(customServerSessionSettings.getDefaultProperties().getProperty("SenderCompID")).isEqualTo("CUSTOM-EXEC");
 		ctx.stop();
 	}
 
@@ -301,6 +304,56 @@ public class QuickFixJServerAutoConfigurationTest {
 		ctx.stop();
 	}
 
+	@Test
+	public void testAutoConfiguredBeansServerCompositeLogFactoryConfiguration() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerCompositeLogFactoryConfiguration.class);
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(CompositeLogFactory.class);
+
+		Field privateField = CompositeLogFactory.class.getDeclaredField("logFactories");
+		privateField.setAccessible(true);
+		LogFactory[] currentLogFactories = (LogFactory[]) privateField.get(serverLogFactory);
+
+		assertThat(currentLogFactories).isNotEmpty();
+		assertThat(currentLogFactories).hasSize(2);
+		assertThat(currentLogFactories[0]).isInstanceOf(ScreenLogFactory.class);
+		assertThat(currentLogFactories[1]).isInstanceOf(SLF4JLogFactory.class);
+
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansServerFileLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerFileLogFactoryConfiguration.class);
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(FileLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansServerJdbcLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerJdbcLogFactoryConfiguration.class);
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(JdbcLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansServerSlf4jLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerSlf4jLogFactoryConfiguration.class);
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(SLF4JLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansServerScreenLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerScreenLogFactoryConfiguration.class);
+		LogFactory serverLogFactory = ctx.getBean("serverLogFactory", LogFactory.class);
+		assertThat(serverLogFactory).isInstanceOf(ScreenLogFactory.class);
+		ctx.stop();
+	}
+
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
 		Application serverApplication = ctx.getBean("serverApplication", Application.class);
 		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
@@ -327,7 +380,7 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	private void assertHasExecutors(Acceptor serverAcceptor, Executor taskExecutor)
-			throws NoSuchFieldException, IllegalAccessException {
+		throws NoSuchFieldException, IllegalAccessException {
 		Field longLivedExecutor = getField(SessionConnector.class, "longLivedExecutor");
 		longLivedExecutor.setAccessible(true);
 		Executor actualLongLivedExecutor = (Executor) longLivedExecutor.get(serverAcceptor);
@@ -360,7 +413,7 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@PropertySource(value = "classpath:server-single-threaded/single-threaded-application-config-string.yml",
-			factory = YamlPropertySourceFactory.class)
+		factory = YamlPropertySourceFactory.class)
 	static class SingleThreadedServerConfigStringYamlConfiguration {
 	}
 
@@ -379,7 +432,7 @@ public class QuickFixJServerAutoConfigurationTest {
 	@Configuration
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-no-config-defined.properties")
-	static class SingleThreadedServerAcceptorConfigurationWithCustomClientSettings {
+	static class SingleThreadedServerAcceptorConfigurationWithCustomServerSettings {
 
 		@Bean(name = "serverSessionSettings")
 		public SessionSettings serverSessionSettings(SessionSettingsLocator serverSessionSettingsLocator) {
@@ -421,5 +474,45 @@ public class QuickFixJServerAutoConfigurationTest {
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-message-store/server-sleepycat-store-factory.properties")
 	static class ServerSleepycatStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-log-factory/server-composite-log-factory.properties")
+	static class ServerCompositeLogFactoryConfiguration {
+
+		@Bean
+		public LogFactory screenLogFactory(SessionSettings serverSessionSettings) {
+			return new ScreenLogFactory(serverSessionSettings);
+		}
+
+		@Bean
+		public LogFactory slf4jLogFactory(SessionSettings serverSessionSettings) {
+			return new SLF4JLogFactory(serverSessionSettings);
+		}
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-log-factory/server-file-log-factory.properties")
+	static class ServerFileLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-log-factory/server-jdbc-log-factory.properties")
+	static class ServerJdbcLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-log-factory/server-slf4j-log-factory.properties")
+	static class ServerSlf4jLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-log-factory/server-screen-log-factory.properties")
+	static class ServerScreenLogFactoryConfiguration {
 	}
 }

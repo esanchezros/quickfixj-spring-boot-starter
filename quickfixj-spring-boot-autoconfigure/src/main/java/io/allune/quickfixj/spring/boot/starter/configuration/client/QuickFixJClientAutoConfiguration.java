@@ -34,6 +34,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
+import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
@@ -55,6 +56,7 @@ import quickfix.SocketInitiator;
 import quickfix.ThreadedSocketInitiator;
 
 import javax.management.ObjectName;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -119,6 +121,7 @@ public class QuickFixJClientAutoConfiguration {
 	 * Grouping the creation of the client's {@link MessageStoreFactory}
 	 */
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "cachedfile")
 	static class CachedFileMessageStoreFactoryConfiguration {
@@ -138,6 +141,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "file")
 	static class FileMessageStoreFactoryConfiguration {
@@ -157,6 +161,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "jdbc")
 	static class JdbcMessageStoreFactoryConfiguration {
@@ -176,6 +181,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "memory", matchIfMissing = true)
 	static class MemoryMessageStoreFactoryConfiguration {
@@ -194,6 +200,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "noop")
 	static class NoopMessageStoreFactoryConfiguration {
@@ -211,6 +218,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(MessageStoreFactory.class)
 	@ConditionalOnMissingBean(name = "clientMessageStoreFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "message-store-factory", havingValue = "sleepycat")
 	static class SleepycatMessageStoreFactoryConfiguration {
@@ -230,6 +238,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
 	@ConditionalOnMissingBean(name = "clientLogFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "file")
 	static class FileLogFactoryConfiguration {
@@ -249,6 +258,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
 	@ConditionalOnMissingBean(name = "clientLogFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "jdbc")
 	static class JdbcLogFactoryConfiguration {
@@ -268,6 +278,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
 	@ConditionalOnMissingBean(name = "clientLogFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "slf4j")
 	static class Slf4jLogFactoryConfiguration {
@@ -287,9 +298,10 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
 	@ConditionalOnMissingBean(name = "clientLogFactory")
 	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory",
-			havingValue = "screen", matchIfMissing = true)
+		havingValue = "screen", matchIfMissing = true)
 	static class ScreenLogFactoryConfiguration {
 
 		/**
@@ -306,6 +318,31 @@ public class QuickFixJClientAutoConfiguration {
 		}
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "clientLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.client", name = "log-factory", havingValue = "compositelog")
+	static class CompositeLogFactoryConfiguration {
+
+		/**
+		 * Creates the client's {@link LogFactory} of type {@link CompositeLogFactory} if
+		 * {@code quickfixj.client.log-factory} is set to {@code compositelog}, used in the creation of the
+		 * {@link Initiator initiator} connector
+		 *
+		 * @param logFactories The client's list of {@link LogFactory log factories} beans to use for creating
+		 *                     the {@link CompositeLogFactory}
+		 * @return The client's {@link LogFactory}
+		 */
+		@Bean
+		public LogFactory clientLogFactory(List<LogFactory> logFactories) {
+			if (logFactories == null || logFactories.isEmpty()) {
+				throw new ConfigurationException("The CompositeLogFactory requires at least one LogFactory bean defined in your application");
+			}
+
+			return new CompositeLogFactory(logFactories.toArray(new LogFactory[0]));
+		}
+	}
+
 	/**
 	 * Creates the default client's {@link MessageFactory}
 	 *
@@ -318,9 +355,10 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(SocketInitiator.class)
 	@ConditionalOnMissingBean(name = "clientInitiator")
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled",
-			havingValue = "false", matchIfMissing = true)
+		havingValue = "false", matchIfMissing = true)
 	public static class SocketInitiatorConfiguration {
 
 		/**
@@ -357,6 +395,7 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ThreadedSocketInitiator.class)
 	@ConditionalOnMissingBean(name = "clientInitiator")
 	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "enabled", havingValue = "true")
 	public static class ThreadedSocketInitiatorConfiguration {

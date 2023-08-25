@@ -34,6 +34,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
+import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
@@ -54,6 +55,7 @@ import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
 
 import javax.management.ObjectName;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -306,6 +308,30 @@ public class QuickFixJServerConfiguration {
 		@Bean
 		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new ScreenLogFactory(serverSessionSettings);
+		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(name = "serverLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "compositelog")
+	static class CompositeLogFactoryConfiguration {
+
+		/**
+		 * Creates the server's {@link LogFactory} of type {@link CompositeLogFactory} if
+		 * {@code quickfixj.server.log-factory} is set to {@code compositelog}, used in the creation of the
+		 * {@link Acceptor acceptor} connector
+		 *
+		 * @param logFactories The server's list of {@link LogFactory log factories} beans to use for creating
+		 *                     the {@link CompositeLogFactory}
+		 * @return The server's {@link LogFactory}
+		 */
+		@Bean
+		public LogFactory serverLogFactory(List<LogFactory> logFactories) {
+			if (logFactories == null || logFactories.isEmpty()) {
+				throw new ConfigurationException("The CompositeLogFactory requires at least one LogFactory bean defined in your application");
+			}
+
+			return new CompositeLogFactory(logFactories.toArray(new LogFactory[0]));
 		}
 	}
 

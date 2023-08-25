@@ -35,11 +35,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
+import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
 import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
+import quickfix.Initiator;
 import quickfix.JdbcLogFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
@@ -55,6 +57,7 @@ import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
 
 import javax.management.ObjectName;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -88,17 +91,17 @@ public class QuickFixJServerAutoConfiguration {
 	@Bean(name = "serverSessionSettings")
 	@ConditionalOnMissingBean(name = "serverSessionSettings")
 	public SessionSettings serverSessionSettings(
-			SessionSettingsLocator serverSessionSettingsLocator, QuickFixJBootProperties properties
+		SessionSettingsLocator serverSessionSettingsLocator, QuickFixJBootProperties properties
 	) {
 		if (isNotEmpty(properties.getServer().getConfigString())) {
 			return serverSessionSettingsLocator.loadSettingsFromString(properties.getServer().getConfigString());
 		}
 
 		return serverSessionSettingsLocator.loadSettings(
-				properties.getServer().getConfig(),
-				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
-				"file:./" + QUICKFIXJ_SERVER_CONFIG,
-				"classpath:/" + QUICKFIXJ_SERVER_CONFIG);
+			properties.getServer().getConfig(),
+			System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
+			"file:./" + QUICKFIXJ_SERVER_CONFIG,
+			"classpath:/" + QUICKFIXJ_SERVER_CONFIG);
 	}
 
 	/**
@@ -294,7 +297,8 @@ public class QuickFixJServerAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LogFactory.class)
 	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "screen", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory",
+		havingValue = "screen", matchIfMissing = true)
 	static class ScreenLogFactoryConfiguration {
 
 		/**
@@ -308,6 +312,31 @@ public class QuickFixJServerAutoConfiguration {
 		@Bean
 		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new ScreenLogFactory(serverSessionSettings);
+		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(LogFactory.class)
+	@ConditionalOnMissingBean(name = "serverLogFactory")
+	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "compositelog")
+	static class CompositeLogFactoryConfiguration {
+
+		/**
+		 * Creates the server's {@link LogFactory} of type {@link CompositeLogFactory} if
+		 * {@code quickfixj.server.log-factory} is set to {@code compositelog}, used in the creation of the
+		 * {@link Initiator initiator} connector
+		 *
+		 * @param logFactories The server's list of {@link LogFactory log factories} beans to use for creating
+		 *                     the {@link CompositeLogFactory}
+		 * @return The server's {@link LogFactory}
+		 */
+		@Bean
+		public LogFactory serverLogFactory(List<LogFactory> logFactories) {
+			if (logFactories == null || logFactories.isEmpty()) {
+				throw new ConfigurationException("The CompositeLogFactory requires at least one LogFactory bean defined in your application");
+			}
+
+			return new CompositeLogFactory(logFactories.toArray(new LogFactory[0]));
 		}
 	}
 
@@ -342,21 +371,21 @@ public class QuickFixJServerAutoConfiguration {
 		 */
 		@Bean
 		public Acceptor serverAcceptor(
-				Application serverApplication,
-				MessageStoreFactory serverMessageStoreFactory,
-				SessionSettings serverSessionSettings,
-				LogFactory serverLogFactory,
-				MessageFactory serverMessageFactory,
-				Optional<ExecutorFactory> serverExecutorFactory
+			Application serverApplication,
+			MessageStoreFactory serverMessageStoreFactory,
+			SessionSettings serverSessionSettings,
+			LogFactory serverLogFactory,
+			MessageFactory serverMessageFactory,
+			Optional<ExecutorFactory> serverExecutorFactory
 		) throws ConfigError {
 
 			SocketAcceptor socketAcceptor = SocketAcceptor.newBuilder()
-					.withApplication(serverApplication)
-					.withMessageStoreFactory(serverMessageStoreFactory)
-					.withSettings(serverSessionSettings)
-					.withLogFactory(serverLogFactory)
-					.withMessageFactory(serverMessageFactory)
-					.build();
+				.withApplication(serverApplication)
+				.withMessageStoreFactory(serverMessageStoreFactory)
+				.withSettings(serverSessionSettings)
+				.withLogFactory(serverLogFactory)
+				.withMessageFactory(serverMessageFactory)
+				.build();
 			serverExecutorFactory.ifPresent(socketAcceptor::setExecutorFactory);
 			return socketAcceptor;
 		}
@@ -381,20 +410,22 @@ public class QuickFixJServerAutoConfiguration {
 		 * @throws ConfigError exception thrown when a configuration error is detected
 		 */
 		@Bean
-		public Acceptor serverAcceptor(Application serverApplication,
-		                               MessageStoreFactory serverMessageStoreFactory,
-		                               SessionSettings serverSessionSettings,
-		                               LogFactory serverLogFactory,
-		                               MessageFactory serverMessageFactory,
-		                               Optional<ExecutorFactory> serverExecutorFactory) throws ConfigError {
+		public Acceptor serverAcceptor(
+			Application serverApplication,
+			MessageStoreFactory serverMessageStoreFactory,
+			SessionSettings serverSessionSettings,
+			LogFactory serverLogFactory,
+			MessageFactory serverMessageFactory,
+			Optional<ExecutorFactory> serverExecutorFactory
+		) throws ConfigError {
 
 			ThreadedSocketAcceptor socketAcceptor = ThreadedSocketAcceptor.newBuilder()
-					.withApplication(serverApplication)
-					.withMessageStoreFactory(serverMessageStoreFactory)
-					.withSettings(serverSessionSettings)
-					.withLogFactory(serverLogFactory)
-					.withMessageFactory(serverMessageFactory)
-					.build();
+				.withApplication(serverApplication)
+				.withMessageStoreFactory(serverMessageStoreFactory)
+				.withSettings(serverSessionSettings)
+				.withLogFactory(serverLogFactory)
+				.withMessageFactory(serverMessageFactory)
+				.build();
 			serverExecutorFactory.ifPresent(socketAcceptor::setExecutorFactory);
 			return socketAcceptor;
 		}

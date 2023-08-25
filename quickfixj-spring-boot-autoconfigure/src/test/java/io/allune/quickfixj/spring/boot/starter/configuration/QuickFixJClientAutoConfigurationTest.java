@@ -15,8 +15,8 @@
  */
 package io.allune.quickfixj.spring.boot.starter.configuration;
 
-import io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
+import io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientAutoConfiguration;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
@@ -29,18 +29,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import quickfix.Application;
 import quickfix.CachedFileStoreFactory;
+import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
 import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
+import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
 import quickfix.FixVersions;
 import quickfix.Initiator;
+import quickfix.JdbcLogFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.NoopStoreFactory;
+import quickfix.SLF4JLogFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
@@ -299,6 +303,56 @@ public class QuickFixJClientAutoConfigurationTest {
 		ctx.stop();
 	}
 
+	@Test
+	public void testAutoConfiguredBeansClientCompositeLogFactoryConfiguration() throws NoSuchFieldException, IllegalAccessException {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientCompositeLogFactoryConfiguration.class);
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(CompositeLogFactory.class);
+
+		Field privateField = CompositeLogFactory.class.getDeclaredField("logFactories");
+		privateField.setAccessible(true);
+		LogFactory[] currentLogFactories = (LogFactory[])privateField.get(clientLogFactory);
+
+		assertThat(currentLogFactories).isNotEmpty();
+		assertThat(currentLogFactories).hasSize(2);
+		assertThat(currentLogFactories[0]).isInstanceOf(ScreenLogFactory.class);
+		assertThat(currentLogFactories[1]).isInstanceOf(SLF4JLogFactory.class);
+
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientFileLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientFileLogFactoryConfiguration.class);
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(FileLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientJdbcLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientJdbcLogFactoryConfiguration.class);
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(JdbcLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientSlf4jLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientSlf4jLogFactoryConfiguration.class);
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(SLF4JLogFactory.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredBeansClientScreenLogFactoryConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientScreenLogFactoryConfiguration.class);
+		LogFactory clientLogFactory = ctx.getBean("clientLogFactory", LogFactory.class);
+		assertThat(clientLogFactory).isInstanceOf(ScreenLogFactory.class);
+		ctx.stop();
+	}
+
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
 		Application clientApplication = ctx.getBean("clientApplication", Application.class);
 		assertThat(clientApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
@@ -416,5 +470,45 @@ public class QuickFixJClientAutoConfigurationTest {
 	@EnableAutoConfiguration
 	@PropertySource("classpath:client-message-store/client-sleepycat-store-factory.properties")
 	static class ClientSleepycatStoreFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-log-factory/client-composite-log-factory.properties")
+	static class ClientCompositeLogFactoryConfiguration {
+
+		@Bean
+		public LogFactory screenLogFactory(SessionSettings clientSessionSettings) {
+			return new ScreenLogFactory(clientSessionSettings);
+		}
+
+		@Bean
+		public LogFactory slf4jLogFactory(SessionSettings clientSessionSettings) {
+			return new SLF4JLogFactory(clientSessionSettings);
+		}
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-log-factory/client-file-log-factory.properties")
+	static class ClientFileLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-log-factory/client-jdbc-log-factory.properties")
+	static class ClientJdbcLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-log-factory/client-slf4j-log-factory.properties")
+	static class ClientSlf4jLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-log-factory/client-screen-log-factory.properties")
+	static class ClientScreenLogFactoryConfiguration {
 	}
 }

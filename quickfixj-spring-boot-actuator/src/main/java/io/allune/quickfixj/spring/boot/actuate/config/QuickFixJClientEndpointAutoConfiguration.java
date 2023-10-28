@@ -37,6 +37,7 @@ import quickfix.SessionSettings;
  *
  * @author Eduardo Sanchez-Ros
  */
+@Deprecated
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(QuickFixJClientConfiguration.class)
 public class QuickFixJClientEndpointAutoConfiguration {

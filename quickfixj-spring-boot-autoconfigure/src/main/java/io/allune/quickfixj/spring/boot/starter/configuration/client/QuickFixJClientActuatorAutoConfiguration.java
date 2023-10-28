@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.actuate.config;
+package io.allune.quickfixj.spring.boot.starter.configuration.client;
 
-import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
+import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJClientEndpoint;
 import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
-import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -25,43 +24,46 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import quickfix.Acceptor;
 import quickfix.DefaultSessionScheduleFactory;
+import quickfix.Initiator;
 import quickfix.SessionScheduleFactory;
 import quickfix.SessionSettings;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link QuickFixJServerEndpoint}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link QuickFixJClientEndpoint}.
  *
  * @author Eduardo Sanchez-Ros
  */
-@Deprecated
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(QuickFixJServerConfiguration.class)
-public class QuickFixJServerEndpointAutoConfiguration {
+@AutoConfigureAfter(QuickFixJClientAutoConfiguration.class)
+@ConditionalOnProperty(name = "quickfixj.client.actuator.enabled", havingValue = "true")
+public class QuickFixJClientActuatorAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(name = {"serverAcceptor", "serverSessionSettings"})
-	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
+	@ConditionalOnBean(name = {"clientInitiator", "clientSessionSettings"})
+	@ConditionalOnClass({Initiator.class, SessionSettings.class})
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public QuickFixJServerEndpoint quickfixjServerEndpoint(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
-		return new QuickFixJServerEndpoint(serverAcceptor, serverSessionSettings);
+	public QuickFixJClientEndpoint quickfixjClientEndpoint(
+			Initiator clientInitiator, SessionSettings clientSessionSettings
+	) {
+		return new QuickFixJClientEndpoint(clientInitiator, clientSessionSettings);
 	}
 
 	@Bean
-	@ConditionalOnBean(name = {"serverAcceptor", "serverSessionSettings"})
-	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
+	@ConditionalOnBean(name = {"clientInitiator", "clientSessionSettings"})
+	@ConditionalOnClass({Initiator.class, SessionSettings.class})
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledHealthIndicator("quickfixjserver")
-	public QuickFixJSessionHealthIndicator quickfixjServerSessionHealthIndicator(
-			Acceptor serverAcceptor,
+	@ConditionalOnEnabledHealthIndicator("quickfixjclient")
+	public QuickFixJSessionHealthIndicator quickfixjClientSessionHealthIndicator(
+			Initiator clientInitiator,
 			SessionScheduleFactory sessionSchedule,
 			SessionSettings clientSessionSettings
 	) {
-		return new QuickFixJSessionHealthIndicator(serverAcceptor, sessionSchedule, clientSessionSettings);
+		return new QuickFixJSessionHealthIndicator(clientInitiator, sessionSchedule, clientSessionSettings);
 	}
 
 	@Bean

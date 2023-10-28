@@ -1,7 +1,9 @@
 # AutoConfigurations
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerAutoConfiguration,\
+  io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerActuatorAutoConfiguration,\
   io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientAutoConfiguration,\
+  io.allune.quickfixj.spring.boot.starter.configuration.client.QuickFixJClientActuatorAutoConfiguration,\
   io.allune.quickfixj.spring.boot.starter.configuration.template.QuickFixJTemplateAutoConfiguration
 org.springframework.boot.diagnostics.FailureAnalyzer=\
   io.allune.quickfixj.spring.boot.starter.failureanalyzer.QuickFixJAutoConfigFailureAnalyzer

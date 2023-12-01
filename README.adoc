@@ -388,7 +388,8 @@ Example usage:
     "BeginString": "FIX.4.2",
     "TargetCompID": "BANZAI",
     "FileStorePath": "target/data/executor",
-    "UseDataDictionary": "Y"
+    "UseDataDictionary": "Y",
+    "ProxyPassword": "******"
   },
   "FIX.4.1:EXEC->BANZAI": {
     "SenderCompID": "EXEC",
@@ -405,7 +406,8 @@ Example usage:
     "BeginString": "FIX.4.1",
     "TargetCompID": "BANZAI",
     "FileStorePath": "target/data/executor",
-    "UseDataDictionary": "Y"
+    "UseDataDictionary": "Y",
+	"JdbcPassword": "******"
   }
 }
 ----
@@ -801,7 +803,8 @@ Example usage:
     "BeginString": "FIXT.1.1",
     "TargetCompID": "EXEC",
     "FileStorePath": "target/data/banzai",
-    "SocketConnectPort": "9881"
+    "SocketConnectPort": "9881",
+    "ProxyPassword": "******"
   },
   "FIX.4.2:BANZAI->EXEC": {
     "SenderCompID": "BANZAI",
@@ -817,7 +820,8 @@ Example usage:
     "BeginString": "FIX.4.2",
     "TargetCompID": "EXEC",
     "FileStorePath": "target/data/banzai",
-    "SocketConnectPort": "9878"
+    "SocketConnectPort": "9878",
+	"JdbcPassword": "******"
   }
 }
 ----

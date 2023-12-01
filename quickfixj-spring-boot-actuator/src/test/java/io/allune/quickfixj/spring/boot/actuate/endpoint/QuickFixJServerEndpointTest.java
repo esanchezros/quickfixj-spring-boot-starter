@@ -15,49 +15,111 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.endpoint.EndpointId;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.actuate.endpoint.Sanitizer;
+import quickfix.Acceptor;
+import quickfix.ConfigError;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
 
-public class QuickFixJServerEndpointTest extends AbstractEndpointTests {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
-	private static final EndpointId ENDPOINT_ID = EndpointId.of("quickfixjserver");
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
-	public QuickFixJServerEndpointTest() {
-		super(ENDPOINT_ID);
+@ExtendWith(MockitoExtension.class)
+public class QuickFixJServerEndpointTest {
+
+	@Mock
+	private Acceptor acceptor;
+
+	@Mock
+	private SessionSettings sessionSettings;
+
+	@Spy
+	private Sanitizer sanitizer = new Sanitizer();
+
+	@InjectMocks
+	private QuickFixJServerEndpoint quickFixJServerEndpoint;
+
+	@Test
+	public void shouldReadProperties() throws ConfigError {
+		Map<SessionID, Properties> sessions = createSessions();
+		given(acceptor.getSessions()).willReturn(new ArrayList<>(sessions.keySet()));
+		given(sessionSettings.getDefaultProperties()).willReturn(createDefaultProperties());
+		for (Map.Entry<SessionID, Properties> entry : sessions.entrySet()) {
+			given(sessionSettings.getSessionProperties(entry.getKey())).willReturn(entry.getValue());
+		}
+
+		Map<String, Properties> actualProperties = quickFixJServerEndpoint.readProperties();
+
+		assertThat(actualProperties.keySet()).hasSize(sessions.size());
+		sessions.forEach((key, value) -> {
+			Properties properties = actualProperties.get(key.toString());
+			assertThat(properties).isNotNull();
+			assertThat(properties).containsAllEntriesOf(properties);
+			assertThat(properties).containsEntry("BeginString", properties.get("BeginString"));
+			assertThat(properties).containsEntry("SenderCompID", properties.get("SenderCompID"));
+			assertThat(properties).containsEntry("TargetCompID", properties.get("TargetCompID"));
+			assertThat(properties).containsEntry("ConnectionType", properties.get("ConnectionType"));
+			assertThat(properties).containsEntry("SocketAcceptPort", properties.get("SocketAcceptPort"));
+			assertThat(properties).containsEntry("FileStorePath", properties.get("FileStorePath"));
+			assertThat(properties).containsEntry("SocketKeyStorePassword", "******");
+			assertThat(properties).containsEntry("SocketTrustStorePassword", "******");
+			assertThat(properties).containsEntry("ProxyPassword", "******");
+			assertThat(properties).containsEntry("JdbcPassword", "******");
+		});
 	}
 
 	@Test
-	public void shouldLoadActuatorEndpoint() {
-		assertActuatorEndpointLoaded(TestConfig.class);
+	void shouldThrowIllegalStateExceptionGivenConfigError() throws ConfigError {
+		Map<SessionID, Properties> sessions = createSessions();
+		given(acceptor.getSessions()).willReturn(new ArrayList<>(sessions.keySet()));
+		given(sessionSettings.getDefaultProperties()).willReturn(createDefaultProperties());
+		given(sessionSettings.getSessionProperties(any())).willThrow(ConfigError.class);
+
+		assertThatThrownBy(() -> quickFixJServerEndpoint.readProperties())
+			.isInstanceOf(IllegalStateException.class);
 	}
 
-	@Test
-	public void shouldNotLoadActuatorWithEndpointDisabled() {
-		assertActuatorEndpointNotLoaded(TestConfigNoEndpoint.class);
+	private Map<SessionID, Properties> createSessions() {
+		long systemTime = System.currentTimeMillis();
+		SessionID sessionID42 = new SessionID("FIX.4.2", "SENDER" + systemTime, "TARGET" + systemTime);
+		SessionID sessionID44 = new SessionID("FIX.4.4", "SENDER" + systemTime, "TARGET" + systemTime);
+
+		Map<SessionID, Properties> sessions = new HashMap<>();
+		sessions.put(sessionID42, createProperties());
+		sessions.put(sessionID44, createProperties());
+		return sessions;
 	}
 
-	@Test
-	public void shouldReadProperties() {
-		assertReadProperties(TestConfig.class);
+	private Properties createProperties() {
+		Properties properties = new Properties();
+		properties.put("foo", "mumble");
+		properties.put("baz", "fargle");
+		properties.put("FileStorePath", "bargle");
+		properties.put("SocketKeyStorePassword", "secret");
+		properties.put("SocketTrustStorePassword", "secret");
+		properties.put("ProxyPassword", "secret");
+		properties.put("JdbcPassword", "secret");
+		return properties;
 	}
 
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableQuickFixJServer
-	@PropertySource("classpath:application-server.properties")
-	public static class TestConfig {
-
-	}
-
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableQuickFixJServer
-	@PropertySource("classpath:application-noendpoint.properties")
-	public static class TestConfigNoEndpoint {
-
+	private Properties createDefaultProperties() {
+		Properties properties = new Properties();
+		properties.put("ConnectionType", "acceptor");
+		properties.put("SocketAcceptPort", "5001");
+		properties.put("FileStorePath", "store");
+		return properties;
 	}
 }

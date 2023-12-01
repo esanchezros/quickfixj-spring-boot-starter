@@ -16,41 +16,54 @@
 package io.allune.quickfixj.spring.boot.actuate.config;
 
 import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJServer;
+import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
+import io.allune.quickfixj.spring.boot.starter.configuration.server.QuickFixJServerConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Eduardo Sanchez-Ros
- */
-@SpringBootTest(
-		properties = {
-				"quickfixj.server.autoStartup=false",
-				"quickfixj.server.config=classpath:quickfixj-server.cfg",
-				"quickfixj.server.jmx-enabled=true"
-		})
-@ActiveProfiles("server")
 public class QuickFixJServerEndpointAutoConfigurationTest {
 
-	@Autowired
-	private QuickFixJServerEndpoint quickfixjServerEndpoint;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(
+			AutoConfigurations.of(QuickFixJServerConfiguration.class, QuickFixJServerEndpointAutoConfiguration.class));
 
 	@Test
-	public void testAutoConfiguredBeans() {
-		assertThat(quickfixjServerEndpoint).isNotNull();
-		assertThat(quickfixjServerEndpoint.readProperties().size()).isEqualTo(0);
+	public void shouldLoadActuatorEndpoint() {
+		contextRunner.withPropertyValues("quickfixj.server.config=classpath:quickfixj-server.cfg")
+			.withPropertyValues("management.endpoints.enabled-by-default=false")
+			.withPropertyValues("management.endpoints.web.exposure.include=quickfixjserver")
+			.withPropertyValues("management.endpoint.quickfixjserver.enabled=true")
+			.withPropertyValues("management.health.quickfixjserver.enabled=true")
+			.run(this::createsBeans);
 	}
 
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableQuickFixJServer
-	public static class Config {
+	private void createsBeans(AssertableApplicationContext ctx) {
+		assertThat(ctx).hasBean("quickfixjServerEndpoint");
+		assertThat(ctx.getBean("quickfixjServerEndpoint"))
+			.isInstanceOf(QuickFixJServerEndpoint.class);
 
+		assertThat(ctx).hasBean("quickfixjServerSessionHealthIndicator");
+		assertThat(ctx).getBean("quickfixjServerSessionHealthIndicator")
+			.isInstanceOf(QuickFixJSessionHealthIndicator.class);
+	}
+
+	@Test
+	public void shouldNotLoadActuatorEndpoint() {
+		contextRunner.withPropertyValues("quickfixj.server.config=classpath:quickfixj-server.cfg")
+			.withPropertyValues("quickfixj.server.autoStartup=true")
+			.withPropertyValues("management.endpoints.enabled-by-default=false")
+			.withPropertyValues("management.endpoints.web.exposure.include=quickfixjserver")
+			.withPropertyValues("management.endpoint.quickfixjserver.enabled=false")
+			.withPropertyValues("management.health.quickfixjserver.enabled=false")
+			.run(this::doesNotCreateBeans);
+	}
+
+	private void doesNotCreateBeans(AssertableApplicationContext ctx) {
+		assertThat(ctx).doesNotHaveBean("quickfixjServerEndpoint");
+		assertThat(ctx).doesNotHaveBean("quickfixjServerSessionHealthIndicator");
 	}
 }

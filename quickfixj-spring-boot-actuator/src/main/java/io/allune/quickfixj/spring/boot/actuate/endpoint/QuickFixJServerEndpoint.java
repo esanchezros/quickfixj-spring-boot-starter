@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import quickfix.Acceptor;
 import quickfix.SessionSettings;
@@ -27,7 +28,10 @@ import quickfix.SessionSettings;
 @Endpoint(id = "quickfixjserver")
 public class QuickFixJServerEndpoint extends AbstractQuickFixJEndpoint {
 
-	public QuickFixJServerEndpoint(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
-		super(serverAcceptor, serverSessionSettings);
+	public QuickFixJServerEndpoint(Acceptor serverAcceptor,
+								   SessionSettings serverSessionSettings,
+								   Sanitizer sanitizer
+	) {
+		super(serverAcceptor, serverSessionSettings, sanitizer);
 	}
 }

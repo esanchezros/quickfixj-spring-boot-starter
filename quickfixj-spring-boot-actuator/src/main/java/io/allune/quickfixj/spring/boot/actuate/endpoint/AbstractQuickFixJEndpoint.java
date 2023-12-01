@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import quickfix.ConfigError;
@@ -22,8 +23,8 @@ import quickfix.Connector;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,9 +41,14 @@ public class AbstractQuickFixJEndpoint {
 
 	private final SessionSettings sessionSettings;
 
-	AbstractQuickFixJEndpoint(Connector connector, SessionSettings sessionSettings) {
+	private final Sanitizer sanitizer;
+
+	AbstractQuickFixJEndpoint(Connector connector,
+							  SessionSettings sessionSettings,
+							  Sanitizer sanitizer) {
 		this.connector = connector;
 		this.sessionSettings = sessionSettings;
+		this.sanitizer = sanitizer;
 	}
 
 	@ReadOperation
@@ -51,9 +57,14 @@ public class AbstractQuickFixJEndpoint {
 		connector.getSessions().forEach(sessionId -> {
 			try {
 				Properties p = new Properties();
-				p.putAll(sessionSettings.getDefaultProperties());
-				p.putAll(sessionSettings.getSessionProperties(sessionId));
-				p.putAll(addSessionIdProperties(sessionId));
+				Optional.ofNullable(sessionSettings.getDefaultProperties())
+					.ifPresent(properties -> properties.forEach((key, value) ->
+						p.put(key, sanitizeProperty(String.valueOf(key), value))));
+				Optional.ofNullable(sessionSettings.getSessionProperties(sessionId))
+					.ifPresent(properties -> properties.forEach((key, value) ->
+						p.put(key, sanitizeProperty(String.valueOf(key), value))));
+				addSessionIdProperties(sessionId).forEach((key, value) ->
+					p.put(key, sanitizeProperty(String.valueOf(key), value)));
 
 				reports.put(sessionId.toString(), p);
 			} catch (ConfigError e) {
@@ -61,6 +72,10 @@ public class AbstractQuickFixJEndpoint {
 			}
 		});
 		return reports;
+	}
+
+	private Object sanitizeProperty(String key, Object value) {
+		return this.sanitizer.sanitize(key, value);
 	}
 
 	private Properties addSessionIdProperties(SessionID sessionID) {

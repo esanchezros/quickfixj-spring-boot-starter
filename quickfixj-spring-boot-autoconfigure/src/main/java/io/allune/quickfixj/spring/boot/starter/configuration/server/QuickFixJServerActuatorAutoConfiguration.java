@@ -19,6 +19,7 @@ import io.allune.quickfixj.spring.boot.actuate.endpoint.QuickFixJServerEndpoint;
 import io.allune.quickfixj.spring.boot.actuate.health.QuickFixJSessionHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
+import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -47,8 +48,10 @@ public class QuickFixJServerActuatorAutoConfiguration {
 	@ConditionalOnClass({Acceptor.class, SessionSettings.class})
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-	public QuickFixJServerEndpoint quickfixjServerEndpoint(Acceptor serverAcceptor, SessionSettings serverSessionSettings) {
-		return new QuickFixJServerEndpoint(serverAcceptor, serverSessionSettings);
+	public QuickFixJServerEndpoint quickfixjServerEndpoint(
+		Acceptor serverAcceptor, SessionSettings serverSessionSettings, Sanitizer serverActuatorSanitizer
+	) {
+		return new QuickFixJServerEndpoint(serverAcceptor, serverSessionSettings, serverActuatorSanitizer);
 	}
 
 	@Bean
@@ -68,5 +71,11 @@ public class QuickFixJServerActuatorAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SessionScheduleFactory sessionSchedule() {
 		return new DefaultSessionScheduleFactory();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Sanitizer serverActuatorSanitizer() {
+		return new Sanitizer();
 	}
 }

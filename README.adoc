@@ -10,6 +10,11 @@ image:https://app.codacy.com/project/badge/Grade/1c6bf92b53324a45ba587e061dc6547
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
 
+== Compatibility with version 3.2 onwards
+
+If you use Spring Boot 3.2 or greater you will need to use version 2.17.0 or greater of the Spring Boot Starter for QuickFIX/J as it
+fixes an issue with https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery[Parameter Name Discovery]
+
 == Getting started
 
 To use the QuickFIX/J Server or QuickFIX/J Client you need to add the QuickFIX/J Spring Boot Starter dependency in your project.

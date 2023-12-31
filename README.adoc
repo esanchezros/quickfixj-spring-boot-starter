@@ -8,7 +8,7 @@ image:https://app.codacy.com/project/badge/Grade/1c6bf92b53324a45ba587e061dc6547
 = Spring Boot Starter for QuickFIX/J (Spring Boot 2 and Spring Boot 3)
 
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
-It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.1.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.1.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.1.0/quickfix/Connector.html[Connector].
+It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.3.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.3.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.3.0/quickfix/Connector.html[Connector].
 
 == Compatibility with version 3.2 onwards
 
@@ -55,25 +55,25 @@ public class AppServer {
     }
 
     @Bean
-    public Application clientApplication() {
-        return new ClientApplicationAdapter(); // Provide your own implementation here
+    public Application serverApplication() {
+        return new ServerApplicationAdapter(); // Provide your own implementation here
     }
 
     @Bean
-    public Initiator clientInitiator(
-            Application clientApplication,
-            MessageStoreFactory clientMessageStoreFactory,
-            SessionSettings clientSessionSettings,
-            LogFactory clientLogFactory,
-            MessageFactory clientMessageFactory
+    public Acceptor severAcceptor(
+            Application serverApplication,
+            MessageStoreFactory serverMessageStoreFactory,
+            SessionSettings serverSessionSettings,
+            LogFactory serverLogFactory,
+            MessageFactory serverMessageFactory
     ) throws ConfigError {
-        return new ThreadedSocketInitiator(clientApplication, clientMessageStoreFactory, clientSessionSettings,
-                clientLogFactory, clientMessageFactory);
+        return new ThreadedSocketAcceptor(serverApplication, serverMessageStoreFactory, serverSessionSettings,
+                serverLogFactory, serverMessageFactory);
     }
 
     @Bean
-    public LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
-        return new FileLogFactory(clientSessionSettings);
+    public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
+        return new FileLogFactory(serverSessionSettings);
     }
 }
 ----
@@ -516,7 +516,7 @@ Enabling the autoconfiguration of QuickFix/J Client can be done through a proper
 
 === Configuring the QuickFix/J Client
 
-Additionally you need to follow the https://www.quickfixj.org/usermanual/2.1.0/usage/configuration.html[configuration guide]
+Additionally you need to follow the https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[configuration guide]
 to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By a QuickFIX/J configuration string defined by the `quickfixj.client.configString` property

@@ -165,7 +165,7 @@
 					<properties>
 						<!-- Values to be substituted in template -->
 						<inceptionYear>2017</inceptionYear>
-						<currentYear>2023</currentYear>
+						<currentYear>2024</currentYear>
 					</properties>
 					<strictCheck>true</strictCheck>
 					<includes>

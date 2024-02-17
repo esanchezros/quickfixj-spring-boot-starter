@@ -425,7 +425,7 @@ For example:
 
 [source,json]
 ----
-"quickfixjserver": {
+"quickfixjServerSession": {
     "status": "DOWN",
     "details": {
         "FIXT.1.1:BANZAI->EXEC1": "LoggedOn",
@@ -839,7 +839,7 @@ For example:
 
 [source,json]
 ----
-"quickfixjclient": {
+"quickfixjClientSession": {
     "status": "DOWN",
     "details": {
         "FIXT.1.1:BANZAI->EXEC1": "LoggedOn",

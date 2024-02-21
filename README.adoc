@@ -364,6 +364,8 @@ management.endpoints.web.exposure.include=quickfixjserver # whether the endpoint
 ----
 management:
   endpoint:
+    health:
+      show-details: always
     quickfixjserver:
       enabled: true
   endpoints:
@@ -779,6 +781,8 @@ management.endpoints.web.exposure.include=quickfixjclient # whether the endpoint
 ----
 management:
   endpoint:
+    health:
+      show-details: always
     quickfixjclient:
       enabled: true
   endpoints:

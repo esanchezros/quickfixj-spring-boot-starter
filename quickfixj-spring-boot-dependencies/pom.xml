@@ -12,7 +12,7 @@
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>18.0.2.1</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>8</maven.compiler.source>

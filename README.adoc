@@ -29,6 +29,14 @@ To use the QuickFIX/J Server or QuickFIX/J Client you need to add the QuickFIX/J
 </dependency>
 ----
 
+## QuickFIX/J Runtime
+
+The QuickFIX/J Spring Boot Starter no longer includes ```quickfixj-messages-all``` dependency and now includes the standard published FIX specification versions from FIX 4.0 to FIX Latest built by the QuickFIX/J project as __optional__ dependency. They are **not** specified as _runtime_ dependencies any longer, which makes it easier to customise QuickFIX/J deployments.
+
+If you do not need to customise a FIX integration then you can use the ```org.quickfixj``` artefacts built by the QuickFIX/J project. Include them as dependencies of your application.
+
+For more information about customising the QuickFIX/J Runtime refer to https://github.com/quickfix-j/quickfixj?tab=readme-ov-file#quickfixj-runtime
+
 == QuickFIX/J Spring Boot Starter - Server (Acceptor)
 
 There are two options to configure a QuickFIX/J Server.

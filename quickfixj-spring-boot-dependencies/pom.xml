@@ -95,8 +95,57 @@
 			</dependency>
 			<dependency>
 				<groupId>org.quickfixj</groupId>
-				<artifactId>quickfixj-messages-all</artifactId>
+				<artifactId>quickfixj-messages-fix40</artifactId>
 				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix41</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix42</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix43</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix44</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50sp1</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50sp2</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fixt11</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
 			</dependency>
 
 			<!-- Test -->

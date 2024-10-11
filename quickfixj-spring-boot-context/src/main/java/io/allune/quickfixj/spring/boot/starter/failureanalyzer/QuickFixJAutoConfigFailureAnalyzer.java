@@ -15,12 +15,13 @@
  */
 package io.allune.quickfixj.spring.boot.starter.failureanalyzer;
 
-import com.google.common.base.Throwables;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.exception.QuickFixJBaseException;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+
+import java.util.Objects;
 
 /**
  * The failure analyzer is responsible to provide readable information of exception which
@@ -51,11 +52,23 @@ public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<
 
 	private String getRootCauseMessage(QuickFixJBaseException cause) {
 		String rootCauseMessage = "no root cause found";
-		Throwable rootCause = Throwables.getRootCause(cause);
+		Throwable rootCause = getRootCause(cause);
 		if (rootCause != null) {
 			rootCauseMessage = rootCause.getMessage() != null ? rootCause.getMessage() : "";
 		}
 		return rootCauseMessage;
 	}
 
+	public static Throwable getRootCause(Throwable throwable) {
+		try {
+			Objects.requireNonNull(throwable);
+			Throwable rootCause = throwable;
+			while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+				rootCause = rootCause.getCause();
+			}
+			return rootCause;
+		} catch (Exception e) {
+			return throwable;
+		}
+	}
 }

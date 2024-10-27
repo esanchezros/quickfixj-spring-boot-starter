@@ -247,7 +247,7 @@
 				<version>4.6</version>
 				<configuration>
 					<!-- Template location -->
-					<header>licence-header.txt</header>
+					<header>licence-header.template</header>
 					<properties>
 						<!-- Values to be substituted in template -->
 						<inceptionYear>2017</inceptionYear>

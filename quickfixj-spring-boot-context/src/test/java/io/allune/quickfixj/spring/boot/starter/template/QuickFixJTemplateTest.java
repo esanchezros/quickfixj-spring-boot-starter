@@ -32,6 +32,7 @@ import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.field.ApplVerID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
@@ -337,6 +338,28 @@ public class QuickFixJTemplateTest {
 		verify(session, never()).getDataDictionaryProvider();
 		verify(dataDictionaryProvider, never()).getApplicationDataDictionary(any());
 		verify(applicationDataDictionary, never()).validate(any());
+	}
+
+	@Test
+	public void shouldDoValidationForSpecificVersion() throws FieldNotFound, IncorrectTagValue, IncorrectDataFormat {
+		// Given
+		Message.Header header = mock(Message.Header.class);
+		given(message.getHeader()).willReturn(header);
+		given(header.getString(ApplVerID.FIELD)).willReturn(ApplVerID.FIX43);
+		given(header.getString(SenderCompID.FIELD)).willReturn(expectedSender);
+		given(header.getString(TargetCompID.FIELD)).willReturn(expectedTarget);
+		given(header.getString(BeginString.FIELD)).willReturn(expectedBeginString);
+		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
+		given(session.getDataDictionaryProvider()).willReturn(dataDictionaryProvider);
+		given(dataDictionaryProvider.getApplicationDataDictionary(new ApplVerID(ApplVerID.FIX43))).willReturn(applicationDataDictionary);
+		quickFixJTemplate.setDoValidation(true);
+
+		// When/Then
+		assertThatCode(() -> quickFixJTemplate.send(message)).doesNotThrowAnyException();
+
+		verify(session).getDataDictionaryProvider();
+		verify(dataDictionaryProvider).getApplicationDataDictionary(any());
+		verify(applicationDataDictionary).validate(any(), any(Boolean.class));
 	}
 
 	private void assertSessionID(SessionID expectedSessionID) {

@@ -23,6 +23,9 @@ import quickfix.RuntimeError;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -115,5 +118,82 @@ public class ConnectorManagerTest {
 		assertThat(connectorManager.isRunning()).isFalse();
 
 		verify(connector).start();
+	}
+
+	@Test
+	void testIsAutoStartup_defaultTrue() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// By default autoStartup should be true
+		assertTrue(connectorManager.isAutoStartup(), "The autoStartup should be true by default");
+	}
+
+	@Test
+	void testIsAutoStartup_setToFalse() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// Set autoStartup to false
+		connectorManager.setAutoStartup(false);
+		assertFalse(connectorManager.isAutoStartup(), "The autoStartup should be false after setting it");
+	}
+
+	@Test
+	void testIsAutoStartup_setToTrue() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+
+		// First set it to false
+		connectorManager.setAutoStartup(false);
+		assertFalse(connectorManager.isAutoStartup(), "The autoStartup should be false after setting it");
+
+		// Then set it back to true
+		connectorManager.setAutoStartup(true);
+		assertTrue(connectorManager.isAutoStartup(), "The autoStartup should be true after setting it back");
+	}
+
+	@Test
+	void testGetPhase_defaultValue() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// By default the phase should be Integer.MAX_VALUE
+		assertEquals(Integer.MAX_VALUE, connectorManager.getPhase(), "The default phase should be Integer.MAX_VALUE");
+	}
+
+	@Test
+	void testSetPhase_customValue() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// Set phase to a specific value and check
+		int customPhase = 42;
+		connectorManager.setPhase(customPhase);
+		assertEquals(customPhase, connectorManager.getPhase(), "The phase should be the custom value set");
+	}
+
+	@Test
+	void testIsForceDisconnect_defaultValue() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// By default, forceDisconnect should be false
+		assertFalse(connectorManager.isForceDisconnect(), "The default forceDisconnect should be false");
+	}
+
+	@Test
+	void testSetForceDisconnect_true() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// Set forceDisconnect to true and check
+		connectorManager.setForceDisconnect(true);
+		assertTrue(connectorManager.isForceDisconnect(), "The forceDisconnect should be true after setting it");
+	}
+
+	@Test
+	void testSetForceDisconnect_false() {
+		Connector connector = mock(Connector.class);
+		ConnectorManager connectorManager = new ConnectorManager(connector);
+		// Initially set forceDisconnect to true
+		connectorManager.setForceDisconnect(true);
+		// Set forceDisconnect to false and check
+		connectorManager.setForceDisconnect(false);
+		assertFalse(connectorManager.isForceDisconnect(), "The forceDisconnect should be false after setting it back");
 	}
 }

@@ -15,67 +15,6 @@ It simplifies the configuration required to create and start an https://www.quic
 
 In this Spring Boot Starter, QuickFIX/J Server is equivalent to `Acceptor` and QuickFIX/J Client to `Initiator`.
 
-== Breaking changes with previous versions
-
-Due to the changes in https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#core-container[how dependencies are autowired from Spring Framework 6.1] and https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery[Parameter Name Discovery], having the quickfixj client and server in the same spring context is not supported.
-
-If you have an application that need to use both, or multiple of one, you can use the following approach to separate the Spring contexts and configurations:
-
-[source,java]
-----
-@SpringBootConfiguration
-public class ApplicationConfiguration {
-
-    public static void main(String[] args) {
-        SpringApplicationBuilder parent =
-                new SpringApplicationBuilder(QuickFixJCommonConfiguration.class);
-        parent.child(QuickFixJServerYourCompanyContextConfiguration.class).web(WebApplicationType.SERVLET);
-        parent.child(QuickFixJClientNDAQContextConfiguration.class).web(WebApplicationType.SERVLET);
-        parent.child(QuickFixJClientFOREXContextConfiguration.class).web(WebApplicationType.SERVLET);
-        parent.child(QuickFixJClientDOWJONESContextConfiguration.class).web(WebApplicationType.SERVLET);
-        parent.run(args);
-    }
-
-    @Configuration
-    public class QuickFixJCommonConfiguration {
-
-        @Bean
-        public QuickFixJTemplate quickFixJTemplate() {
-            return new QuickFixJTemplate();
-        }
-    }
-
-
-    @EnableAutoConfiguration
-    @Configuration(proxyBeanMethods = false)
-    @PropertySource("classpath:server/server.properties")
-    public class QuickFixJServerYourCompanyContextConfiguration {
-        // override beans if required
-    }
-
-    @EnableAutoConfiguration
-    @Configuration(proxyBeanMethods = false)
-    @PropertySource("classpath:client/ndaq.properties")
-    public class QuickFixJClientNDAQContextConfiguration {
-        // override beans if required
-    }
-
-    @EnableAutoConfiguration
-    @Configuration(proxyBeanMethods = false)
-    @PropertySource("classpath:client/forex.properties")
-    public class QuickFixJClientFOREXContextConfiguration {
-        // override beans if required
-    }
-
-    @EnableAutoConfiguration
-    @Configuration(proxyBeanMethods = false)
-    @PropertySource("classpath:client/dow-jones.properties")
-    public class QuickFixJClientDOWJONESContextConfiguration {
-        // override beans if required
-    }
-}
-----
-
 == Getting started
 
 To use the QuickFIX/J Server or QuickFIX/J Client you need to add the QuickFIX/J Spring Boot Starter dependency in your project.
@@ -126,6 +65,72 @@ and add the specific version(s) of the FIX messages you need in your project `de
     <groupId>org.quickfixj</groupId>
     <artifactId>quickfixj-messages-fix50</artifactId>
 </dependency>
+----
+
+== Breaking changes with previous versions
+
+Due to the changes in https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#core-container[how dependencies are autowired from Spring Framework 6.1] and https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery[Parameter Name Discovery], having the quickfixj client and server in the same spring context is not supported.
+
+If you have an application that need to use both, or multiple of one, you can use the following approach to separate the Spring contexts and configurations:
+
+[source,java]
+----
+public class ApplicationConfiguration {
+
+    public static void main(String[] args) {
+        SpringApplicationBuilder parentBuilder
+            = new SpringApplicationBuilder(QuickFixJCommonConfiguration.class)
+                .web(WebApplicationType.NONE);
+        parentBuilder.run(args);
+
+        parentBuilder.child(QuickFixJServerYourCompanyContextConfiguration.class)
+                .properties("spring.config.name=server")
+                .web(WebApplicationType.SERVLET).run(args);
+        parentBuilder.child(QuickFixJClientNDAQContextConfiguration.class)
+                .properties("spring.config.name=ndaq")
+                .web(WebApplicationType.SERVLET).run(args);
+        parentBuilder.child(QuickFixJClientFOREXContextConfiguration.class)
+                .properties("spring.config.name=forex")
+                .web(WebApplicationType.SERVLET).run(args);
+        parentBuilder.child(QuickFixJClientDOWJONESContextConfiguration.class)
+                .properties("spring.config.name=dow-jones")
+                .web(WebApplicationType.SERVLET).run(args);
+    }
+
+    @Configuration
+    public class QuickFixJCommonConfiguration {
+
+        @Bean
+        public QuickFixJTemplate quickFixJTemplate() {
+            return new QuickFixJTemplate();
+        }
+    }
+
+
+    @EnableAutoConfiguration
+    @Configuration
+    public class QuickFixJServerYourCompanyContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    public class QuickFixJClientNDAQContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    public class QuickFixJClientFOREXContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    public class QuickFixJClientDOWJONESContextConfiguration {
+        // override beans if required
+    }
+}
 ----
 
 == QuickFIX/J Spring Boot Starter - Server (Acceptor)

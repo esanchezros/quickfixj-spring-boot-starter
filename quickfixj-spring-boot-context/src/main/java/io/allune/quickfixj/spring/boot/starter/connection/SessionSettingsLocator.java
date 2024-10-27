@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * {@link SessionSettings} helper class that attempts to load the settings files from the default locations
@@ -66,6 +67,9 @@ public class SessionSettingsLocator {
 	}
 
 	public SessionSettings loadSettingsFromString(String configString) {
+		if (isBlank(configString)) {
+			throw new SettingsNotFoundException("configString is blank or empty");
+		}
 		try {
 			return new SessionSettings(new ByteArrayInputStream(configString.getBytes()));
 		} catch (RuntimeException | ConfigError e) {

@@ -18,12 +18,18 @@ package io.allune.quickfixj.spring.boot.starter.connection;
 import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
+import quickfix.ConfigError;
+import quickfix.FieldConvertError;
+import quickfix.SessionID;
 import quickfix.SessionSettings;
 
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Eduardo Sanchez-Ros
@@ -49,5 +55,49 @@ public class SessionSettingsLocatorTest {
 		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
 		assertThatThrownBy(() -> sessionSettingsLocator.loadSettings(null, null, null, null))
 				.isInstanceOf(SettingsNotFoundException.class);
+	}
+
+	@Test
+	void testLoadSettingsFromString_validConfig() throws ConfigError, FieldConvertError {
+		String configString = "[DEFAULT]\n" +
+				"ConnectionType=initiator\n" +
+				"BeginString=FIX.4.2\n" +
+				"SenderCompID=CLIENT1\n" +
+				"TargetCompID=SERVER\n" +
+				"\n" +
+				"[SESSION]\n" +
+				"SocketConnectPort=5001\n" +
+				"SocketConnectHost=localhost\n";
+
+		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
+		SessionSettings settings = sessionSettingsLocator.loadSettingsFromString(configString);
+
+		assertThat("initiator").isEqualTo(settings.getString("ConnectionType"));
+		assertThat("FIX.4.2").isEqualTo(settings.getString("BeginString"));
+		assertThat("CLIENT1").isEqualTo(settings.getString("SenderCompID"));
+		assertThat("SERVER").isEqualTo(settings.getString("TargetCompID"));
+
+		SessionID sessionID = new SessionID("FIX.4.2", "CLIENT1", "SERVER");
+		assertThat(5001).isEqualTo(settings.getLong(sessionID, "SocketConnectPort"));
+		assertThat("localhost").isEqualTo(settings.getString(sessionID, "SocketConnectHost"));
+	}
+
+	@Test
+	void testLoadSettingsFromString_emptyConfig() {
+		String configString = "";
+		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
+		assertThatThrownBy(() -> sessionSettingsLocator.loadSettingsFromString(configString))
+				.isInstanceOf(SettingsNotFoundException.class);
+	}
+
+	@Test
+	void testLoadSettingsFromString_invalidConfig() {
+		String configString = "[INVALID]\n" +
+				"ThisIsNotAValidSetting";
+
+		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
+		assertDoesNotThrow(() -> {
+			sessionSettingsLocator.loadSettingsFromString(configString);
+		});
 	}
 }

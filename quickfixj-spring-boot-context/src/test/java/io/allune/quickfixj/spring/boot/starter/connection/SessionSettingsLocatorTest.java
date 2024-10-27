@@ -58,7 +58,7 @@ public class SessionSettingsLocatorTest {
 	}
 
 	@Test
-	void testLoadSettingsFromString_validConfig() throws ConfigError, FieldConvertError {
+	void testLoadSettingsFromStringValidConfig() throws ConfigError, FieldConvertError {
 		String configString = "[DEFAULT]\n" +
 				"ConnectionType=initiator\n" +
 				"BeginString=FIX.4.2\n" +
@@ -83,7 +83,7 @@ public class SessionSettingsLocatorTest {
 	}
 
 	@Test
-	void testLoadSettingsFromString_emptyConfig() {
+	void testLoadSettingsFromStringEmptyConfig() {
 		String configString = "";
 		SessionSettingsLocator sessionSettingsLocator = new SessionSettingsLocator(new DefaultResourceLoader());
 		assertThatThrownBy(() -> sessionSettingsLocator.loadSettingsFromString(configString))
@@ -91,7 +91,7 @@ public class SessionSettingsLocatorTest {
 	}
 
 	@Test
-	void testLoadSettingsFromString_invalidConfig() {
+	void testLoadSettingsFromStringInvalidConfig() {
 		String configString = "[INVALID]\n" +
 				"ThisIsNotAValidSetting";
 

@@ -121,7 +121,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testIsAutoStartup_defaultTrue() {
+	void testIsAutoStartupDefaultTrue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// By default autoStartup should be true
@@ -129,7 +129,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testIsAutoStartup_setToFalse() {
+	void testIsAutoStartupSetToFalse() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// Set autoStartup to false
@@ -138,7 +138,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testIsAutoStartup_setToTrue() {
+	void testIsAutoStartupSetToTrue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 
@@ -152,7 +152,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testGetPhase_defaultValue() {
+	void testGetPhaseDefaultValue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// By default the phase should be Integer.MAX_VALUE
@@ -160,7 +160,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testSetPhase_customValue() {
+	void testSetPhaseCustomValue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// Set phase to a specific value and check
@@ -170,7 +170,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testIsForceDisconnect_defaultValue() {
+	void testIsForceDisconnectDefaultValue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// By default, forceDisconnect should be false
@@ -178,7 +178,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testSetForceDisconnect_true() {
+	void testSetForceDisconnectToTrue() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// Set forceDisconnect to true and check
@@ -187,7 +187,7 @@ public class ConnectorManagerTest {
 	}
 
 	@Test
-	void testSetForceDisconnect_false() {
+	void testSetForceDisconnectToFalse() {
 		Connector connector = mock(Connector.class);
 		ConnectorManager connectorManager = new ConnectorManager(connector);
 		// Initially set forceDisconnect to true

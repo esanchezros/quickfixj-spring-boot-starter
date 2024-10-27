@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -75,7 +76,7 @@ public class AbstractQuickFixJEndpoint {
 	}
 
 	private Object sanitizeProperty(String key, Object value) {
-		return this.sanitizer.sanitize(key, value);
+		return this.sanitizer.sanitize(new SanitizableData(null, key, value), false);
 	}
 
 	private Properties addSessionIdProperties(SessionID sessionID) {

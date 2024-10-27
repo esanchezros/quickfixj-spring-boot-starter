@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.allune</groupId>
 		<artifactId>quickfixj-spring-boot</artifactId>
-		<version>2.18.1-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
 	<name>Spring Boot Starter for QuickFIX/J :: Starter</name>
@@ -13,9 +13,7 @@
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<quickfixj.version>2.3.1</quickfixj.version>
 	</properties>
 
 	<dependencies>
@@ -27,5 +25,73 @@
 			<groupId>io.allune</groupId>
 			<artifactId>quickfixj-spring-boot-autoconfigure</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.quickfixj</groupId>
+			<artifactId>quickfixj-core</artifactId>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-core</artifactId>
+				<version>${quickfixj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix40</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix41</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix42</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix43</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix44</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50sp1</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fix50sp2</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.quickfixj</groupId>
+				<artifactId>quickfixj-messages-fixt11</artifactId>
+				<version>${quickfixj.version}</version>
+				<optional>true</optional>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

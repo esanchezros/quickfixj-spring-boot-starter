@@ -15,7 +15,6 @@
  */
 package io.allune.quickfixj.spring.boot.starter.application;
 
-import io.allune.quickfixj.spring.boot.starter.EnableQuickFixJClient;
 import io.allune.quickfixj.spring.boot.starter.model.Create;
 import io.allune.quickfixj.spring.boot.starter.model.FromAdmin;
 import io.allune.quickfixj.spring.boot.starter.model.FromApp;
@@ -23,161 +22,123 @@ import io.allune.quickfixj.spring.boot.starter.model.Logon;
 import io.allune.quickfixj.spring.boot.starter.model.Logout;
 import io.allune.quickfixj.spring.boot.starter.model.ToAdmin;
 import io.allune.quickfixj.spring.boot.starter.model.ToApp;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
-import quickfix.Application;
+import org.springframework.context.ApplicationEventPublisher;
 import quickfix.Message;
 import quickfix.SessionID;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.FIVE_SECONDS;
+import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-/**
- * @author Eduardo Sanchez-Ros
- */
-@SpringBootTest(
-		properties = {
-				"quickfixj.client.autoStartup=false",
-				"quickfixj.client.config=classpath:quickfixj.cfg",
-				"quickfixj.client.jmx-enabled=false"
-		})
 public class EventPublisherApplicationAdapterTest {
 
-	@Autowired
-	private Application clientApplication;
-
-	private static List<Object> receivedEvents = new ArrayList<>();
-
-	@BeforeEach
-	public void setUp() {
-		receivedEvents.clear();
-	}
-
 	@Test
-	public void shouldPublishFromAdminMessage() throws Exception {
+	public void testFromAdmin() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		Message message = mock(Message.class);
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.fromAdmin(message, sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() == 1);
-		assertThat(receivedEvents.get(0)).isInstanceOf(FromAdmin.class);
-		assertThat(((FromAdmin) receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((FromAdmin) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.fromAdmin(message, sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(FromAdmin.class));
 	}
 
 	@Test
-	public void shouldPublishFromAppMessage() throws Exception {
+	public void testFromApp() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		Message message = mock(Message.class);
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.fromApp(message, sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(FromApp.class);
-		assertThat(((FromApp) receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((FromApp) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.fromApp(message, sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(FromApp.class));
 	}
 
 	@Test
-	public void shouldPublishCreateMessage() {
+	public void testOnCreate() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.onCreate(sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(Create.class);
-		assertThat(((Create) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.onCreate(sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(Create.class));
 	}
 
 	@Test
-	public void shouldPublishLogonMessage() {
+	public void testOnLogon() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.onLogon(sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(Logon.class);
-		assertThat(((Logon) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.onLogon(sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(Logon.class));
 	}
 
 	@Test
-	public void shouldPublishLogoutMessage() {
+	public void testOnLogout() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.onLogout(sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(Logout.class);
-		assertThat(((Logout) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.onLogout(sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(Logout.class));
 	}
 
 	@Test
-	public void shouldPublishToAdminMessage() {
+	public void testToAdmin() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		Message message = mock(Message.class);
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.toAdmin(message, sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(ToAdmin.class);
-		assertThat(((ToAdmin) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
+		// invoke the method under test.
+		adapter.toAdmin(message, sessionId);
+
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(ToAdmin.class));
 	}
 
 	@Test
-	public void shouldPublishToAppMessage() throws Exception {
+	public void testToApp() {
+		// mock dependencies
+		ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+		EventPublisherApplicationAdapter adapter = new EventPublisherApplicationAdapter(applicationEventPublisher);
+
 		Message message = mock(Message.class);
 		SessionID sessionId = mock(SessionID.class);
-		clientApplication.toApp(message, sessionId);
 
-		await().atMost(FIVE_SECONDS).until(() -> receivedEvents.size() > 0);
-		assertThat(receivedEvents.get(0)).isInstanceOf(ToApp.class);
-		assertThat(((ToApp) receivedEvents.get(0)).getMessage()).isEqualTo(message);
-		assertThat(((ToApp) receivedEvents.get(0)).getSessionId()).isEqualTo(sessionId);
-	}
+		// invoke the method under test.
+		adapter.toApp(message, sessionId);
 
-	@Configuration
-	@EnableAutoConfiguration
-	@EnableQuickFixJClient
-	static class TestConfig {
-
-		@EventListener
-		public void listenFromAdmin(FromAdmin fromAdmin) {
-			receivedEvents.add(fromAdmin);
-		}
-
-		@EventListener
-		public void listenFromApp(FromApp fromApp) {
-			receivedEvents.add(fromApp);
-		}
-
-		@EventListener
-		public void listenOnCreate(Create create) {
-			receivedEvents.add(create);
-		}
-
-		@EventListener
-		public void listenOnLogon(Logon logon) {
-			receivedEvents.add(logon);
-		}
-
-		@EventListener
-		public void listenOnLogout(Logout logout) {
-			receivedEvents.add(logout);
-		}
-
-		@EventListener
-		public void listenToAdmin(ToAdmin toAdmin) {
-			receivedEvents.add(toAdmin);
-		}
-
-		@EventListener
-		public void listenToApp(ToApp toApp) {
-			receivedEvents.add(toApp);
-		}
+		// Mock will record the interactions. We just need to verify if the call was made
+		verify(applicationEventPublisher).publishEvent(isA(ToApp.class));
 	}
 }

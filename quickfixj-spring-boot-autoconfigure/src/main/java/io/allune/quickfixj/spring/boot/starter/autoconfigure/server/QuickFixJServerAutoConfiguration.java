@@ -24,7 +24,7 @@ import org.quickfixj.jmx.JmxExporter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -44,7 +44,6 @@ import quickfix.DefaultMessageFactory;
 import quickfix.ExecutorFactory;
 import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
-import quickfix.Initiator;
 import quickfix.JdbcLogFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
@@ -73,9 +72,9 @@ import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
  * @author Eduardo Sanchez-Ros
  */
 @AutoConfiguration
-@ConditionalOnClass(ConnectorManager.class)
 @ConditionalOnMissingBean(name = "serverConnectorManager")
 @ConditionalOnProperty(name = "quickfixj.server.enabled", havingValue = "true")
+@ConditionalOnExpression(value = "${quickfixj.client.enabled:false} == false")
 @EnableConfigurationProperties(QuickFixJBootProperties.class)
 public class QuickFixJServerAutoConfiguration {
 
@@ -87,21 +86,21 @@ public class QuickFixJServerAutoConfiguration {
 	 * Creates the default server's {@link SessionSettings session settings} bean used in the creation of the
 	 * {@link Acceptor acceptor} connector
 	 *
-	 * @param serverSessionSettingsLocator The {@link SessionSettingsLocator} for the server
-	 * @param properties                   The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
+	 * @param sessionSettingsLocator The {@link SessionSettingsLocator} for the server
+	 * @param properties             The {@link QuickFixJBootProperties QuickFix/J Spring Boot properties}
 	 * @return The server's {@link SessionSettings session settings} bean
 	 */
-	@Bean(name = "serverSessionSettings")
-	@ConditionalOnMissingBean(name = "serverSessionSettings")
+	@Bean
+	@ConditionalOnMissingBean
 	public SessionSettings serverSessionSettings(
-			@Qualifier("serverSessionSettingsLocator") SessionSettingsLocator serverSessionSettingsLocator,
+			SessionSettingsLocator sessionSettingsLocator,
 			QuickFixJBootProperties properties
 	) {
 		if (isNotEmpty(properties.getServer().getConfigString())) {
-			return serverSessionSettingsLocator.loadSettingsFromString(properties.getServer().getConfigString());
+			return sessionSettingsLocator.loadSettingsFromString(properties.getServer().getConfigString());
 		}
 
-		return serverSessionSettingsLocator.loadSettings(
+		return sessionSettingsLocator.loadSettings(
 				properties.getServer().getConfig(),
 				System.getProperty(SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG),
 				"file:./" + QUICKFIXJ_SERVER_CONFIG,
@@ -116,15 +115,15 @@ public class QuickFixJServerAutoConfiguration {
 	 * @return The default server's {@link Application application} bean
 	 */
 	@Bean
-	@ConditionalOnMissingBean(name = "serverApplication")
+	@ConditionalOnMissingBean
 	public Application serverApplication(ApplicationEventPublisher applicationEventPublisher) {
 		return new EventPublisherApplicationAdapter(applicationEventPublisher);
 	}
 
+	/**
+	 * Grouping the creation of the client's {@link MessageStoreFactory}
+	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "cachedfile")
 	static class CachedFileMessageStoreFactoryConfiguration {
 
 		/**
@@ -136,16 +135,16 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
-		public MessageStoreFactory serverMessageStoreFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "cachedfile")
+		public MessageStoreFactory serverMessageStoreFactory(SessionSettings serverSessionSettings) {
 			return new CachedFileStoreFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "file")
 	static class FileMessageStoreFactoryConfiguration {
+
 		/**
 		 * Creates the server's {@link MessageStoreFactory} of type {@link FileStoreFactory} if
 		 * {@code quickfixj.server.message-store-factory} is set to {@code file}, used in the creation of the
@@ -155,15 +154,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
-		public MessageStoreFactory serverMessageStoreFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "file")
+		public MessageStoreFactory serverMessageStoreFactory(SessionSettings serverSessionSettings) {
 			return new FileStoreFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "jdbc")
 	static class JdbcMessageStoreFactoryConfiguration {
 
 		/**
@@ -175,15 +173,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
-		public MessageStoreFactory serverMessageStoreFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "jdbc")
+		public MessageStoreFactory serverMessageStoreFactory(SessionSettings serverSessionSettings) {
 			return new JdbcStoreFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "memory", matchIfMissing = true)
 	static class MemoryMessageStoreFactoryConfiguration {
 
 		/**
@@ -194,15 +191,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "memory", matchIfMissing = true)
 		public MessageStoreFactory serverMessageStoreFactory() {
 			return new MemoryStoreFactory();
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "noop")
 	static class NoopMessageStoreFactoryConfiguration {
 
 		/**
@@ -213,15 +209,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "noop")
 		public MessageStoreFactory serverMessageStoreFactory() {
 			return new NoopStoreFactory();
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MessageStoreFactory.class)
-	@ConditionalOnMissingBean(name = "serverMessageStoreFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "sleepycat")
 	static class SleepycatMessageStoreFactoryConfiguration {
 
 		/**
@@ -233,15 +228,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link MessageStoreFactory}
 		 */
 		@Bean
-		public MessageStoreFactory serverMessageStoreFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "message-store-factory", havingValue = "sleepycat")
+		public MessageStoreFactory serverMessageStoreFactory(SessionSettings serverSessionSettings) {
 			return new SleepycatStoreFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(LogFactory.class)
-	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "file")
 	static class FileLogFactoryConfiguration {
 
 		/**
@@ -253,16 +247,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link LogFactory}
 		 */
 		@Bean
-		@Primary
-		public LogFactory serverLogFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "file")
+		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new FileLogFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(LogFactory.class)
-	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "jdbc")
 	static class JdbcLogFactoryConfiguration {
 
 		/**
@@ -274,16 +266,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link LogFactory}
 		 */
 		@Bean
-		@Primary
-		public LogFactory serverLogFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "jdbc")
+		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new JdbcLogFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(LogFactory.class)
-	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "slf4j")
 	static class Slf4jLogFactoryConfiguration {
 
 		/**
@@ -295,17 +285,14 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link LogFactory}
 		 */
 		@Bean
-		@Primary
-		public LogFactory serverLogFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "slf4j")
+		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new SLF4JLogFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(LogFactory.class)
-	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory",
-			havingValue = "screen", matchIfMissing = true)
 	static class ScreenLogFactoryConfiguration {
 
 		/**
@@ -317,22 +304,20 @@ public class QuickFixJServerAutoConfiguration {
 		 * @return The server's {@link LogFactory}
 		 */
 		@Bean
-		@Primary
-		public LogFactory serverLogFactory(@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings) {
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "screen", matchIfMissing = true)
+		public LogFactory serverLogFactory(SessionSettings serverSessionSettings) {
 			return new ScreenLogFactory(serverSessionSettings);
 		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(LogFactory.class)
-	@ConditionalOnMissingBean(name = "serverLogFactory")
-	@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "compositelog")
 	static class CompositeLogFactoryConfiguration {
 
 		/**
 		 * Creates the server's {@link LogFactory} of type {@link CompositeLogFactory} if
 		 * {@code quickfixj.server.log-factory} is set to {@code compositelog}, used in the creation of the
-		 * {@link Initiator initiator} connector
+		 * {@link Acceptor acceptor} connector
 		 *
 		 * @param logFactories The server's list of {@link LogFactory log factories} beans to use for creating
 		 *                     the {@link CompositeLogFactory}
@@ -340,6 +325,7 @@ public class QuickFixJServerAutoConfiguration {
 		 */
 		@Bean
 		@Primary
+		@ConditionalOnProperty(prefix = "quickfixj.server", name = "log-factory", havingValue = "compositelog")
 		public LogFactory serverLogFactory(List<LogFactory> logFactories) {
 			if (logFactories == null || logFactories.isEmpty()) {
 				throw new ConfigurationException("The CompositeLogFactory requires at least one LogFactory bean defined in your application");
@@ -355,15 +341,12 @@ public class QuickFixJServerAutoConfiguration {
 	 * @return The default server's {@link MessageFactory application} bean
 	 */
 	@Bean
-	@ConditionalOnMissingBean(name = "serverMessageFactory")
+	@ConditionalOnMissingBean
 	public MessageFactory serverMessageFactory() {
 		return new DefaultMessageFactory();
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Acceptor.class)
-	@ConditionalOnMissingBean(name = "serverAcceptor")
-	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public static class SocketAcceptorConfiguration {
 
 		/**
@@ -379,15 +362,16 @@ public class QuickFixJServerAutoConfiguration {
 		 * @throws ConfigError exception thrown when a configuration error is detected
 		 */
 		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
 		public Acceptor serverAcceptor(
-				@Qualifier("serverApplication") Application serverApplication,
-				@Qualifier("serverMessageStoreFactory") MessageStoreFactory serverMessageStoreFactory,
-				@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings,
-				@Qualifier("serverLogFactory") LogFactory serverLogFactory,
-				@Qualifier("serverMessageFactory") MessageFactory serverMessageFactory,
-				@Qualifier("serverExecutorFactory") Optional<ExecutorFactory> serverExecutorFactory
+				Application serverApplication,
+				MessageStoreFactory serverMessageStoreFactory,
+				SessionSettings serverSessionSettings,
+				LogFactory serverLogFactory,
+				MessageFactory serverMessageFactory,
+				Optional<ExecutorFactory> serverExecutorFactory
 		) throws ConfigError {
-
 			SocketAcceptor socketAcceptor = SocketAcceptor.newBuilder()
 					.withApplication(serverApplication)
 					.withMessageStoreFactory(serverMessageStoreFactory)
@@ -401,9 +385,6 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Acceptor.class)
-	@ConditionalOnMissingBean(name = "serverAcceptor")
-	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
 	public static class ThreadedSocketAcceptorConfiguration {
 
 		/**
@@ -419,13 +400,15 @@ public class QuickFixJServerAutoConfiguration {
 		 * @throws ConfigError exception thrown when a configuration error is detected
 		 */
 		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
 		public Acceptor serverAcceptor(
-				@Qualifier("serverApplication") Application serverApplication,
-				@Qualifier("serverMessageStoreFactory") MessageStoreFactory serverMessageStoreFactory,
-				@Qualifier("serverSessionSettings") SessionSettings serverSessionSettings,
-				@Qualifier("serverLogFactory") LogFactory serverLogFactory,
-				@Qualifier("serverMessageFactory") MessageFactory serverMessageFactory,
-				@Qualifier("serverExecutorFactory") Optional<ExecutorFactory> serverExecutorFactory
+				Application serverApplication,
+				MessageStoreFactory serverMessageStoreFactory,
+				SessionSettings serverSessionSettings,
+				LogFactory serverLogFactory,
+				MessageFactory serverMessageFactory,
+				Optional<ExecutorFactory> serverExecutorFactory
 		) throws ConfigError {
 
 			ThreadedSocketAcceptor socketAcceptor = ThreadedSocketAcceptor.newBuilder()
@@ -441,11 +424,9 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@Primary
-	@ConditionalOnClass(ExecutorFactory.class)
-	@ConditionalOnMissingBean(name = "serverExecutorFactory")
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
-	public ExecutorFactory serverExecutorFactory(Executor serverTaskExecutor) {
+	public ExecutorFactory serverExecutorFactory(@Qualifier("serverTaskExecutor") Executor serverTaskExecutor) {
 		return new ExecutorFactory() {
 			@Override
 			public Executor getLongLivedExecutor() {
@@ -460,8 +441,6 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@Primary
-	@ConditionalOnMissingBean(name = "serverTaskExecutor")
 	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
 	public Executor serverTaskExecutor(QuickFixJBootProperties properties) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -505,9 +484,8 @@ public class QuickFixJServerAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnProperty(prefix = "quickfixj.server", name = "jmx-enabled", havingValue = "true")
-	@ConditionalOnClass(JmxExporter.class)
 	@ConditionalOnSingleCandidate(Acceptor.class)
-	@ConditionalOnMissingBean(name = "serverAcceptorMBean")
+	@ConditionalOnMissingBean
 	public ObjectName serverAcceptorMBean(Acceptor serverAcceptor) {
 		try {
 			JmxExporter exporter = new JmxExporter();
@@ -525,7 +503,8 @@ public class QuickFixJServerAutoConfiguration {
 	 * @return the server's {@link SessionSettingsLocator}
 	 */
 	@Bean
-	public SessionSettingsLocator serverSessionSettingsLocator(ResourceLoader resourceLoader) {
+	@ConditionalOnMissingBean
+	public SessionSettingsLocator sessionSettingsLocator(ResourceLoader resourceLoader) {
 		return new SessionSettingsLocator(resourceLoader);
 	}
 }

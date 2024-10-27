@@ -11,10 +11,70 @@ image:https://api.securityscorecards.dev/projects/github.com/esanchezros/quickfi
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.3.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.3.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.3.0/quickfix/Connector.html[Connector].
 
-== Compatibility with version 3.2 onwards
+== Terminology
 
-If you use Spring Boot 3.2 or greater you will need to use version 2.17.0 or greater of the Spring Boot Starter for QuickFIX/J as it
-fixes an issue with https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery[Parameter Name Discovery]
+In this Spring Boot Starter, QuickFIX/J Server is equivalent to `Acceptor` and QuickFIX/J Client to `Initiator`.
+
+== Breaking changes with previous versions
+
+Due to the changes in https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#core-container[how dependencies are autowired from Spring Framework 6.1] and https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery[Parameter Name Discovery], having the quickfixj client and server in the same spring context is not supported.
+
+If you have an application that need to use both, or multiple of one, you can use the following approach to separate the Spring contexts and configurations:
+
+[source,java]
+----
+@SpringBootConfiguration
+public class ApplicationConfiguration {
+
+    public static void main(String[] args) {
+        SpringApplicationBuilder parent =
+                new SpringApplicationBuilder(QuickFixJCommonConfiguration.class);
+        parent.child(QuickFixJServerYourCompanyContextConfiguration.class).web(WebApplicationType.SERVLET);
+        parent.child(QuickFixJClientNDAQContextConfiguration.class).web(WebApplicationType.SERVLET);
+        parent.child(QuickFixJClientFOREXContextConfiguration.class).web(WebApplicationType.SERVLET);
+        parent.child(QuickFixJClientDOWJONESContextConfiguration.class).web(WebApplicationType.SERVLET);
+        parent.run(args);
+    }
+
+    @Configuration
+    public class QuickFixJCommonConfiguration {
+
+        @Bean
+        public QuickFixJTemplate quickFixJTemplate() {
+            return new QuickFixJTemplate();
+        }
+    }
+
+
+    @EnableAutoConfiguration
+    @Configuration(proxyBeanMethods = false)
+    @PropertySource("classpath:server/server.properties")
+    public class QuickFixJServerYourCompanyContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration(proxyBeanMethods = false)
+    @PropertySource("classpath:client/ndaq.properties")
+    public class QuickFixJClientNDAQContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration(proxyBeanMethods = false)
+    @PropertySource("classpath:client/forex.properties")
+    public class QuickFixJClientFOREXContextConfiguration {
+        // override beans if required
+    }
+
+    @EnableAutoConfiguration
+    @Configuration(proxyBeanMethods = false)
+    @PropertySource("classpath:client/dow-jones.properties")
+    public class QuickFixJClientDOWJONESContextConfiguration {
+        // override beans if required
+    }
+}
+----
 
 == Getting started
 
@@ -37,13 +97,13 @@ If you do not need to customise a FIX integration then you can use the ```org.qu
 
 For more information about customising the QuickFIX/J Runtime refer to https://github.com/quickfix-j/quickfixj?tab=readme-ov-file#quickfixj-runtime
 
-For example, import the `quickfixj-spring-boot-dependencies` pom in your `dependencyManagement` section:
+For example, import the `quickfixj-spring-boot-started` pom in your `dependencyManagement` section:
 
 [source,xml]
 ----
 <dependency>
     <groupId>io.allune</groupId>
-    <artifactId>quickfixj-spring-boot-dependencies</artifactId>
+    <artifactId>quickfixj-spring-boot-starter</artifactId>
     <version>3.0.0</version>
     <type>pom</type>
     <scope>import</scope>
@@ -54,6 +114,10 @@ and add the specific version(s) of the FIX messages you need in your project `de
 
 [source,xml]
 ----
+<dependency>
+    <groupId>io.allune</groupId>
+    <artifactId>quickfixj-spring-boot-starter</artifactId>
+</dependency>
 <dependency>
     <groupId>org.quickfixj</groupId>
     <artifactId>quickfixj-messages-fix44</artifactId>
@@ -66,23 +130,24 @@ and add the specific version(s) of the FIX messages you need in your project `de
 
 == QuickFIX/J Spring Boot Starter - Server (Acceptor)
 
-There are two options to configure a QuickFIX/J Server.
+=== Enabling QuickFix/J Server
 
-=== EnableQuickFixJServer annotation
-Adding the `@EnableQuickFixJServer` annotation in your project will configure an Acceptor with all the default QuickFix/J components:
+Adding `quickfixj.server.enabled=true` in your properties file will configure an Acceptor with all the default QuickFix/J components:
 
 * A `MessageStoreFactory` of type `MemoryStoreFactory`.
 * A `LogFactory` of type `ScreenLogFactory`.
 * An `Acceptor` of type `SocketAcceptor`.
 * An `Application` of type `EventPublisherApplicationAdapter`.
+* If quickfixj.server.concurrent.useDefaultExecutorFactory is set to `true`, an `ExecutorFactory` is configured and added to the `Acceptor`.
 
-All these QuickFix/J components can be configured via properties or by overriding the beans. If you choose to provide your own implementation for any of these components, you need to specify `spring.main.allow-bean-definition-overriding=true`. This annotation will be *deprecated* in future releases.
+All these QuickFix/J components can be configured via properties or by overriding the default beans.
+
+Note that `@EnableQuickFixJServer` has been deprecated in version `3.0.0`.
 
 For example:
 
 [source,java]
 ----
-@EnableQuickFixJServer
 @SpringBootApplication
 public class AppServer {
 
@@ -113,21 +178,6 @@ public class AppServer {
     }
 }
 ----
-
-=== Enabling QuickFix/J Server through a property
-
-Enabling the autoconfiguration of QuickFix/J Server can be done through a property. It autoconfigures an Acceptor with all the same default QuickFix/J components as `@EnableQuickFixJServer`.
-
-[cols="3*", options="header"]
-|===
-|property
-|example
-|description
-
-|quickfixj.server.enabled
-|true
-|Enables QuickFix/J Server autoconfiguration.
-|===
 
 === Configuring the QuickFix/J Server
 
@@ -225,6 +275,7 @@ For example:
 
 [source,properties]
 ----
+quickfixj.server.enabled=true
 quickfixj.server.config=classpath:quickfixj-server.cfg
 quickfixj.server.configString=[default]  \r\n\... (see below for an example)
 quickfixj.server.auto-startup=true
@@ -250,6 +301,7 @@ quickfixj.server.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thre
 ----
 quickfixj:
   server:
+    enabled: true
     config: classpath:quickfixj-server.cfg
     auto-startup: true
     force-disconnect: false
@@ -270,7 +322,7 @@ quickfixj:
     log-factory: screen
 ----
 
-=== QuickFIX/J configuration file in properties and yaml files
+=== QuickFIX/J Server configuration file in properties and yaml files
 
 Using the `quickfixj.server.configString` property:
 
@@ -487,25 +539,27 @@ management:
       enabled: true
 ----
 
+
 == QuickFIX/J Spring Boot Starter - Client (Initiator)
 
-There are two options to configure a QuickFIX/J Client.
+=== Enabling QuickFix/J Client
 
-=== EnableQuickFixJClient annotation
-Adding the `@EnableQuickFixJClient` annotation in your project will configure an Initiator with all the default QuickFix/J components:
+Adding `quickfixj.client.enabled=true` in your properties file will configure an Initiator with all the default QuickFix/J components:
 
 * A `MessageStoreFactory` of type `MemoryStoreFactory`.
 * A `LogFactory` of type `ScreenLogFactory`.
 * An `Initiator` of type `SocketInitiator`.
 * An `Application` of type `EventPublisherApplicationAdapter`.
+* If quickfixj.client.concurrent.useDefaultExecutorFactory is set to `true`, an `ExecutorFactory` is configured and added to the `Initiator`.
 
-All these QuickFix/J components can be configured via properties or by overriding the beans. If you choose to provide your own implementation for any of these components, you need to specify `spring.main.allow-bean-definition-overriding=true`. This annotation will be *deprecated* in future releases.
+All these QuickFix/J components can be configured via properties or by overriding the beans.
+
+Note that `@EnableQuickFixJClient` has been deprecated in version `3.0.0`.
 
 For example:
 
 [source,java]
 ----
-@EnableQuickFixJClient
 @SpringBootApplication
 public class AppClient {
 
@@ -537,24 +591,9 @@ public class AppClient {
 }
 ----
 
-=== Enabling QuickFix/J Client through a property
-
-Enabling the autoconfiguration of QuickFix/J Client can be done through a property. It autoconfigures an Initiator with all the same default QuickFix/J components as `@EnableQuickFixJClient`.
-
-[cols="3*", options="header"]
-|===
-|property
-|example
-|description
-
-|quickfixj.client.enabled
-|true
-|Enables QuickFix/J Client autoconfiguration.
-|===
-
 === Configuring the QuickFix/J Client
 
-Additionally you need to follow the https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[configuration guide]
+Additionally, you need to follow the https://www.quickfixj.org/usermanual/2.3.0/usage/configuration.html[configuration guide]
 to configure the FIX sessions. The configuration is resolved using the following approach:
 
 * By a QuickFIX/J configuration string defined by the `quickfixj.client.configString` property
@@ -582,6 +621,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |quickfixj.client.auto-startup
 |true
 |Whether to autostart the connection manager at start up (default: `true`).
+
+|quickfixj.client.force-disconnect
+|false
+|Whether logged on sessions should be disconnected forcibly when the connector is stopped (default: `false`).
 
 |quickfixj.client.phase
 |0
@@ -644,6 +687,7 @@ For example:
 
 [source,properties]
 ----
+quickfixj.client.enabled=true
 quickfixj.client.config=classpath:quickfixj-client.cfg
 quickfixj.client.configString=[default]  \r\n\... (see below for an example)
 quickfixj.client.auto-startup=true
@@ -668,6 +712,7 @@ quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thre
 ----
 quickfixj:
   client:
+    enabled: true
     config: classpath:quickfixj-client.cfg
     auto-startup: true
     force-disconnect: false
@@ -802,7 +847,6 @@ Enabling the autoconfiguration of QuickFix/J Client Actuator can be done through
 |===
 
 Please note that the `quickfixj-spring-boot-actuator` dependency will be added automatically by `quickfixj-spring-boot-starter`
-
 
 And enable the QuickFix/J Client endpoint in Spring:
 

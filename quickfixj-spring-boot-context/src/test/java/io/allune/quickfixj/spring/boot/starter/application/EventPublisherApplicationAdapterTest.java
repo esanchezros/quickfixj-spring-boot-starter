@@ -27,7 +27,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import quickfix.Message;
 import quickfix.SessionID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class EventPublisherApplicationAdapterTest {
 

@@ -15,14 +15,16 @@
  */
 package io.allune.quickfixj.spring.boot.starter.integration;
 
+import io.allune.quickfixj.spring.boot.starter.integration.config.QuickFixJCommonConfiguration;
+import io.allune.quickfixj.spring.boot.starter.integration.config.client.QuickFixJClientContextConfiguration;
+import io.allune.quickfixj.spring.boot.starter.integration.config.server.QuickFixJServerContextConfiguration;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.Initiator;
@@ -51,38 +53,27 @@ import static quickfix.field.CxlType.PARTIAL_CANCEL;
 /**
  * @author Eduardo Sanchez-Ros
  */
-@SpringBootTest(classes = QuickFixJServerClientITConfiguration.class,
-		properties = {
-				"spring.main.allow-bean-definition-overriding=true",
-				"quickfixj.client.enabled=true",
-				"quickfixj.client.autoStartup=true",
-				"quickfixj.client.config=classpath:quickfixj-client.cfg",
-				"quickfixj.client.jmx-enabled=false",
-				"quickfixj.server.enabled=true",
-				"quickfixj.server.autoStartup=true",
-				"quickfixj.server.config=classpath:quickfixj-server.cfg",
-				"quickfixj.server.jmx-enabled=false"
-		})
-@DirtiesContext
 public class QuickFixJServerClientIntegrationTest {
 
-	@Autowired
-	private QuickFixJTemplate quickFixJTemplate;
-
-	@Autowired
-	private Acceptor serverAcceptor;
-
-	@Autowired
-	private Initiator clientInitiator;
-
-	@Autowired
-	private Application serverApplication;
-
-	@Autowired
-	private Application clientApplication;
+	private AnnotationConfigApplicationContext parentContext;
+	private AnnotationConfigApplicationContext serverContext;
+	private AnnotationConfigApplicationContext clientContext;
 
 	@BeforeEach
 	public void setUp() {
+		parentContext = new AnnotationConfigApplicationContext(QuickFixJCommonConfiguration.class);
+		serverContext = new AnnotationConfigApplicationContext(QuickFixJServerContextConfiguration.class);
+		clientContext = new AnnotationConfigApplicationContext(QuickFixJClientContextConfiguration.class);
+
+		serverContext.setParent(parentContext);
+		clientContext.setParent(parentContext);
+
+		serverContext.start();
+		clientContext.start();
+
+		Acceptor serverAcceptor = serverContext.getBean("serverAcceptor", Acceptor.class);
+		Initiator clientInitiator = clientContext.getBean("clientInitiator", Initiator.class);
+
 		await().atMost(TEN_SECONDS).until(() ->
 				serverAcceptor.getSessions()
 						.stream()
@@ -95,12 +86,25 @@ public class QuickFixJServerClientIntegrationTest {
 		);
 	}
 
+	@AfterEach
+	void tearDown() {
+		System.out.println("closing clientContext now...");
+		clientContext.close();
+		System.out.println("closing serverContext now...");
+		serverContext.close();
+		System.out.println("closing parent now...");
+		parentContext.close();
+	}
+
 	@Test
 	public void shouldSendMessagesFromServerToClient() {
 		// Given
 		List<Message> messages = getMessages();
 		String senderCompID = "BANZAI";
 		String targetCompID = "EXEC";
+
+		QuickFixJTemplate quickFixJTemplate = parentContext.getBean("quickFixJTemplate", QuickFixJTemplate.class);
+		Application clientApplication = clientContext.getBean("clientApplication", Application.class);
 
 		// When
 		messages.forEach(message -> {
@@ -119,6 +123,9 @@ public class QuickFixJServerClientIntegrationTest {
 		List<Message> messages = getMessages();
 		String senderCompID = "EXEC";
 		String targetCompID = "BANZAI";
+
+		QuickFixJTemplate quickFixJTemplate = parentContext.getBean("quickFixJTemplate", QuickFixJTemplate.class);
+		Application serverApplication = serverContext.getBean("serverApplication", Application.class);
 
 		// When
 		messages.forEach(message -> {

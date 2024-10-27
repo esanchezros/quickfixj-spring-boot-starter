@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.allune.quickfixj.spring.boot.starter.integration;
+package io.allune.quickfixj.spring.boot.starter.integration.config.server;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import quickfix.Application;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * @author Eduardo Sanchez-Ros
- */
-@SpringBootApplication
-public class QuickFixJServerClientITConfiguration {
+@EnableAutoConfiguration
+@Configuration(proxyBeanMethods = false)
+@PropertySource("classpath:integration/server-integration.properties")
+public class QuickFixJServerContextConfiguration {
 
 	@Bean
-	@Qualifier("serverApplication")
 	public Application serverApplication() {
-		return mock(Application.class);
-	}
-
-	@Bean
-	@Qualifier("clientApplication")
-	public Application clientApplication() {
 		return mock(Application.class);
 	}
 }

@@ -12,7 +12,6 @@
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
 	<modules>
-<!--		<module>quickfixj-spring-boot-dependencies</module>-->
 		<module>quickfixj-spring-boot-context</module>
 		<module>quickfixj-spring-boot-actuator</module>
 		<module>quickfixj-spring-boot-autoconfigure</module>
@@ -281,12 +280,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.10.1</version>
-<!--					<configuration>-->
-<!--						<source>1.8</source>-->
-<!--						<target>1.8</target>-->
-<!--						<compilerArgs>-parameters</compilerArgs>-->
-<!--					</configuration>-->
+					<version>3.13.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

@@ -22,6 +22,7 @@ import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ import quickfix.ExecutorFactory;
 import quickfix.FileLogFactory;
 import quickfix.FileStoreFactory;
 import quickfix.FixVersions;
+import quickfix.Initiator;
 import quickfix.JdbcLogFactory;
 import quickfix.JdbcStoreFactory;
 import quickfix.LogFactory;
@@ -64,16 +66,21 @@ import static io.allune.quickfixj.spring.boot.starter.autoconfigure.server.Quick
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 
 /**
  * @author Eduardo Sanchez-Ros
  */
 public class QuickFixJServerAutoConfigurationTest {
 
-	private static Field getField(Class clazz, String fieldName)
-		throws NoSuchFieldException {
+	private static Field getField(
+			Class clazz,
+			String fieldName
+	)
+			throws NoSuchFieldException {
 		try {
 			return clazz.getDeclaredField(fieldName);
 		} catch (NoSuchFieldException e) {
@@ -133,12 +140,12 @@ public class QuickFixJServerAutoConfigurationTest {
 		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
 		assertThat(serverAcceptor).isInstanceOf(SocketAcceptor.class);
 		List<SessionID> expectedSessionIDs = asList(
-			new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
-			new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
-			new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
-			new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
-			new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
-			new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
+				new SessionID(FixVersions.BEGINSTRING_FIX40, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX41, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX42, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX43, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIX44, "EXEC", "BANZAI"),
+				new SessionID(FixVersions.BEGINSTRING_FIXT11, "EXEC", "BANZAI")
 		);
 
 		expectedSessionIDs.forEach(expectedSessionID -> {
@@ -354,6 +361,45 @@ public class QuickFixJServerAutoConfigurationTest {
 		ctx.stop();
 	}
 
+	@Test
+	public void testAutoConfiguredBeansServerOverriddenConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerInitiatorOverrideAllBeansConfiguration.class);
+		assertThatThrownBy(() -> ctx.getBean("serverApplication", Application.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("serverMessageStoreFactory", MessageStoreFactory.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("serverSessionSettings", SessionSettings.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("serverLogFactory", LogFactory.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("serverMessageFactory", MessageFactory.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("serverExecutorFactory", ExecutorFactory.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+
+		Application customApplication = ctx.getBean("customApplication", Application.class);
+		assertThat(mockingDetails(customApplication).isMock()).isTrue();
+
+		MessageStoreFactory customMessageStoreFactory = ctx.getBean("customMessageStoreFactory", MessageStoreFactory.class);
+		assertThat(mockingDetails(customMessageStoreFactory).isMock()).isTrue();
+
+		SessionSettings customSessionSettings = ctx.getBean("customSessionSettings", SessionSettings.class);
+		assertThat(mockingDetails(customSessionSettings).isMock()).isTrue();
+
+		LogFactory customLogFactory = ctx.getBean("customLogFactory", LogFactory.class);
+		assertThat(mockingDetails(customLogFactory).isMock()).isTrue();
+
+		MessageFactory customMessageFactory = ctx.getBean("customMessageFactory", MessageFactory.class);
+		assertThat(mockingDetails(customMessageFactory).isMock()).isTrue();
+
+		ExecutorFactory customExecutorFactory = ctx.getBean("customExecutorFactory", ExecutorFactory.class);
+		assertThat(mockingDetails(customExecutorFactory).isMock()).isTrue();
+
+		ctx.stop();
+	}
+
+	@Test
+	public void testClientAndServerSameContextConfiguration() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ClientAndServerSameContextConfiguration.class);
+		assertThatThrownBy(() -> ctx.getBean("serverAcceptor", Acceptor.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		assertThatThrownBy(() -> ctx.getBean("clientInitiator", Initiator.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
+		ctx.stop();
+	}
+
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
 		Application serverApplication = ctx.getBean("serverApplication", Application.class);
 		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
@@ -379,8 +425,11 @@ public class QuickFixJServerAutoConfigurationTest {
 		ctx.stop();
 	}
 
-	private void assertHasExecutors(Acceptor serverAcceptor, Executor taskExecutor)
-		throws NoSuchFieldException, IllegalAccessException {
+	private void assertHasExecutors(
+			Acceptor serverAcceptor,
+			Executor taskExecutor
+	)
+			throws NoSuchFieldException, IllegalAccessException {
 		Field longLivedExecutor = getField(SessionConnector.class, "longLivedExecutor");
 		longLivedExecutor.setAccessible(true);
 		Executor actualLongLivedExecutor = (Executor) longLivedExecutor.get(serverAcceptor);
@@ -435,8 +484,8 @@ public class QuickFixJServerAutoConfigurationTest {
 	static class SingleThreadedServerAcceptorConfigurationWithCustomServerSettings {
 
 		@Bean(name = "serverSessionSettings")
-		public SessionSettings serverSessionSettings(SessionSettingsLocator serverSessionSettingsLocator) {
-			return serverSessionSettingsLocator.loadSettings("classpath:quickfixj-server-extra.cfg");
+		public SessionSettings serverSessionSettings(SessionSettingsLocator sessionSettingsLocator) {
+			return sessionSettingsLocator.loadSettings("classpath:quickfixj-server-extra.cfg");
 		}
 	}
 
@@ -514,5 +563,47 @@ public class QuickFixJServerAutoConfigurationTest {
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-log-factory/server-screen-log-factory.properties")
 	static class ServerScreenLogFactoryConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-single-threaded/single-threaded-application.properties")
+	static class SingleThreadedServerInitiatorOverrideAllBeansConfiguration {
+
+		@Bean
+		public Application customApplication() {
+			return mock(Application.class);
+		}
+
+		@Bean
+		public MessageStoreFactory customMessageStoreFactory() {
+			return mock(MessageStoreFactory.class);
+		}
+
+		@Bean
+		public SessionSettings customSessionSettings() {
+			return mock(SessionSettings.class);
+		}
+
+		@Bean
+		public LogFactory customLogFactory() {
+			return mock(LogFactory.class);
+		}
+
+		@Bean
+		public MessageFactory customMessageFactory() {
+			return mock(MessageFactory.class);
+		}
+
+		@Bean
+		public ExecutorFactory customExecutorFactory() {
+			return mock(ExecutorFactory.class);
+		}
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:client-and-server-same-context/application.properties")
+	static class ClientAndServerSameContextConfiguration {
 	}
 }

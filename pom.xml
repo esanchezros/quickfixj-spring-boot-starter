@@ -63,6 +63,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>2.3.1</quickfixj.version>
 		<awaitility.version>4.2.2</awaitility.version>
+		<spring-boot-dependencies.version>3.3.5</spring-boot-dependencies.version>
+		<snakeyaml.version>2.3</snakeyaml.version>
 
 		<!-- Plugins -->
 		<maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
@@ -159,7 +161,7 @@
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>3.3.5</version>
+				<version>${spring-boot-dependencies.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -168,7 +170,7 @@
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>2.1</version>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 
 			<!-- Test -->
@@ -220,7 +222,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.8</version>
+				<version>0.8.12</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
@@ -247,7 +249,7 @@
 				<version>4.6</version>
 				<configuration>
 					<!-- Template location -->
-					<header>licence-header.txt</header>
+					<header>licence-header.template</header>
 					<properties>
 						<!-- Values to be substituted in template -->
 						<inceptionYear>2017</inceptionYear>

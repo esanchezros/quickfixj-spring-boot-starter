@@ -72,4 +72,19 @@ public class QuickFixJAutoConfigFailureAnalyzerTest {
 		assertThat(analyze.getDescription()).contains("Error message");
 		assertThat(analyze.getCause()).isEqualTo(exception);
 	}
+
+	@Test
+	public void shouldAnalyzeConfigurationExceptionWithNullRootCause() {
+
+		// Given
+		QuickFixJAutoConfigFailureAnalyzer analyzer = new QuickFixJAutoConfigFailureAnalyzer();
+		ConfigurationException exception = new ConfigurationException("Error", null);
+
+		// When
+		FailureAnalysis analyze = analyzer.analyze(null, exception);
+
+		assertThat(analyze.getAction()).contains("Please configure your QuickFIX/J settings");
+		assertThat(analyze.getDescription()).contains("A configuration error has been detected in the QuickFIX/J settings provided: Error");
+		assertThat(analyze.getCause()).isEqualTo(exception);
+	}
 }

@@ -21,8 +21,6 @@ import io.allune.quickfixj.spring.boot.starter.exception.SettingsNotFoundExcepti
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
-import java.util.Objects;
-
 /**
  * The failure analyzer is responsible to provide readable information of exception which
  * occur on startup. All exception based on the {@link QuickFixJBaseException} are handled here.
@@ -60,15 +58,10 @@ public class QuickFixJAutoConfigFailureAnalyzer extends AbstractFailureAnalyzer<
 	}
 
 	public static Throwable getRootCause(Throwable throwable) {
-		try {
-			Objects.requireNonNull(throwable);
-			Throwable rootCause = throwable;
-			while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
-				rootCause = rootCause.getCause();
-			}
-			return rootCause;
-		} catch (Exception e) {
-			return throwable;
+		Throwable rootCause = throwable;
+		while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+			rootCause = rootCause.getCause();
 		}
+		return rootCause;
 	}
 }

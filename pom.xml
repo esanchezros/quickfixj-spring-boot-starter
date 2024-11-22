@@ -63,7 +63,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>2.3.1</quickfixj.version>
 		<awaitility.version>4.2.2</awaitility.version>
-		<spring-boot-dependencies.version>3.3.6</spring-boot-dependencies.version>
+		<spring-boot-dependencies.version>3.4.0</spring-boot-dependencies.version>
 		<snakeyaml.version>2.3</snakeyaml.version>
 
 		<!-- Plugins -->

@@ -52,11 +52,6 @@ public class MockSystemTimeSource implements SystemTimeSource {
         return systemTimes[offset];
     }
 
-    @Override
-    public long getTimeFromNanos() {
-        return 0;
-    }
-
     public void increment(long delta) {
         if (systemTimes.length - offset == 1) {
             systemTimes[offset] += delta;

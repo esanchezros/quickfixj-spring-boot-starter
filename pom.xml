@@ -64,7 +64,7 @@
 		<quickfixj.version>2.3.2</quickfixj.version>
 		<awaitility.version>4.2.2</awaitility.version>
 		<spring-boot-dependencies.version>3.3.6</spring-boot-dependencies.version>
-		<snakeyaml.version>2.3</snakeyaml.version>
+		<snakeyaml.version>2.4</snakeyaml.version>
 
 		<!-- Plugins -->
 		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>

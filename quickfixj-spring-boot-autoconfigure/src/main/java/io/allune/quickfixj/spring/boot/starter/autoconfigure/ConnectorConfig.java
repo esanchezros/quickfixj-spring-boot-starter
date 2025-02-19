@@ -17,9 +17,10 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
 import lombok.Data;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
- * Defines the configuration for the {@link ConnectorManager} for the Initiator and Acceptor
+ * Defines the configuration for the {@link ConnectorManager} for the Client (Initiator) and Server (Acceptor).
  *
  * @author Eduardo Sanchez-Ros
  */
@@ -27,7 +28,12 @@ import lombok.Data;
 public class ConnectorConfig {
 
 	/**
-	 * Whether the {@link ConnectorManager} should get started automatically
+	 * Whether to enable the autoconfiguration of the QuickFIX/J client/server.
+	 */
+	private boolean enabled;
+
+	/**
+	 * Whether the {@link ConnectorManager} should get started automatically.
 	 */
 	private boolean autoStartup = true;
 
@@ -37,37 +43,44 @@ public class ConnectorConfig {
 	private int phase = Integer.MAX_VALUE;
 
 	/**
-	 * The location of the configuration file to use to initialize QuickFIX/J client.
+	 * The location of the configuration file to use to initialize QuickFIX/J client/server.
 	 */
 	private String config;
 
 	/**
-	 * The configuration string to use to initialize QuickFIX/J client.
+	 * The configuration string to use to initialize QuickFIX/J client/server.
 	 */
 	private String configString;
 
 	/**
-	 * Whether to register the Jmx MBeans for the client
+	 * Whether to register the Jmx MBeans for the client/server.
 	 */
 	private boolean jmxEnabled = false;
 
 	/**
-	 * Configures the concurrent options
+	 * Configures the concurrent options.
 	 */
+	@NestedConfigurationProperty
 	private Concurrent concurrent = new Concurrent();
 
 	/**
-	 * Configures the message store factory to use
+	 * Configures the message store factory to use.
 	 */
 	private MessageStoreMethod messageStoreMethod = MessageStoreMethod.MEMORY;
 
 	/**
-	 * Configures the log store factory to use
+	 * Configures the log store factory to use.
 	 */
 	private LogMethod logMethod = LogMethod.SCREEN;
 
 	/**
-	 * Configures if sessions should be disconnected forcibly when the connector is stopped
+	 * Configures if sessions should be disconnected forcibly when the connector is stopped.
 	 */
 	private boolean forceDisconnect = false;
+
+	/**
+	 * Configures the actuator health options.
+	 */
+	@NestedConfigurationProperty
+	private Health health = new Health();
 }

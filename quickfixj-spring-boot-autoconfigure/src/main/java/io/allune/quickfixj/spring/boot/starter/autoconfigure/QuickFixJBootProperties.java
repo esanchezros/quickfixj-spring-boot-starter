@@ -17,6 +17,7 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Holds all the relevant starter properties which can be configured with
@@ -30,7 +31,9 @@ public class QuickFixJBootProperties {
 
 	public static final String PROPERTY_PREFIX = "quickfixj";
 
+	@NestedConfigurationProperty
 	private ConnectorConfig client = new ConnectorConfig();
 
+	@NestedConfigurationProperty
 	private ConnectorConfig server = new ConnectorConfig();
 }

@@ -203,6 +203,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |Example
 |Description
 
+|quickfixj.server.enabled
+|true
+|Whether the QuickFix/J Server is enabled.
+
 |quickfixj.server.config
 |classpath:quickfixj-server.cfg
 |Location of the QuickFix/J configuration file.
@@ -614,6 +618,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |Property
 |Example
 |Description
+
+|quickfixj.client.enabled
+|true
+|Whether the QuickFix/J Client is enabled.
 
 |quickfixj.client.config
 |classpath:quickfixj-client.cfg

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.allune</groupId>
 		<artifactId>quickfixj-spring-boot</artifactId>
-		<version>3.1.1-SNAPSHOT</version>
+		<version>3.2.0</version>
 	</parent>
 	<artifactId>quickfixj-spring-boot-starter</artifactId>
 	<name>Spring Boot Starter for QuickFIX/J :: Starter</name>

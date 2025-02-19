@@ -4,7 +4,7 @@
 
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot</artifactId>
-	<version>3.2.0</version>
+	<version>3.2.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Boot Starter for QuickFIX/J</name>
@@ -38,7 +38,7 @@
 		<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 		<connection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</connection>
 		<developerConnection>scm:git:git@github.com:esanchezros/quickfixj-spring-boot-starter.git</developerConnection>
-		<tag>3.2.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>

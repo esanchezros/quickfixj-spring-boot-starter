@@ -16,24 +16,12 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
-/**
- * Holds all the relevant starter properties which can be configured with
- * Spring Boot's application.properties / application.yml configuration files.
- *
- * @author Eduardo Sanchez-Ros
- */
 @Data
-@ConfigurationProperties(prefix = QuickFixJBootProperties.PROPERTY_PREFIX)
-public class QuickFixJBootProperties {
+public class Health {
 
-	public static final String PROPERTY_PREFIX = "quickfixj";
-
-	@NestedConfigurationProperty
-	private ConnectorConfig client = new ConnectorConfig();
-
-	@NestedConfigurationProperty
-	private ConnectorConfig server = new ConnectorConfig();
+	/**
+	 * Whether to enable the actuator health endpoint with QuickFIX/J session state
+	 */
+	private boolean enabled;
 }

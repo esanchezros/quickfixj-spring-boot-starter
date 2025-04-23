@@ -62,7 +62,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>2.3.2</quickfixj.version>
-		<awaitility.version>4.2.2</awaitility.version>
+		<awaitility.version>4.3.0</awaitility.version>
 		<spring-boot-dependencies.version>3.4.4</spring-boot-dependencies.version>
 		<snakeyaml.version>2.4</snakeyaml.version>
 
@@ -246,7 +246,7 @@
 			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>4.6</version>
+				<version>5.0.0</version>
 				<configuration>
 					<!-- Template location -->
 					<header>licence-header.template</header>
@@ -279,7 +279,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.13.0</version>
+					<version>3.14.0</version>
 					<configuration>
 						<release>${java.version}</release>
 					</configuration>

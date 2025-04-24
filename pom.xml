@@ -67,7 +67,7 @@
 		<snakeyaml.version>2.4</snakeyaml.version>
 
 		<!-- Plugins -->
-		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 	</properties>
 

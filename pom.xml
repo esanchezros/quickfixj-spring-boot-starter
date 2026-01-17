@@ -4,7 +4,7 @@
 
 	<groupId>io.allune</groupId>
 	<artifactId>quickfixj-spring-boot</artifactId>
-	<version>3.3.1-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Boot Starter for QuickFIX/J</name>
@@ -52,8 +52,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>2.3.2</quickfixj.version>
 		<awaitility.version>4.3.0</awaitility.version>
-		<spring-boot-dependencies.version>3.4.4</spring-boot-dependencies.version>
+		<spring-boot-dependencies.version>4.0.1</spring-boot-dependencies.version>
 		<snakeyaml.version>2.5</snakeyaml.version>
+		<lombok.version>1.18.42</lombok.version>
 
 		<!-- Plugins -->
 		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -160,6 +161,13 @@
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
+				<optional>true</optional>
 			</dependency>
 
 			<!-- Test -->
@@ -271,7 +279,15 @@
 					<version>3.14.0</version>
 					<configuration>
 						<release>${java.version}</release>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
+
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

@@ -6,7 +6,7 @@ image:https://img.shields.io/badge/quickfixj-2.3.2-blue.svg["QuickFIX/J 2.3.2", 
 image:https://app.codacy.com/project/badge/Grade/1c6bf92b53324a45ba587e061dc6547d["Codacy code quality", link="https://www.codacy.com/gh/esanchezros/quickfixj-spring-boot-starter/dashboard?utm_source=github.com&utm_medium=referral&utm_content=esanchezros/quickfixj-spring-boot-starter&utm_campaign=Badge_Grade"]
 image:https://api.securityscorecards.dev/projects/github.com/esanchezros/quickfixj-spring-boot-starter/badge["OpenSSF Scorecard", link="https://securityscorecards.dev/viewer/?uri=github.com/esanchezros/quickfixj-spring-boot-starter"]
 
-= Spring Boot Starter for QuickFIX/J (Spring Boot 3)
+= Spring Boot Starter for QuickFIX/J (Spring Boot 4)
 
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
 It simplifies the configuration required to create and start an https://www.quickfixj.org/javadoc/2.3.0/quickfix/Initiator.html[Initiator] or https://www.quickfixj.org/javadoc/2.3.0/quickfix/Acceptor.html[Acceptor], and handles the lifecycle of the https://www.quickfixj.org/javadoc/2.3.0/quickfix/Connector.html[Connector].

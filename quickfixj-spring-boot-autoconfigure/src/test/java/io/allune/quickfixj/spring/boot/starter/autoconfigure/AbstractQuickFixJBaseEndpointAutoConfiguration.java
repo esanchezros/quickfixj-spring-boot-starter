@@ -15,12 +15,12 @@
  */
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import quickfix.SessionID;
+import tools.jackson.core.exc.JacksonIOException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -55,7 +55,7 @@ public class AbstractQuickFixJBaseEndpointAutoConfiguration {
 				assertThat(sessionID44Properties).containsEntry("SocketTrustStorePassword", "******");
 				assertThat(sessionID44Properties).containsEntry("ProxyPassword", "******");
 				assertThat(sessionID44Properties).containsEntry("JdbcPassword", "******");
-			} catch (IOException e) {
+			} catch (JacksonIOException e) {
 				throw new RuntimeException(e);
 			}
 		};

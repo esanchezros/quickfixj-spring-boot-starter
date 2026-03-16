@@ -243,6 +243,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |true
 |Whether to use a simple `SocketAcceptor` or a `ThreadedSocketAcceptor` (default: `false` - uses `SocketAcceptor`).
 
+|quickfixj.server.dynamic.enabled
+|true
+|Whether to register `DynamicAcceptorSessionProvider` instances for `ThreadedSocketAcceptor` template sessions (default: `false`).
+
 |quickfixj.server.concurrent.useDefaultExecutorFactory
 |true
 |Whether to use a default `ExecutorFactory` to create the `Acceptor` (default: `false`).
@@ -295,6 +299,7 @@ quickfixj.server.message-store-factory=memory
 quickfixj.server.log-factory=screen
 
 quickfixj.server.concurrent.enabled=true
+quickfixj.server.dynamic.enabled=true
 quickfixj.server.concurrent.useDefaultExecutorFactory=true
 quickfixj.server.concurrent.queueCapacity=Integer.MAX_VALUE
 quickfixj.server.concurrent.corePoolSize=8
@@ -316,6 +321,8 @@ quickfixj:
     force-disconnect: false
     phase: 0
     jmx-enabled: true
+    dynamic:
+      enabled: true
     concurrent:
       enabled: true
       useDefaultExecutorFactory: true
@@ -329,6 +336,34 @@ quickfixj:
       threadNamePrefix: "QuickFixJ Spring Boot Starter thread-"
     message-store-factory: memory
     log-factory: screen
+----
+
+=== QuickFIX/J Server dynamic sessions
+
+Dynamic sessions are supported when using `ThreadedSocketAcceptor`. Enable them with
+`quickfixj.server.dynamic.enabled=true` and define one or more session templates in the QuickFIX/J
+configuration file using `AcceptorTemplate=Y`.
+
+[source,properties]
+----
+quickfixj.server.concurrent.enabled=true
+quickfixj.server.dynamic.enabled=true
+----
+
+[source,ini]
+----
+[default]
+ConnectionType=acceptor
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=EXECUTOR
+TargetCompID=*
+SocketAcceptPort=9876
+AcceptorTemplate=Y
 ----
 
 === QuickFIX/J Server configuration file in properties and yaml files

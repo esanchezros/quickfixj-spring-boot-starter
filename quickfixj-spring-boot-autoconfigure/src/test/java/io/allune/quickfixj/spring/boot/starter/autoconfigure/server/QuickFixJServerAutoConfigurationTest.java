@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import quickfix.Acceptor;
 import quickfix.Application;
+import quickfix.ApplicationAdapter;
 import quickfix.CachedFileStoreFactory;
 import quickfix.CompositeLogFactory;
 import quickfix.ConfigError;
@@ -49,13 +50,16 @@ import quickfix.NoopStoreFactory;
 import quickfix.SLF4JLogFactory;
 import quickfix.ScreenLogFactory;
 import quickfix.SessionID;
+import quickfix.SessionFactory;
 import quickfix.SessionSettings;
 import quickfix.SleepycatStoreFactory;
 import quickfix.SocketAcceptor;
 import quickfix.ThreadedSocketAcceptor;
 import quickfix.mina.SessionConnector;
+import quickfix.mina.acceptor.DynamicAcceptorSessionProvider;
 
 import javax.management.ObjectName;
+import java.net.InetSocketAddress;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
@@ -226,7 +230,18 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	@Test
-	public void shouldCreateServerThreadedAcceptor() throws ConfigError {
+	public void testAutoConfiguredBeansMultiThreadedDynamicAcceptor() throws Exception {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedDynamicServerAcceptorConfiguration.class);
+		Acceptor serverAcceptor = ctx.getBean(Acceptor.class);
+
+		assertThat(serverAcceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+		assertThat(ctx.getBean(ThreadedSocketAcceptorDynamicSessionProviderRegistrar.class)).isNotNull();
+
+		ctx.stop();
+	}
+
+	@Test
+	public void shouldCreateServerThreadedAcceptor() throws Exception {
 		// Given
 		Application application = mock(Application.class);
 		MessageStoreFactory messageStoreFactory = mock(MessageStoreFactory.class);
@@ -238,11 +253,110 @@ public class QuickFixJServerAutoConfigurationTest {
 
 		// When
 		Acceptor acceptor = acceptorConfiguration.serverAcceptor(application, messageStoreFactory, sessionSettings,
-			logFactory, messageFactory, Optional.empty());
+			logFactory, messageFactory, Optional.empty(), Optional.empty());
 
 		// Then
 		assertThat(acceptor).isNotNull();
 		assertThat(acceptor).isInstanceOf(ThreadedSocketAcceptor.class);
+	}
+
+	@Test
+	public void shouldRegisterDynamicSessionProviderForThreadedAcceptor() throws Exception {
+		Application application = new ApplicationAdapter();
+		SessionSettings sessionSettings = new SessionSettings();
+
+		SessionID templateSessionId = new SessionID(FixVersions.BEGINSTRING_FIX44, "DYN_EXEC", "DYN_CLIENT");
+		sessionSettings.setString(SessionSettings.BEGINSTRING, FixVersions.BEGINSTRING_FIX44);
+		sessionSettings.setString(SessionSettings.SENDERCOMPID, "DYN_EXEC");
+		sessionSettings.setString(SessionSettings.TARGETCOMPID, "DYN_CLIENT");
+		sessionSettings.setString(templateSessionId, SessionFactory.SETTING_CONNECTION_TYPE, "acceptor");
+		sessionSettings.setString(templateSessionId, "SocketAcceptPort", "9899");
+		sessionSettings.setString(templateSessionId, "AcceptorTemplate", "Y");
+
+		MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
+		LogFactory logFactory = new ScreenLogFactory(sessionSettings);
+		MessageFactory messageFactory = new DefaultMessageFactory();
+		ThreadedSocketAcceptorDynamicSessionProviderRegistrar registrar = new ThreadedSocketAcceptorDynamicSessionProviderRegistrar();
+		CapturingThreadedSocketAcceptor acceptor = new CapturingThreadedSocketAcceptor(
+				application,
+				messageStoreFactory,
+				sessionSettings,
+				logFactory,
+				messageFactory
+		);
+
+		registrar.registerDynamicSessionProviders(
+				acceptor,
+				sessionSettings,
+				application,
+				messageStoreFactory,
+				logFactory,
+				messageFactory
+		);
+
+		assertThat(acceptor.getRegisteredAddress()).isEqualTo(new InetSocketAddress(9899));
+		assertThat(acceptor.getRegisteredProvider()).isInstanceOf(DynamicAcceptorSessionProvider.class);
+	}
+
+	@Test
+	public void shouldFailFastWhenDynamicSessionTemplateSettingIsInvalid() {
+		Application application = mock(Application.class);
+		MessageStoreFactory messageStoreFactory = mock(MessageStoreFactory.class);
+		LogFactory logFactory = mock(LogFactory.class);
+		MessageFactory messageFactory = mock(MessageFactory.class);
+		SessionSettings sessionSettings = new SessionSettings();
+
+		SessionID templateSessionId = new SessionID(FixVersions.BEGINSTRING_FIX44, "DYN_EXEC", "DYN_CLIENT");
+		sessionSettings.setString(SessionSettings.BEGINSTRING, FixVersions.BEGINSTRING_FIX44);
+		sessionSettings.setString(SessionSettings.SENDERCOMPID, "DYN_EXEC");
+		sessionSettings.setString(SessionSettings.TARGETCOMPID, "DYN_CLIENT");
+		sessionSettings.setString(templateSessionId, SessionFactory.SETTING_CONNECTION_TYPE, "acceptor");
+		sessionSettings.setString(templateSessionId, "SocketAcceptPort", "9899");
+		sessionSettings.setString(templateSessionId, "AcceptorTemplate", "NOT_A_BOOLEAN");
+
+		ThreadedSocketAcceptorConfiguration acceptorConfiguration = new ThreadedSocketAcceptorConfiguration();
+		ThreadedSocketAcceptorDynamicSessionProviderRegistrar registrar = new ThreadedSocketAcceptorDynamicSessionProviderRegistrar();
+
+		assertThatThrownBy(() -> acceptorConfiguration.serverAcceptor(
+				application,
+				messageStoreFactory,
+				sessionSettings,
+				logFactory,
+				messageFactory,
+				Optional.empty(),
+				Optional.of(registrar)
+		))
+				.isInstanceOf(ConfigError.class)
+				.hasMessageContaining("AcceptorTemplate")
+				.hasMessageContaining(templateSessionId.toString());
+	}
+
+	@Test
+	public void shouldRejectSocketAcceptPortOutsideValidRange() {
+		SessionSettings sessionSettings = new SessionSettings();
+		SessionID templateSessionId = new SessionID(FixVersions.BEGINSTRING_FIX44, "DYN_EXEC", "DYN_CLIENT");
+		ThreadedSocketAcceptorDynamicSessionProviderRegistrar registrar = new ThreadedSocketAcceptorDynamicSessionProviderRegistrar();
+
+		sessionSettings.setString(templateSessionId, "SocketAcceptPort", "70000");
+
+		assertThatThrownBy(() -> registrar.getAcceptorAddress(sessionSettings, templateSessionId))
+				.isInstanceOf(ConfigError.class)
+				.hasMessageContaining("SocketAcceptPort")
+				.hasMessageContaining("70000");
+	}
+
+	@Test
+	public void shouldRejectSocketAcceptPortThatOverflowsInt() {
+		SessionSettings sessionSettings = new SessionSettings();
+		SessionID templateSessionId = new SessionID(FixVersions.BEGINSTRING_FIX44, "DYN_EXEC", "DYN_CLIENT");
+		ThreadedSocketAcceptorDynamicSessionProviderRegistrar registrar = new ThreadedSocketAcceptorDynamicSessionProviderRegistrar();
+
+		sessionSettings.setString(templateSessionId, "SocketAcceptPort", "2147483648");
+
+		assertThatThrownBy(() -> registrar.getAcceptorAddress(sessionSettings, templateSessionId))
+				.isInstanceOf(ConfigError.class)
+				.hasMessageContaining("SocketAcceptPort")
+				.hasMessageContaining("2147483648");
 	}
 
 	@Test
@@ -400,6 +514,14 @@ public class QuickFixJServerAutoConfigurationTest {
 		ctx.stop();
 	}
 
+	@Test
+	public void shouldNotCreateDynamicSessionProviderRegistrarWhenDynamicSessionsDisabled() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MultiThreadedServerAcceptorConfiguration.class);
+		assertThatThrownBy(() -> ctx.getBean(ThreadedSocketAcceptorDynamicSessionProviderRegistrar.class))
+				.isInstanceOf(NoSuchBeanDefinitionException.class);
+		ctx.stop();
+	}
+
 	private void hasAutoConfiguredBeans(AnnotationConfigApplicationContext ctx) {
 		Application serverApplication = ctx.getBean("serverApplication", Application.class);
 		assertThat(serverApplication).isInstanceOf(EventPublisherApplicationAdapter.class);
@@ -447,6 +569,40 @@ public class QuickFixJServerAutoConfigurationTest {
 	static class SingleThreadedServerAcceptorConfiguration {
 	}
 
+	private static final class CapturingThreadedSocketAcceptor extends ThreadedSocketAcceptor {
+
+		private java.net.SocketAddress registeredAddress;
+
+		private quickfix.mina.acceptor.AcceptorSessionProvider registeredProvider;
+
+		private CapturingThreadedSocketAcceptor(
+				Application application,
+				MessageStoreFactory messageStoreFactory,
+				SessionSettings sessionSettings,
+				LogFactory logFactory,
+				MessageFactory messageFactory
+		) throws ConfigError {
+			super(application, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+		}
+
+		@Override
+		public void setSessionProvider(
+				java.net.SocketAddress socketAddress,
+				quickfix.mina.acceptor.AcceptorSessionProvider sessionProvider
+		) {
+			this.registeredAddress = socketAddress;
+			this.registeredProvider = sessionProvider;
+		}
+
+		private java.net.SocketAddress getRegisteredAddress() {
+			return this.registeredAddress;
+		}
+
+		private quickfix.mina.acceptor.AcceptorSessionProvider getRegisteredProvider() {
+			return this.registeredProvider;
+		}
+	}
+
 	@Configuration
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-single-threaded/single-threaded-application-executor-factory.properties")
@@ -470,6 +626,12 @@ public class QuickFixJServerAutoConfigurationTest {
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-multi-threaded/multi-threaded-application.properties")
 	static class MultiThreadedServerAcceptorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-multi-threaded/multi-threaded-dynamic-application.properties")
+	static class MultiThreadedDynamicServerAcceptorConfiguration {
 	}
 
 	@Configuration

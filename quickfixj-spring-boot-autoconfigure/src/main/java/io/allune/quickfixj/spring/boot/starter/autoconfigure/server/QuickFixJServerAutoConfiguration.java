@@ -388,6 +388,19 @@ public class QuickFixJServerAutoConfiguration {
 	public static class ThreadedSocketAcceptorConfiguration {
 
 		/**
+		 * Creates the registrar responsible for wiring dynamic session providers into the
+		 * {@link ThreadedSocketAcceptor} when dynamic sessions are enabled.
+		 *
+		 * @return The dynamic session provider registrar
+		 */
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnProperty(prefix = "quickfixj.server.dynamic", name = "enabled", havingValue = "true")
+		public ThreadedSocketAcceptorDynamicSessionProviderRegistrar threadedSocketAcceptorDynamicSessionProviderRegistrar() {
+			return new ThreadedSocketAcceptorDynamicSessionProviderRegistrar();
+		}
+
+		/**
 		 * Creates a multi threaded {@link Acceptor acceptor} bean
 		 *
 		 * @param serverApplication         The server's {@link Application}
@@ -401,14 +414,18 @@ public class QuickFixJServerAutoConfiguration {
 		 */
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "true")
+		@ConditionalOnExpression(
+			"${quickfixj.server.concurrent.enabled:false} == true || "
+				+ "${quickfixj.server.dynamic.enabled:false} == true"
+		)
 		public Acceptor serverAcceptor(
 				Application serverApplication,
 				MessageStoreFactory serverMessageStoreFactory,
 				SessionSettings serverSessionSettings,
 				LogFactory serverLogFactory,
 				MessageFactory serverMessageFactory,
-				Optional<ExecutorFactory> serverExecutorFactory
+				Optional<ExecutorFactory> serverExecutorFactory,
+				Optional<ThreadedSocketAcceptorDynamicSessionProviderRegistrar> dynamicSessionProviderRegistrar
 		) throws ConfigError {
 
 			ThreadedSocketAcceptor socketAcceptor = ThreadedSocketAcceptor.newBuilder()
@@ -419,6 +436,16 @@ public class QuickFixJServerAutoConfiguration {
 					.withMessageFactory(serverMessageFactory)
 					.build();
 			serverExecutorFactory.ifPresent(socketAcceptor::setExecutorFactory);
+			if (dynamicSessionProviderRegistrar.isPresent()) {
+				dynamicSessionProviderRegistrar.get().registerDynamicSessionProviders(
+						socketAcceptor,
+						serverSessionSettings,
+						serverApplication,
+						serverMessageStoreFactory,
+						serverLogFactory,
+						serverMessageFactory
+				);
+			}
 			return socketAcceptor;
 		}
 	}

@@ -171,6 +171,12 @@
       "defaultValue": false
     },
     {
+      "name": "quickfixj.server.dynamic.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to register DynamicAcceptorSessionProvider instances for ThreadedSocketAcceptor template sessions",
+      "defaultValue": false
+    },
+    {
       "name": "quickfixj.server.concurrent.useDefaultExecutorFactory",
       "type": "java.lang.Boolean",
       "description": "Whether to use a default ExecutorFactory to create the SocketAcceptor (default: `false`)",

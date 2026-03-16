@@ -71,9 +71,13 @@ public class ThreadedSocketAcceptorDynamicSessionProviderRegistrar {
 		}
 	}
 
-	boolean isAcceptorTemplate(SessionSettings settings, SessionID sessionId) throws ConfigError, FieldConvertError {
-		return settings.isSetting(sessionId, Acceptor.SETTING_ACCEPTOR_TEMPLATE)
-				&& settings.getBool(sessionId, Acceptor.SETTING_ACCEPTOR_TEMPLATE);
+	boolean isAcceptorTemplate(SessionSettings settings, SessionID sessionId) throws ConfigError {
+		try {
+			return settings.isSetting(sessionId, Acceptor.SETTING_ACCEPTOR_TEMPLATE)
+					&& settings.getBool(sessionId, Acceptor.SETTING_ACCEPTOR_TEMPLATE);
+		} catch (ConfigError | FieldConvertError e) {
+			throw new ConfigError("Invalid AcceptorTemplate setting for session " + sessionId, e);
+		}
 	}
 
 	InetSocketAddress getAcceptorAddress(SessionSettings settings, SessionID sessionId)

@@ -47,7 +47,7 @@
 	</issueManagement>
 
 	<properties>
-		<revision>3.3.1-SNAPSHOT</revision>
+		<revision>3.5.0-SNAPSHOT</revision>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -308,6 +308,30 @@
 			<id>release</id>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>3.5.0</version>
+						<executions>
+							<execution>
+								<id>enforce-release</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireReleaseVersion>
+											<message>Release builds must not use a SNAPSHOT version.</message>
+										</requireReleaseVersion>
+										<requireReleaseDeps>
+											<message>Release builds must not depend on SNAPSHOT artifacts.</message>
+										</requireReleaseDeps>
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>

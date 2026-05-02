@@ -16,6 +16,7 @@
 package io.allune.quickfixj.spring.boot.starter.autoconfigure;
 
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import lombok.Data;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -46,6 +47,16 @@ public class ConnectorConfig {
 	 * The location of the configuration file to use to initialize QuickFIX/J client/server.
 	 */
 	private String config;
+
+	/**
+	 * Whether to resolve {@code ${...}} placeholders against the Spring {@link org.springframework.core.env.Environment}
+	 * when loading the configuration from {@link #config the configuration file}. Unresolvable placeholders cause
+	 * startup to fail. This flag has no effect on {@link #configString}, since values bound from
+	 * {@code application.yml}/properties are already resolved during property binding.
+	 *
+	 * @see SessionSettingsLocator#loadSettings(String...)
+	 */
+	private boolean resolvePlaceholders = false;
 
 	/**
 	 * The configuration string to use to initialize QuickFIX/J client/server.

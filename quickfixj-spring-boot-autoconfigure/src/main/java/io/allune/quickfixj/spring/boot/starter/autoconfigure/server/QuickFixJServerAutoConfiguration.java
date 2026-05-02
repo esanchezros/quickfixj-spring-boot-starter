@@ -18,6 +18,7 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.ResolvePlaceholderSessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import org.quickfixj.jmx.JmxExporter;
@@ -33,6 +34,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import quickfix.Acceptor;
@@ -530,8 +532,23 @@ public class QuickFixJServerAutoConfiguration {
 	 * @return the server's {@link SessionSettingsLocator}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "quickfixj.server", name = "resolve-placeholders", havingValue = "false", matchIfMissing = true)
 	@ConditionalOnMissingBean
 	public SessionSettingsLocator sessionSettingsLocator(ResourceLoader resourceLoader) {
 		return new SessionSettingsLocator(resourceLoader);
+	}
+
+	/**
+	 * Creates the server's {@link SessionSettingsLocator}
+	 *
+	 * @param resourceLoader The {@link ResourceLoader} to use for loading the properties
+	 * @param environment the configurable environment
+	 * @return the server's {@link SessionSettingsLocator}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "quickfixj.server", name = "resolve-placeholders", havingValue = "true")
+	@ConditionalOnMissingBean
+	public SessionSettingsLocator resolvePlaceholderSessionSettingsLocator(ResourceLoader resourceLoader, ConfigurableEnvironment environment) {
+		return new ResolvePlaceholderSessionSettingsLocator(resourceLoader, environment);
 	}
 }

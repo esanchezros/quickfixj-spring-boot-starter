@@ -207,6 +207,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |true
 |Whether the QuickFix/J Server is enabled.
 
+|quickfixj.server.resolve-placeholders
+|true
+|Whether to resolve `${...}` placeholders against the Spring Environment. This *only* works when used with `quickfixj.server.config`. (default: `false`)
+
 |quickfixj.server.config
 |classpath:quickfixj-server.cfg
 |Location of the QuickFix/J configuration file.
@@ -289,6 +293,7 @@ For example:
 [source,properties]
 ----
 quickfixj.server.enabled=true
+quickfixj.server.resolve-placeholders=true
 quickfixj.server.config=classpath:quickfixj-server.cfg
 quickfixj.server.configString=[default]  \r\n\... (see below for an example)
 quickfixj.server.auto-startup=true
@@ -316,6 +321,7 @@ quickfixj.server.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thre
 quickfixj:
   server:
     enabled: true
+    resolve-placeholders: true
     config: classpath:quickfixj-server.cfg
     auto-startup: true
     force-disconnect: false
@@ -363,6 +369,44 @@ BeginString=FIX.4.4
 SenderCompID=EXECUTOR
 TargetCompID=*
 SocketAcceptPort=9876
+AcceptorTemplate=Y
+----
+
+=== QuickFIX/J Server placeholder resolution
+When using `quickfixj.server.config` placeholder resolution can be enabled using the `quickfixj.server.resolve-placeholders` property. See Spring Boot's https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.files.property-placeholders[Property Placeholder] documentation for further information.
+
+[source,properties]
+----
+quickfixj.client.resolve-placeholders=true
+quickfixj.client.config=classpath:quickfixj-client.cfg
+fix.sender-comp-id=EXECUTOR
+fix.target-comp-id=*
+----
+
+[source,yml]
+----
+quickfixj:
+  client:
+    resolve-placeholders: true
+    config: classpath:quickfixj-client.cfg
+fix:
+  sender-comp-id: EXECUTOR
+  target-comp-id: *
+----
+
+[source,ini]
+----
+[default]
+ConnectionType=acceptor
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=${FIX_SENDERCOMPID}
+TargetCompID=${FIX_TARGETCOMPID}
+SocketAcceptPort=${FIX_SOCKETACCEPTPORT:9876}
 AcceptorTemplate=Y
 ----
 
@@ -658,6 +702,10 @@ to configure the FIX sessions. The configuration is resolved using the following
 |true
 |Whether the QuickFix/J Client is enabled.
 
+|quickfixj.client.resolve-placeholders
+|true
+|Whether to resolve `${...}` placeholders against the Spring Environment. This *only* works when used with `quickfixj.client.config`. (default: `false`)
+
 |quickfixj.client.config
 |classpath:quickfixj-client.cfg
 |Location of the QuickFix/J configuration file.
@@ -736,6 +784,7 @@ For example:
 [source,properties]
 ----
 quickfixj.client.enabled=true
+quickfixj.client.resolve-placeholders=true
 quickfixj.client.config=classpath:quickfixj-client.cfg
 quickfixj.client.configString=[default]  \r\n\... (see below for an example)
 quickfixj.client.auto-startup=true
@@ -761,6 +810,7 @@ quickfixj.client.concurrent.threadNamePrefix="QuickFixJ Spring Boot Starter thre
 quickfixj:
   client:
     enabled: true
+    resolve-placeholders: true
     config: classpath:quickfixj-client.cfg
     auto-startup: true
     force-disconnect: false
@@ -779,6 +829,41 @@ quickfixj:
       threadNamePrefix: "QuickFixJ Spring Boot Starter thread-"
     message-store-factory: memory
     log-factory: screen
+----
+
+=== QuickFIX/J Client placeholder resolution
+When using `quickfixj.client.config` placeholder resolution can be enabled using the `quickfixj.client.resolve-placeholders` property. See Spring Boot's https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.files.property-placeholders[Property Placeholder] documentation for further information.
+
+[source,properties]
+----
+quickfixj.client.resolve-placeholders=true
+quickfixj.client.config=classpath:quickfixj-client.cfg
+fix.sender-comp-id=EXEC
+fix.target-comp-id=BANZI
+fix.host=localhost
+----
+
+[source,yml]
+----
+quickfixj:
+  client:
+    resolve-placeholders: true
+    config: classpath:quickfixj-client.cfg
+fix:
+  sender-comp-id: EXEC
+  target-comp-id: BANZI
+  host: localhost
+----
+
+[source,ini]
+----
+[SESSION]
+BeginString=FIX.4.4
+SessionQualifier=Example
+SenderCompID=${FIX_SENDERCOMPID}
+TargetCompID=${FIX_TARGETCOMPID}
+SocketConnectHost=${FIX_HOST}
+SocketConnectPort=${FIX_PORT:9876}
 ----
 
 === QuickFIX/J configuration file in properties and yaml files

@@ -25,6 +25,7 @@ import quickfix.SessionSettings;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
@@ -38,7 +39,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Slf4j
 public class SessionSettingsLocator {
 
-	private final ResourceLoader resourceLoader;
+	protected final ResourceLoader resourceLoader;
 
 	public SessionSettingsLocator(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
@@ -56,7 +57,7 @@ public class SessionSettingsLocator {
 				Optional<Resource> resource = load(location);
 				if (resource.isPresent()) {
 					log.info("Loading settings from '{}'", location);
-					return new SessionSettings(resource.get().getInputStream());
+					return new SessionSettings(readResource(resource.get()));
 				}
 			}
 
@@ -64,6 +65,16 @@ public class SessionSettingsLocator {
 		} catch (RuntimeException | ConfigError | IOException e) {
 			throw new SettingsNotFoundException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Reads the resource into an {@link InputStream}.
+	 * @param resource the resource
+	 * @return the input stream
+	 * @throws IOException if the content stream could not be opened
+	 */
+	protected InputStream readResource(Resource resource) throws IOException {
+		return resource.getInputStream();
 	}
 
 	public SessionSettings loadSettingsFromString(String configString) {
@@ -77,7 +88,7 @@ public class SessionSettingsLocator {
 		}
 	}
 
-	private Optional<Resource> load(String location) {
+	protected Optional<Resource> load(String location) {
 		if (location == null) {
 			return empty();
 		}

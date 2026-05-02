@@ -18,6 +18,7 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure.server;
 import io.allune.quickfixj.spring.boot.starter.application.EventPublisherApplicationAdapter;
 import io.allune.quickfixj.spring.boot.starter.autoconfigure.YamlPropertySourceFactory;
 import io.allune.quickfixj.spring.boot.starter.connection.ConnectorManager;
+import io.allune.quickfixj.spring.boot.starter.connection.ResolvePlaceholderSessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.connection.SessionSettingsLocator;
 import io.allune.quickfixj.spring.boot.starter.exception.ConfigurationException;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
@@ -476,6 +477,22 @@ public class QuickFixJServerAutoConfigurationTest {
 	}
 
 	@Test
+	public void testAutoConfiguredSessionSettingsLocatorIsDefaultWhenResolvePlaceholdersDisabled() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerAcceptorConfiguration.class);
+		SessionSettingsLocator sessionSettingsLocator = ctx.getBean(SessionSettingsLocator.class);
+		assertThat(sessionSettingsLocator).isExactlyInstanceOf(SessionSettingsLocator.class);
+		ctx.stop();
+	}
+
+	@Test
+	public void testAutoConfiguredSessionSettingsLocatorWhenResolvePlaceholdersEnabled() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerResolvePlaceholdersConfiguration.class);
+		SessionSettingsLocator sessionSettingsLocator = ctx.getBean(SessionSettingsLocator.class);
+		assertThat(sessionSettingsLocator).isInstanceOf(ResolvePlaceholderSessionSettingsLocator.class);
+		ctx.stop();
+	}
+
+	@Test
 	public void testAutoConfiguredBeansServerOverriddenConfiguration() {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SingleThreadedServerInitiatorOverrideAllBeansConfiguration.class);
 		assertThatThrownBy(() -> ctx.getBean("serverApplication", Application.class)).isInstanceOf(NoSuchBeanDefinitionException.class);
@@ -567,6 +584,12 @@ public class QuickFixJServerAutoConfigurationTest {
 	@EnableAutoConfiguration
 	@PropertySource("classpath:server-single-threaded/single-threaded-application.properties")
 	static class SingleThreadedServerAcceptorConfiguration {
+	}
+
+	@Configuration
+	@EnableAutoConfiguration
+	@PropertySource("classpath:server-single-threaded/single-threaded-application-resolve-placeholders.properties")
+	static class SingleThreadedServerResolvePlaceholdersConfiguration {
 	}
 
 	private static final class CapturingThreadedSocketAcceptor extends ThreadedSocketAcceptor {

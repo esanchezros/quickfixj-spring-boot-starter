@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Eduardo Sanchez-Ros
  */
-public class DefaultSessionLookupHandlerTest {
+class DefaultSessionLookupHandlerTest {
 
 	@Test
-	public void shouldReturnSessionGivenSessionId() throws IOException {
+	void shouldReturnSessionGivenSessionId() throws IOException {
 		// Given
 		long systemTime = System.currentTimeMillis();
 		SessionID sessionID = new SessionID("FIX.4.2", "SENDER" + systemTime, "TARGET" + systemTime);
@@ -37,8 +37,8 @@ public class DefaultSessionLookupHandlerTest {
 		ScreenLogFactory factory = new ScreenLogFactory(settings);
 
 		try (Session expectedSession = new Session(new UnitTestApplication(), new MemoryStoreFactory(),
-				sessionID, new DefaultDataDictionaryProvider(), null, factory,
-				new DefaultMessageFactory(), 0)) {
+			sessionID, new DefaultDataDictionaryProvider(), new ValidationSettings(), null, factory,
+			new DefaultMessageFactory(), 0)) {
 			Session.registerSession(expectedSession);
 
 			DefaultSessionLookupHandler defaultSessionLookupHandler = new DefaultSessionLookupHandler();

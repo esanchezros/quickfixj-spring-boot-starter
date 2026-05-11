@@ -12,10 +12,6 @@
 	<description>Spring Boot Starter for QuickFIX/J</description>
 	<url>https://github.com/esanchezros/quickfixj-spring-boot-starter</url>
 
-	<properties>
-		<quickfixj.version>2.3.2</quickfixj.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.allune</groupId>

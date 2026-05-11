@@ -140,7 +140,7 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 			try {
 				ApplVerID applVerID = getApplicationVersionID(message, session);
 				DataDictionary applicationDataDictionary = dataDictionaryProvider.getApplicationDataDictionary(applVerID);
-				applicationDataDictionary.validate(message, true);
+				applicationDataDictionary.validate(message, true, session.getValidationSettings());
 			} catch (Exception e) {
 				LogUtil.logThrowable(sessionID, "Message failed validation: " + e.getMessage(), e);
 				throw new MessageValidationException("Message failed validation: " + e.getMessage(), e);

@@ -51,7 +51,7 @@
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<quickfixj.version>3.0.0</quickfixj.version>
+		<quickfixj.version>3.0.1</quickfixj.version>
 		<awaitility.version>4.3.0</awaitility.version>
 		<spring-boot-dependencies.version>3.5.14</spring-boot-dependencies.version>
 		<snakeyaml.version>2.6</snakeyaml.version>

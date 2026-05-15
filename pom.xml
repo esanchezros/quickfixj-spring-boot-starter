@@ -47,7 +47,7 @@
 	</issueManagement>
 
 	<properties>
-		<revision>3.6.0-SNAPSHOT</revision>
+		<revision>3.6.0</revision>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

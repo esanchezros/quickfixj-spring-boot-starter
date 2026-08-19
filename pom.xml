@@ -53,7 +53,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>3.0.1</quickfixj.version>
 		<awaitility.version>4.3.0</awaitility.version>
-		<spring-boot-dependencies.version>4.0.6</spring-boot-dependencies.version>
+		<spring-boot-dependencies.version>4.1.0</spring-boot-dependencies.version>
 		<snakeyaml.version>2.6</snakeyaml.version>
 		<lombok.version>1.18.46</lombok.version>
 

@@ -1,0 +1,54 @@
+name: Compatibility regression
+description: Report a problem caused by a Java, Spring Boot, QuickFIX/J, or starter upgrade.
+title: "[Compatibility]: "
+labels:
+  - bug
+body:
+  - type: input
+    id: working_combination
+    attributes:
+      label: Last working combination
+      description: Include starter, Spring Boot, QuickFIX/J, and Java versions.
+    validations:
+      required: true
+  - type: input
+    id: failing_combination
+    attributes:
+      label: Failing combination
+      description: Include starter, Spring Boot, QuickFIX/J, and Java versions.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior_change
+    attributes:
+      label: Observed compatibility change
+      description: Describe the compile-time, startup, runtime, configuration, dependency, or operational failure.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide steps or a minimal public repository. Remove all credentials and sensitive session settings.
+    validations:
+      required: true
+  - type: textarea
+    id: dependency_tree
+    attributes:
+      label: Relevant dependency tree
+      description: Include the relevant part of `mvn dependency:tree` when dependencies are involved.
+      render: text
+  - type: textarea
+    id: migration_attempts
+    attributes:
+      label: Migration attempts
+      description: Describe configuration changes or workarounds already tried.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and release notes.
+          required: true
+        - label: I removed credentials and sensitive FIX session information.
+          required: true

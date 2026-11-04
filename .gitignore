@@ -10,3 +10,7 @@
 **/logs/**
 **/.settings
 .flattened-pom.xml
+
+# Local planning and implementation notes. Public requirements belong in
+# GitHub Issues, ROADMAP.adoc, or tracked documentation under docs/.
+tasks/

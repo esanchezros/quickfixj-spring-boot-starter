@@ -1,0 +1,29 @@
+= ADR 0001: Versioning policy
+
+== Status
+
+Accepted
+
+== Context
+
+The project historically aligns major releases with substantial Spring Boot and starter changes. A future starter `5.0.0` may still use Spring Boot 4 while introducing intentional changes to this project's own public configuration and bean contracts.
+
+Equating the starter major version with the Spring Boot major version would prevent the project from communicating its own breaking changes accurately.
+
+== Decision
+
+The starter follows semantic versioning for its own public compatibility contract.
+
+The supported Spring Boot, Java, and QuickFIX/J combinations are declared separately in link:../compatibility.adoc[the compatibility table]. A starter major version does not guarantee a numerically matching Spring Boot major version.
+
+== Consequences
+
+* Breaking starter API, property, bean-contract, or dependency changes require a starter major release.
+* Compatible features use a minor release.
+* Compatible fixes use a patch release.
+* Every release must state its Spring Boot, Java, and QuickFIX/J baselines.
+* Migration documentation must explain why a major starter version changed even when the Spring Boot major did not.
+
+== Alternatives considered
+
+Match the starter major to Spring Boot. This was rejected because it hides breaking changes in the starter and couples two independent compatibility contracts.

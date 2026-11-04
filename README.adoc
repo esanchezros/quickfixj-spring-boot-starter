@@ -1181,6 +1181,15 @@ https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[quickfixj-
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-with-database[QuickFIX/J Spring Boot Server application with database message store]
 * https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[QuickFIX/J Spring Boot Server application]
 
+=== Project documentation and maintenance
+
+* link:docs/README.adoc[Project documentation]
+* link:ROADMAP.adoc[Roadmap]
+* link:docs/compatibility.adoc[Compatibility]
+* link:docs/support-policy.adoc[Support policy]
+* link:CONTRIBUTING.adoc[Contributing]
+* link:SECURITY.md[Security policy]
+
 === License and Acknowledgement
 
 The QuickFIX/J Spring Boot Starter is released under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].

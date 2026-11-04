@@ -1,0 +1,107 @@
+= QuickFIX/J Spring Boot Starter Roadmap
+:toc:
+:toclevels: 2
+
+This roadmap describes the intended direction of the project. It is not a promise of release dates.
+GitHub Issues contain the public requirements and acceptance criteria for individual changes.
+The roadmap is reviewed when a milestone is completed or project priorities change.
+
+== Product objective
+
+Provide a stable, idiomatic, and observable Spring Boot integration for QuickFIX/J that is easy to configure, customize, test, and upgrade.
+
+The project is used by existing applications. Compatibility and migration support therefore take priority over rapid redesign.
+
+== Maintenance principles
+
+* Preserve documented configuration properties, bean names, Maven coordinates, and behavior within a maintained major version unless a change fixes a serious defect or security issue.
+* Introduce replacements before removing public APIs or configuration properties.
+* Test the packaged artifacts from a consumer application, not only from the project reactor.
+* Keep Spring-specific wiring in this project and FIX-message assertions in dedicated test libraries.
+* Record durable architectural choices as link:docs/adr/README.adoc[Architecture Decision Records].
+* Track public work in GitHub Issues. Local `tasks/projects/` directories are working notes, not the public source of truth.
+
+== Supported lines
+
+[cols="1,2,3"]
+|===
+|Line |Status |Scope
+
+|`4.x` / `main`
+|Active
+|Features, compatibility improvements, bug fixes, and security fixes for Spring Boot 4.
+
+|`3.x`
+|Maintenance
+|Compatible high-value bug fixes and security fixes for Spring Boot 3.
+
+|`1.x` and `2.x`
+|End of life
+|Branches and tags remain available, but no further fixes or releases are planned.
+|===
+
+See link:docs/support-policy.adoc[Support Policy] and link:docs/compatibility.adoc[Compatibility] for the public contract.
+
+== Planned milestones
+
+=== 4.4.0 - Reliability
+
+The first milestone strengthens the current behavior without redesigning the public auto-configuration model.
+
+* Correct multi-session health aggregation and define its operational semantics.
+* Align configuration properties, Java accessors, and generated metadata.
+* Make connector shutdown callbacks and error handling deterministic.
+* Correct the Maven verification and integration-test lifecycle.
+* Restore independent continuous integration and dependency maintenance for `3.x`.
+* Add packaged-consumer and compatibility checks.
+* Verify the QuickFIX/J 3.0.2 upgrade.
+
+Compatible fixes will be considered individually for a `3.7.0` maintenance release.
+
+=== 4.5.0 - Testing and observability
+
+This milestone makes the project's release signal representative of real applications.
+
+* Move auto-configuration contracts to `ApplicationContextRunner` where appropriate.
+* Use ephemeral ports and deterministic asynchronous waits.
+* Add peer-receipt transport tests in both initiator and acceptor directions.
+* Adopt released AssertJ QuickFIX/J and FixMock artifacts in test scope.
+* Add binary API, configuration metadata, dependency-tree, and consumer checks.
+* Add reconnect, rejection, multi-session, health-transition, and shutdown scenarios.
+* Establish scheduled leak, soak, and performance baselines outside the pull-request critical path.
+
+=== 5.0.0 - Composition and configuration
+
+This milestone may contain intentional breaking changes and will include a migration guide and release-candidate period.
+
+* Support initiator and acceptor auto-configuration in the same application context by default.
+* Introduce role-specific bean names, qualifiers, and back-off rules.
+* Complete canonical configuration-property migration and remove obsolete APIs.
+* Complete the staged separation of Actuator support from the core starter.
+* Consider a dedicated Bill of Materials (BOM) for dependency management.
+
+The 4.x line should first expose the new composition model as an opt-in prototype. See link:docs/adr/0002-client-server-composition.adoc[ADR 0002].
+
+=== Future - Multiple connectors
+
+Multiple initiators or acceptors in one application are a separate design problem. Work will start only after the 5.0 composition model is stable and user demand is understood.
+
+== Ecosystem dependencies
+
+The following independent projects support the testing roadmap:
+
+* AssertJ QuickFIX/J provides readable, semantic assertions for QuickFIX/J messages.
+* FixMock provides peer behavior and transport-level integration testing.
+
+They must be released and verified with QuickFIX/J 3.x before they become release gates for this project. This repository will consume their published artifacts and will not create a circular source dependency.
+
+== How work is selected
+
+Priorities use the following meaning:
+
+* `P0`: active security issue, data exposure, or release-blocking regression.
+* `P1`: reliability or compatibility work needed for the next milestone.
+* `P2`: valuable product, testing, documentation, or maintainability improvement.
+* `P3`: exploratory or low-demand improvement.
+
+Each implementation issue should identify affected branches, compatibility impact, acceptance criteria, test plan, documentation needs, backport decision, and rollback considerations.

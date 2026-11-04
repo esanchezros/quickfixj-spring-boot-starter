@@ -44,8 +44,5 @@ jobs:
         with:
           disable_search: true
           fail_ci_if_error: false
-          files: >-
-            ./quickfixj-spring-boot-actuator/target/site/jacoco/jacoco.xml,
-            ./quickfixj-spring-boot-autoconfigure/target/site/jacoco/jacoco.xml,
-            ./quickfixj-spring-boot-context/target/site/jacoco/jacoco.xml
+          files: ./quickfixj-spring-boot-actuator/target/site/jacoco/jacoco.xml,./quickfixj-spring-boot-autoconfigure/target/site/jacoco/jacoco.xml,./quickfixj-spring-boot-context/target/site/jacoco/jacoco.xml
           use_oidc: true

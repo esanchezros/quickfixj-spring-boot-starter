@@ -41,14 +41,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import static java.util.Calendar.FEBRUARY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static quickfix.SessionHelper.registerSession;
-import static quickfix.SessionHelper.unregisterSession;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for FIX health indicator
@@ -81,6 +81,7 @@ public class QuickFixJSessionHealthIndicatorTest {
 	private MockSystemTimeSource mockSystemTimeSource;
 	private Locale defaultLocale;
 	private SessionID sessionID;
+	private List<SessionID> registeredSessionIDs;
 
 	@BeforeEach
 	public void setUp() {
@@ -89,16 +90,19 @@ public class QuickFixJSessionHealthIndicatorTest {
 		defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
 
+		registeredSessionIDs = new ArrayList<>();
 		sessionID = new SessionID("FIX.4.2", "SENDER", "TARGET");
 		ArrayList<SessionID> sessionIDs = new ArrayList<>();
 		sessionIDs.add(sessionID);
 		given(connector.getSessions()).willReturn(sessionIDs);
 		given(session.getSessionID()).willReturn(sessionID);
-		registerSession(session);
+		quickfix.SessionHelper.registerSession(session);
+		registeredSessionIDs.add(sessionID);
 	}
 
 	@AfterEach
 	public void tearDown() {
+		registeredSessionIDs.forEach(quickfix.SessionHelper::unregisterSession);
 		SystemTime.setTimeSource(null);
 		Locale.setDefault(defaultLocale);
 	}
@@ -120,7 +124,62 @@ public class QuickFixJSessionHealthIndicatorTest {
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get(sessionID.toString())).isEqualTo("LoggedOn");
 		assertThat(health.getDetails().get("sessionSchedule")).isEqualTo(sessionSchedule.toString());
-		unregisterSession(sessionID);
+	}
+
+	@Test
+	public void shouldReportServiceHealthIsDOWNRegardlessOfSessionIterationOrder() throws Exception {
+		SessionID loggedOnSessionID = new SessionID("FIX.4.2", "SENDER_2", "TARGET_2");
+		Session loggedOnSession = registerAdditionalSession(loggedOnSessionID);
+		SessionSchedule sessionSchedule = mock(SessionSchedule.class);
+		given(sessionSchedule.isSessionTime()).willReturn(true);
+		given(sessionScheduleFactory.create(sessionID, sessionSettings)).willReturn(sessionSchedule);
+		given(sessionScheduleFactory.create(loggedOnSessionID, sessionSettings)).willReturn(sessionSchedule);
+		given(session.isLoggedOn()).willReturn(false);
+		given(loggedOnSession.isLoggedOn()).willReturn(true);
+
+		given(connector.getSessions()).willReturn(new ArrayList<>(List.of(sessionID, loggedOnSessionID)));
+		Health loggedOffFirst = quickFixJSessionHealthIndicator.health();
+		given(connector.getSessions()).willReturn(new ArrayList<>(List.of(loggedOnSessionID, sessionID)));
+		Health loggedOnFirst = quickFixJSessionHealthIndicator.health();
+
+		assertThat(loggedOffFirst.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(loggedOnFirst.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(loggedOffFirst.getDetails())
+				.containsEntry(sessionID.toString(), "LoggedOff")
+				.containsEntry(loggedOnSessionID.toString(), "LoggedOn");
+		assertThat(loggedOnFirst.getDetails())
+				.containsEntry(sessionID.toString(), "LoggedOff")
+				.containsEntry(loggedOnSessionID.toString(), "LoggedOn");
+	}
+
+	@Test
+	public void shouldReportServiceHealthIsUPGivenAllSessionsAreLoggedOn() throws Exception {
+		SessionID secondSessionID = new SessionID("FIX.4.2", "SENDER_2", "TARGET_2");
+		Session secondSession = registerAdditionalSession(secondSessionID);
+		SessionSchedule sessionSchedule = mock(SessionSchedule.class);
+		given(sessionSchedule.isSessionTime()).willReturn(true);
+		given(sessionScheduleFactory.create(sessionID, sessionSettings)).willReturn(sessionSchedule);
+		given(sessionScheduleFactory.create(secondSessionID, sessionSettings)).willReturn(sessionSchedule);
+		given(session.isLoggedOn()).willReturn(true);
+		given(secondSession.isLoggedOn()).willReturn(true);
+		given(connector.getSessions()).willReturn(new ArrayList<>(List.of(sessionID, secondSessionID)));
+
+		Health health = quickFixJSessionHealthIndicator.health();
+
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails())
+				.containsEntry(sessionID.toString(), "LoggedOn")
+				.containsEntry(secondSessionID.toString(), "LoggedOn");
+	}
+
+	@Test
+	public void shouldReportServiceHealthIsUNKNOWNGivenNoSessions() {
+		given(connector.getSessions()).willReturn(new ArrayList<>());
+
+		Health health = quickFixJSessionHealthIndicator.health();
+
+		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
@@ -187,6 +246,14 @@ public class QuickFixJSessionHealthIndicatorTest {
 		settings.setString(Session.SETTING_END_TIME, UtcTimeOnlyConverter.convert(endTime, false));
 
 		return new DefaultSessionSchedule(settings, sessionID);
+	}
+
+	private Session registerAdditionalSession(SessionID id) {
+		Session registeredSession = mock(Session.class);
+		given(registeredSession.getSessionID()).willReturn(id);
+		quickfix.SessionHelper.registerSession(registeredSession);
+		registeredSessionIDs.add(id);
+		return registeredSession;
 	}
 
 	private Calendar getTimeStamp(

@@ -16,8 +16,10 @@
 package io.allune.quickfixj.spring.boot.actuate.health;
 
 import lombok.Getter;
+import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 import quickfix.Connector;
 import quickfix.Session;
 import quickfix.SessionID;
@@ -25,8 +27,10 @@ import quickfix.SessionSchedule;
 import quickfix.SessionScheduleFactory;
 import quickfix.SessionSettings;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QuickFixJSessionHealthIndicator extends AbstractHealthIndicator {
@@ -50,32 +54,21 @@ public class QuickFixJSessionHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
+		Set<Status> statuses = new HashSet<>();
 		connector.getSessions().forEach(sessionID -> {
 			SessionSchedule sessionSchedule =
 					sessionScheduleMap.computeIfAbsent(sessionID,
 							id -> getSessionSchedule(sessionID).orElse(null));
 
 			SessionStatus sessionStatus = getSessionStatus(sessionID, sessionSchedule);
-			switch (sessionStatus) {
-				case LOGGED_ON:
-					builder.up().withDetail(sessionID.toString(), "LoggedOn");
-					break;
-				case LOGGED_OFF:
-					builder.down().withDetail(sessionID.toString(), "LoggedOff");
-					break;
-				case NOT_IN_SESSION:
-					builder.unknown().withDetail(sessionID.toString(), "NotInSession");
-					break;
-				case ERROR:
-				default:
-					builder.outOfService().withDetail(sessionID.toString(), "Error");
-					break;
-			}
+			statuses.add(sessionStatus.getHealthStatus());
+			builder.withDetail(sessionID.toString(), sessionStatus.getDescription());
 
 			if (sessionSchedule != null) {
 				builder.withDetail("sessionSchedule", sessionSchedule.toString());
 			}
 		});
+		builder.status(StatusAggregator.getDefault().getAggregateStatus(statuses));
 	}
 
 	private Optional<SessionSchedule> getSessionSchedule(SessionID sessionID) {
@@ -110,15 +103,18 @@ public class QuickFixJSessionHealthIndicator extends AbstractHealthIndicator {
 	@Getter
 	public enum SessionStatus {
 
-		LOGGED_ON("LoggedOn"),
-		LOGGED_OFF("LoggedOff"),
-		NOT_IN_SESSION("NotInSession"),
-		ERROR("Error");
+		LOGGED_ON("LoggedOn", Status.UP),
+		LOGGED_OFF("LoggedOff", Status.DOWN),
+		NOT_IN_SESSION("NotInSession", Status.UNKNOWN),
+		ERROR("Error", Status.OUT_OF_SERVICE);
 
 		private final String description;
 
-		SessionStatus(String description) {
+		private final Status healthStatus;
+
+		SessionStatus(String description, Status healthStatus) {
 			this.description = description;
+			this.healthStatus = healthStatus;
 		}
 	}
 }

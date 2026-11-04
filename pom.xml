@@ -198,7 +198,10 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-					<argLine>@{argLine} -Xms512m -Xmx512m</argLine>
+					<argLine>@{surefireArgLine} -Xms512m -Xmx512m</argLine>
+					<excludes>
+						<exclude>**/*IntegrationTest.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -206,7 +209,10 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>${maven-failsafe-plugin.version}</version>
 				<configuration>
-					<argLine>@{argLine} -Xms512m -Xmx512m</argLine>
+					<argLine>@{failsafeArgLine} -Xms512m -Xmx512m</argLine>
+					<includes>
+						<include>**/*IntegrationTest.java</include>
+					</includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -227,6 +233,39 @@
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-integration.exec</destFile>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>merge-results</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>jacoco-unit.exec</include>
+										<include>jacoco-integration.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+							<destFile>${project.build.directory}/jacoco.exec</destFile>
+						</configuration>
 					</execution>
 					<execution>
 						<id>report</id>
@@ -234,6 +273,7 @@
 							<goal>report</goal>
 						</goals>
 						<configuration>
+							<dataFile>${project.build.directory}/jacoco.exec</dataFile>
 							<formats>
 								<format>XML</format>
 							</formats>

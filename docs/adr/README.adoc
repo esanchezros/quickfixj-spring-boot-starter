@@ -1,0 +1,36 @@
+= Architecture Decision Records
+
+Architecture Decision Records (ADRs) preserve important decisions and their reasoning. GitHub Issues track delivery; ADRs explain why the project chose a direction.
+
+== Status values
+
+* `Proposed`: under review or awaiting implementation evidence.
+* `Accepted`: the project has adopted the decision.
+* `Superseded`: a later ADR replaces the decision.
+* `Rejected`: considered but not adopted.
+
+== Naming
+
+Use a four-digit sequence and a short descriptive name:
+
+[source,text]
+----
+0004-example-decision.adoc
+----
+
+== Required sections
+
+Each ADR contains:
+
+* Status
+* Context
+* Decision
+* Consequences
+* Alternatives considered
+* Verification, when the decision requires implementation evidence
+
+== Index
+
+* link:0001-versioning-policy.adoc[ADR 0001: Versioning policy]
+* link:0002-client-server-composition.adoc[ADR 0002: Client and server composition]
+* link:0003-actuator-packaging.adoc[ADR 0003: Actuator packaging]

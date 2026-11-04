@@ -1,0 +1,26 @@
+= Project Documentation
+
+The main link:../README.adoc[README] is the quickest introduction to the starter. This directory contains maintenance, compatibility, and architectural documentation.
+
+== Maintainer documentation
+
+* link:../ROADMAP.adoc[Roadmap]
+* link:support-policy.adoc[Support Policy]
+* link:compatibility.adoc[Compatibility]
+* link:release-process.adoc[Release Process]
+* link:adr/README.adoc[Architecture Decision Records]
+
+== Planned user documentation
+
+The current README contains the complete user reference. A future documentation project will split it into focused guides without removing the quick-start path:
+
+* Getting started
+* Configuration sources and properties
+* Acceptor configuration
+* Initiator configuration
+* Customization and bean overrides
+* Actuator and operations
+* Testing
+* Migration guides
+
+Until that work is complete, the README remains the authoritative usage reference.

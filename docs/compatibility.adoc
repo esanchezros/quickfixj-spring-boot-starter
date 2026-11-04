@@ -1,0 +1,62 @@
+= Compatibility
+
+The starter's major version defines its own public compatibility contract. It does not always equal the Spring Boot major version.
+
+== Current and planned lines
+
+[cols="1,1,1,1,2"]
+|===
+|Starter line |Spring Boot line |Minimum Java |QuickFIX/J line |Status
+
+|`4.4.x`
+|`4.1.x`
+|17
+|`3.0.x`
+|In development on `main`
+
+|`4.3.x`
+|`4.0.x`
+|17
+|`3.0.x`
+|Latest published active line
+
+|`3.7.x`
+|`3.5.x`
+|17
+|`3.0.x`
+|In development on `3.x`
+
+|`3.6.x`
+|`3.5.x`
+|17
+|`3.0.x`
+|Latest published maintenance line
+
+|`1.x` and `2.x`
+|Historical Spring Boot lines
+|8
+|Historical QuickFIX/J lines
+|End of life
+|===
+
+Patch versions shown above describe the versions used to build and test the project. Applications should use a compatible patch from the same supported line unless a release note states a stricter requirement.
+
+== Verification policy
+
+Each maintained line should verify:
+
+* Its minimum Java version and a current Long-Term Support (LTS) Java version.
+* The Spring Boot line owned by that branch.
+* The current supported QuickFIX/J patch and proposed upgrades.
+* Operation with Actuator present and absent, once Actuator becomes optional.
+* A minimal consumer application built from the packaged artifacts.
+* Binary and source compatibility with the previous release in the same major line.
+* Maven dependency convergence and the intended optional-dependency behavior.
+
+The test matrix will expand as the work in link:../ROADMAP.adoc[the roadmap] is delivered.
+
+== Versioning changes
+
+A dependency upgrade can be incompatible even when this project's Java API does not change. Release notes must identify changes to the supported Spring Boot, QuickFIX/J, Java, Maven, and transitive dependency baselines.
+
+See link:adr/0001-versioning-policy.adoc[ADR 0001] for the versioning decision.

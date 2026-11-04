@@ -1,0 +1,60 @@
+= Release Process
+
+This document defines the intended release controls. Some automated gates are roadmap work and are not yet implemented.
+
+== Release ownership
+
+Only a maintainer publishes artifacts, creates release tags, or marks a GitHub release as final. Pull requests and automated agents must not publish or tag releases without explicit maintainer approval.
+
+== Release preparation
+
+. Confirm the target branch and milestone.
+. Confirm all milestone issues are closed or explicitly deferred.
+. Review compatibility, deprecations, dependency changes, and backport decisions.
+. Update user documentation, the compatibility table, and release notes.
+. Run the complete verification command from a clean checkout.
+. Verify packaged consumer applications and ecosystem compatibility tests.
+. Confirm Maven coordinates, source archives, Javadocs, signatures, and license metadata.
+. Prepare the release version and the next development version.
+
+The canonical local verification command is intended to be:
+
+[source,shell]
+----
+mvn --batch-mode verify
+----
+
+The continuous integration workflow will be updated to make this command authoritative.
+
+== Required release evidence
+
+The release pull request should record:
+
+* Supported Java, Spring Boot, and QuickFIX/J matrix results.
+* Unit, auto-configuration contract, and integration-test results.
+* Packaged-consumer results.
+* Binary and source compatibility results.
+* Dependency convergence and dependency-tree results.
+* Configuration metadata verification.
+* FixMock interoperability results when that suite becomes available.
+* Documentation and migration review.
+
+== Maven Central
+
+The maintainer performs or explicitly approves Maven Central publication. Credentials must stay in the maintainer's local settings or the repository's protected release environment and must never be committed.
+
+Publication should use staging or an equivalent review step when the publishing service supports it. The maintainer verifies the staged artifacts before publication becomes final.
+
+== After publication
+
+. Verify the artifacts and POMs from Maven Central.
+. Create the signed or annotated Git tag used by the project.
+. Publish the GitHub release and release notes.
+. Update README version examples and compatibility documentation.
+. Advance the development version.
+. Announce any deprecations, operational changes, or required migrations.
+. Create or confirm backport issues for the maintained `3.x` line.
+
+== Rollback and failed releases
+
+Published Maven artifacts are immutable and must not be replaced. If an artifact is defective, stop the release process, document the failure, and publish a corrected patch version after verification.

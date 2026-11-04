@@ -1,0 +1,85 @@
+name: Bug report
+description: Report reproducible incorrect behavior in a supported release.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Do not include credentials, FIX session secrets, or other sensitive data.
+  - type: input
+    id: starter_version
+    attributes:
+      label: Starter version
+      placeholder: 4.3.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Java, Spring Boot, QuickFIX/J, operating system, and build-tool versions.
+      placeholder: Java 17, Spring Boot 4.0.6, QuickFIX/J 3.0.1, Linux, Maven 3.9
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Connector role
+      options:
+        - Initiator (client)
+        - Acceptor (server)
+        - Both in one application
+        - Not role-specific
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the observed behavior and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide configuration and steps, or link to a minimal public repository. Remove secrets from FIX settings and logs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or stack trace
+      render: text
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      options:
+        - Unknown
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: input
+    id: last_working
+    attributes:
+      label: Last known working version
+      description: Complete this when the problem is a regression.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and pull requests.
+          required: true
+        - label: I removed credentials and sensitive FIX session information.
+          required: true

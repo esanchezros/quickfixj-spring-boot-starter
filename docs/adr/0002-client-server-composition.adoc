@@ -1,0 +1,41 @@
+= ADR 0002: Client and server composition
+
+== Status
+
+Proposed
+
+== Context
+
+The current client and server auto-configurations exclude one another in the same Spring application context. Applications that need both roles use child contexts.
+
+Removing the exclusion conditions alone is unsafe. Client and server configurations currently contain overlapping bean names, type-wide back-off conditions, unqualified optional dependencies, and composite factories that can consume beans from both roles.
+
+== Decision
+
+Prototype a second-generation composition model behind an opt-in property in the 4.x line. Use explicit role-specific bean names, qualifiers, dependencies, and back-off rules.
+
+After consumer testing and a release-candidate period, make that model the default in 5.0. Preserve the current behavior by default throughout 4.x.
+
+Multiple connectors of the same role are outside this decision and require a separate design.
+
+== Consequences
+
+* Existing 4.x applications retain their current default behavior.
+* The project can test the new bean contract with real consumers before making it the default.
+* Custom application beans need documented role-specific names or qualifiers.
+* The 5.0 migration guide must describe bean-name, qualifier, and back-off changes.
+* The auto-configuration contract suite must cover client-only, server-only, combined, and customized combinations.
+
+== Alternatives considered
+
+=== Remove the mutual-exclusion conditions immediately
+
+Rejected because it creates bean collisions and ambiguous or cross-role injection.
+
+=== Keep child contexts as the permanent model
+
+Rejected as the only long-term model because it adds application complexity and differs from normal Spring Boot composition.
+
+== Verification
+
+The proposal becomes accepted only after an opt-in implementation passes packaged-consumer and transport-level tests and receives downstream feedback.

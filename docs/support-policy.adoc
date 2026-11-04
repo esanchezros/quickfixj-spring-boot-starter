@@ -1,0 +1,57 @@
+= Support Policy
+
+This policy explains which project lines receive changes and how compatibility changes are handled.
+
+== Supported release lines
+
+[cols="1,1,3"]
+|===
+|Line |Status |Maintenance policy
+
+|`4.x`
+|Active
+|Receives features, bug fixes, security fixes, documentation improvements, and dependency updates for Spring Boot 4.
+
+|`3.x`
+|Maintenance
+|Receives security fixes and compatible high-value bug fixes for Spring Boot 3. New features are considered only when they are low-risk and do not complicate maintenance.
+
+|`1.x` and `2.x`
+|End of life
+|No further fixes or releases are planned. Existing branches, tags, and Maven Central artifacts remain available.
+|===
+
+No fixed end-of-life date is currently set for `3.x`. The project will announce an end date at least 90 days in advance in the README, roadmap, and a GitHub Issue.
+
+== Compatibility commitments
+
+Within a maintained major version, the project aims to preserve:
+
+* Maven coordinates and module names.
+* Public Java APIs.
+* Documented configuration property names and defaults.
+* Documented bean names and customization points.
+* Auto-configuration back-off behavior.
+* Actuator endpoint identifiers and documented response semantics.
+* Supported Java, Spring Boot, and QuickFIX/J combinations.
+
+A bug or security fix can require a behavior change. Such a change must include tests, release notes, and an explicit compatibility assessment.
+
+== Deprecation policy
+
+When practical, a replacement is introduced before an API, property, or behavior is removed.
+
+* Deprecations are documented in Javadoc or configuration metadata and in release notes.
+* Deprecated functionality normally remains for the rest of the current major line.
+* Removal normally occurs only in the next major version.
+* A security issue can require faster removal. The release notes will explain the reason and migration.
+
+== Backports
+
+Backports to `3.x` are evaluated case by case. A backport should be compatible, independently tested on `3.x`, and valuable enough to justify the maintenance cost.
+
+Features and architectural redesigns normally remain on `main`.
+
+== Reporting problems
+
+Use GitHub Issues for reproducible bugs, compatibility regressions, and feature requests. Follow link:../SECURITY.md[SECURITY.md] for vulnerabilities that should not be disclosed publicly.

@@ -1,0 +1,36 @@
+= ADR 0003: Actuator packaging
+
+== Status
+
+Proposed
+
+== Context
+
+The starter currently brings Actuator support into the normal dependency graph. Making it optional immediately would be cleaner for new users but could break applications that rely on the existing transitive dependencies.
+
+== Decision
+
+Introduce a dedicated Actuator starter during 4.x while retaining the current umbrella dependency behavior. Document the dedicated dependency as the future model.
+
+Remove Actuator from the core starter's default dependency graph only in 5.0, with migration documentation and dependency-tree contract tests.
+
+== Consequences
+
+* Existing 4.x consumers remain compatible.
+* New consumers can adopt the future dependency layout before 5.0.
+* The project temporarily maintains both the legacy umbrella behavior and the dedicated Actuator path.
+* The 5.0 release must call out the dependency change prominently.
+
+== Alternatives considered
+
+=== Make Actuator optional in the next 4.x release
+
+Rejected because it can cause compile-time or runtime failures in applications that currently receive Actuator transitively.
+
+=== Keep Actuator transitively forever
+
+Rejected because users that do not need operational endpoints should not be required to carry the dependency.
+
+== Verification
+
+Consumer fixtures must verify applications with and without the dedicated Actuator starter before this proposal becomes accepted.

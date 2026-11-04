@@ -1,0 +1,67 @@
+= Contributing
+
+Thank you for helping maintain the QuickFIX/J Spring Boot Starter.
+
+== Before starting
+
+* Search existing GitHub Issues and pull requests.
+* For a substantial or potentially breaking change, open an issue before implementation.
+* Read link:ROADMAP.adoc[the roadmap], link:docs/support-policy.adoc[the support policy], and relevant link:docs/adr/README.adoc[ADRs].
+* Do not disclose suspected vulnerabilities in a public issue. Follow link:SECURITY.md[the security policy].
+
+== Public and local planning
+
+GitHub Issues are the public source of truth for requirements, acceptance criteria, and delivery status.
+
+Maintainers may use ignored `tasks/projects/<project-name>/` directories for investigation notes and implementation plans. Important requirements and decisions must be copied to a GitHub Issue, tracked documentation, or an ADR before the work is considered complete.
+
+== Development setup
+
+The active line requires Java 17 or later and Maven. Run the complete verification lifecycle before submitting a pull request:
+
+[source,shell]
+----
+mvn --batch-mode verify
+----
+
+The current continuous integration workflow is being aligned with this command. If a branch temporarily requires another command, document it in the pull request.
+
+== Branches
+
+Use a short branch name that describes one independently reviewable change:
+
+* `fix/<issue>-<description>`
+* `feat/<issue>-<description>`
+* `test/<issue>-<description>`
+* `docs/<issue>-<description>`
+* `chore/<issue>-<description>`
+
+Changes for `main` target the active Spring Boot 4 line. A compatible fix can be backported to `3.x` in a separate pull request after it passes that branch's verification.
+
+== Pull requests
+
+Keep pull requests focused. Include:
+
+* The user or maintainer problem being solved.
+* Compatibility impact on APIs, configuration, bean names, dependencies, and operations.
+* Tests that demonstrate the change.
+* Documentation and release-note updates.
+* The backport decision.
+* Rollback considerations for behavior or dependency changes.
+
+Do not reference internal planning labels or local `tasks/` files in production code or comments.
+
+== Tests
+
+Use the smallest suitable test layer:
+
+* Unit tests for isolated behavior.
+* `ApplicationContextRunner` tests for auto-configuration contracts.
+* Integration tests for real QuickFIX/J lifecycle and transport behavior.
+* Packaged-consumer tests for dependency and public-contract verification.
+
+Transport tests must verify receipt at the peer, not only the sender's callback. Avoid fixed ports and sleeps. Clean up sessions, connectors, contexts, executors, and global test state.
+
+== Releases
+
+Only a maintainer publishes Maven artifacts, tags a release, or publishes a GitHub release. See link:docs/release-process.adoc[the release process].

@@ -29,7 +29,9 @@ public class QuickFixJServerDynamicProperties {
 
 	/**
 	 * Whether to register dynamic session providers for
-	 * {@link quickfix.ThreadedSocketAcceptor} template sessions.
+	 * {@link quickfix.ThreadedSocketAcceptor} template sessions. Enabling dynamic
+	 * sessions selects {@link quickfix.ThreadedSocketAcceptor} even when concurrent
+	 * mode is disabled.
 	 */
 	private boolean enabled = false;
 }

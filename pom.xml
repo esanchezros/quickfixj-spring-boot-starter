@@ -53,14 +53,14 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>3.0.2</quickfixj.version>
 		<awaitility.version>4.3.0</awaitility.version>
-		<spring-boot-dependencies.version>4.1.0</spring-boot-dependencies.version>
+		<spring-boot-dependencies.version>4.1.2</spring-boot-dependencies.version>
 		<snakeyaml.version>2.7</snakeyaml.version>
-		<lombok.version>1.18.46</lombok.version>
+		<lombok.version>1.18.48</lombok.version>
 
 		<!-- Plugins -->
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-		<maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-		<maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
+		<maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+		<maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
 		<maven-invoker-plugin.version>3.10.1</maven-invoker-plugin.version>
 	</properties>
 

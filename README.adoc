@@ -1,5 +1,5 @@
 :current-version: 4.3.0
-:quickfixj-version: 3.0.1
+:quickfixj-version: 3.0.2
 
 image:https://github.com/esanchezros/quickfixj-spring-boot-starter/actions/workflows/maven.yml/badge.svg?branch=main["Java CI", link="https://github.com/esanchezros/quickfixj-spring-boot-starter/actions/workflows/maven.yml"]
 image:https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter/branch/main/graph/badge.svg?token=DhK6IBGZMS["codecov",link="https://codecov.io/gh/esanchezros/quickfixj-spring-boot-starter"]
@@ -12,7 +12,7 @@ image:https://api.securityscorecards.dev/projects/github.com/esanchezros/quickfi
 == Spring Boot Starter for QuickFIX/J (Spring Boot 4)
 
 This project is a https://spring.io/projects/spring-boot/[Spring Boot Starter] for https://github.com/quickfix-j/quickfixj[QuickFIX/J messaging engine for the FIX protocol].
-It simplifies the configuration required to create and start an https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_1/quickfixj-core/src/main/java/quickfix/Initiator.java[Initiator] or https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_1/quickfixj-core/src/main/java/quickfix/Acceptor.java[Acceptor], and handles the lifecycle of the https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_1/quickfixj-core/src/main/java/quickfix/Connector.java[Connector].
+It simplifies the configuration required to create and start an https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_2/quickfixj-core/src/main/java/quickfix/Initiator.java[Initiator] or https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_2/quickfixj-core/src/main/java/quickfix/Acceptor.java[Acceptor], and handles the lifecycle of the https://github.com/quickfix-j/quickfixj/blob/QFJ_RELEASE_3_0_2/quickfixj-core/src/main/java/quickfix/Connector.java[Connector].
 
 === Terminology
 

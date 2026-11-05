@@ -90,4 +90,39 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<version>${maven-invoker-plugin.version}</version>
+				<configuration>
+					<cloneProjectsTo>${project.build.directory}/consumer-projects</cloneProjectsTo>
+					<failIfNoProjects>true</failIfNoProjects>
+					<goals>
+						<goal>verify</goal>
+					</goals>
+					<localRepositoryPath>${project.build.directory}/consumer-repository</localRepositoryPath>
+					<pomIncludes>
+						<pomInclude>*/pom.xml</pomInclude>
+					</pomIncludes>
+					<projectsDirectory>${project.basedir}/src/it</projectsDirectory>
+					<streamLogsOnFailures>true</streamLogsOnFailures>
+					<timeoutInSeconds>180</timeoutInSeconds>
+					<writeJunitReport>true</writeJunitReport>
+				</configuration>
+				<executions>
+					<execution>
+						<id>packaged-consumer-contract</id>
+						<goals>
+							<goal>install</goal>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

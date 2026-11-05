@@ -39,7 +39,7 @@ If you do not need to customise a FIX integration then you can use the ```org.qu
 
 For more information about customising the QuickFIX/J Runtime refer to https://github.com/quickfix-j/quickfixj?tab=readme-ov-file#quickfixj-runtime
 
-For example, import the `quickfixj-spring-boot-started` pom in your `dependencyManagement` section:
+For example, import the `quickfixj-spring-boot-starter` pom in your `dependencyManagement` section:
 
 [source,xml,subs="+attributes"]
 ----

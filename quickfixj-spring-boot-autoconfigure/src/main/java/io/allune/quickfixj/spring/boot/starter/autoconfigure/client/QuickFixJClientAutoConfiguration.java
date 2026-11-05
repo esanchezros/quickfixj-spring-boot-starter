@@ -427,7 +427,8 @@ public class QuickFixJClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	@ConditionalOnExpression("${quickfixj.client.concurrent.use-default-executor-factory:"
+			+ "${quickfixj.client.concurrent.useDefaultExecutorFactory:false}}")
 	public ExecutorFactory clientExecutorFactory(@Qualifier("clientTaskExecutor") Executor clientTaskExecutor) {
 		return new ExecutorFactory() {
 			@Override
@@ -443,7 +444,8 @@ public class QuickFixJClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "quickfixj.client.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	@ConditionalOnExpression("${quickfixj.client.concurrent.use-default-executor-factory:"
+			+ "${quickfixj.client.concurrent.useDefaultExecutorFactory:false}}")
 	public Executor clientTaskExecutor(QuickFixJBootProperties properties) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setQueueCapacity(properties.getClient().getConcurrent().getQueueCapacity());

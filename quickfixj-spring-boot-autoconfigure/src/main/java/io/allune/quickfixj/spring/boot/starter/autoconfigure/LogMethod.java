@@ -28,5 +28,7 @@ public enum LogMethod {
 
 	SLF4J,
 
-	SCREEN
+	SCREEN,
+
+	COMPOSITELOG
 }

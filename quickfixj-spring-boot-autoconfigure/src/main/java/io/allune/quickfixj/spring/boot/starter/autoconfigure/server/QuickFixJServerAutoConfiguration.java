@@ -77,7 +77,7 @@ import static org.quickfixj.jmx.JmxExporter.REGISTRATION_REPLACE_EXISTING;
 @ConditionalOnMissingBean(name = "serverConnectorManager")
 @ConditionalOnProperty(name = "quickfixj.server.enabled", havingValue = "true")
 @ConditionalOnExpression(value = "${quickfixj.client.enabled:false} == false")
-@EnableConfigurationProperties(QuickFixJBootProperties.class)
+@EnableConfigurationProperties({QuickFixJBootProperties.class, QuickFixJServerDynamicProperties.class})
 public class QuickFixJServerAutoConfiguration {
 
 	private static final String SYSTEM_VARIABLE_QUICKFIXJ_SERVER_CONFIG = "quickfixj.server.config";
@@ -454,7 +454,8 @@ public class QuickFixJServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	@ConditionalOnExpression("${quickfixj.server.concurrent.use-default-executor-factory:"
+			+ "${quickfixj.server.concurrent.useDefaultExecutorFactory:false}}")
 	public ExecutorFactory serverExecutorFactory(@Qualifier("serverTaskExecutor") Executor serverTaskExecutor) {
 		return new ExecutorFactory() {
 			@Override
@@ -470,7 +471,8 @@ public class QuickFixJServerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "useDefaultExecutorFactory", havingValue = "true")
+	@ConditionalOnExpression("${quickfixj.server.concurrent.use-default-executor-factory:"
+			+ "${quickfixj.server.concurrent.useDefaultExecutorFactory:false}}")
 	public Executor serverTaskExecutor(QuickFixJBootProperties properties) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setQueueCapacity(properties.getServer().getConcurrent().getQueueCapacity());

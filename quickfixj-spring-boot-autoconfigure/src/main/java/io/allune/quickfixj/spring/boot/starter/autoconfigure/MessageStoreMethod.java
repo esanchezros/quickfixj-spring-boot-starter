@@ -22,6 +22,10 @@ package io.allune.quickfixj.spring.boot.starter.autoconfigure;
  */
 public enum MessageStoreMethod {
 
+	/**
+	 * @deprecated Typo retained for binary compatibility. Use {@link #CACHEDFILE}.
+	 */
+	@Deprecated(since = "4.4.0", forRemoval = true)
 	CACHAEDFILE,
 
 	FILE,
@@ -32,5 +36,7 @@ public enum MessageStoreMethod {
 
 	NOOP,
 
-	SLEEPYCAT
+	SLEEPYCAT,
+
+	CACHEDFILE
 }

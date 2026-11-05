@@ -1,0 +1,162 @@
+{
+  "properties": [
+    {
+      "name": "quickfixj.client.message-store-factory",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.MessageStoreMethod",
+      "description": "The message store factory to use: cachedfile, file, jdbc, memory, noop, or sleepycat.",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.server.message-store-factory",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.MessageStoreMethod",
+      "description": "The message store factory to use: cachedfile, file, jdbc, memory, noop, or sleepycat.",
+      "defaultValue": "memory"
+    },
+    {
+      "name": "quickfixj.client.log-factory",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.LogMethod",
+      "description": "The log factory to use: compositelog, file, jdbc, slf4j, or screen.",
+      "defaultValue": "screen"
+    },
+    {
+      "name": "quickfixj.server.log-factory",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.LogMethod",
+      "description": "The log factory to use: compositelog, file, jdbc, slf4j, or screen.",
+      "defaultValue": "screen"
+    },
+    {
+      "name": "quickfixj.client.phase",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.phase",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.concurrent.queue-capacity",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.concurrent.queue-capacity",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.concurrent.max-pool-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.server.concurrent.max-pool-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "quickfixj.client.message-store-method",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.MessageStoreMethod",
+      "description": "Deprecated property that did not control message store auto-configuration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not control message store auto-configuration.",
+        "replacement": "quickfixj.client.message-store-factory"
+      }
+    },
+    {
+      "name": "quickfixj.server.message-store-method",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.MessageStoreMethod",
+      "description": "Deprecated property that did not control message store auto-configuration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not control message store auto-configuration.",
+        "replacement": "quickfixj.server.message-store-factory"
+      }
+    },
+    {
+      "name": "quickfixj.client.log-method",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.LogMethod",
+      "description": "Deprecated property that did not control log factory auto-configuration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not control log factory auto-configuration.",
+        "replacement": "quickfixj.client.log-factory"
+      }
+    },
+    {
+      "name": "quickfixj.server.log-method",
+      "type": "io.allune.quickfixj.spring.boot.starter.autoconfigure.LogMethod",
+      "description": "Deprecated property that did not control log factory auto-configuration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not control log factory auto-configuration.",
+        "replacement": "quickfixj.server.log-factory"
+      }
+    },
+    {
+      "name": "quickfixj.client.health.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Deprecated property that did not enable the client actuator integration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not enable the actuator integration.",
+        "replacement": "quickfixj.client.actuator.enabled"
+      }
+    },
+    {
+      "name": "quickfixj.server.health.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Deprecated property that did not enable the server actuator integration.",
+      "deprecation": {
+        "level": "warning",
+        "reason": "This generated property did not enable the actuator integration.",
+        "replacement": "quickfixj.server.actuator.enabled"
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "quickfixj.client.message-store-factory",
+      "values": [
+        { "value": "cachedfile" },
+        { "value": "file" },
+        { "value": "jdbc" },
+        { "value": "memory" },
+        { "value": "noop" },
+        { "value": "sleepycat" }
+      ]
+    },
+    {
+      "name": "quickfixj.server.message-store-factory",
+      "values": [
+        { "value": "cachedfile" },
+        { "value": "file" },
+        { "value": "jdbc" },
+        { "value": "memory" },
+        { "value": "noop" },
+        { "value": "sleepycat" }
+      ]
+    },
+    {
+      "name": "quickfixj.client.log-factory",
+      "values": [
+        { "value": "compositelog" },
+        { "value": "file" },
+        { "value": "jdbc" },
+        { "value": "slf4j" },
+        { "value": "screen" }
+      ]
+    },
+    {
+      "name": "quickfixj.server.log-factory",
+      "values": [
+        { "value": "compositelog" },
+        { "value": "file" },
+        { "value": "jdbc" },
+        { "value": "slf4j" },
+        { "value": "screen" }
+      ]
+    }
+  ]
+}

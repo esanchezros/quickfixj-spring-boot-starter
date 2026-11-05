@@ -26,6 +26,39 @@ mvn --batch-mode verify
 
 The current continuous integration workflow is being aligned with this command. If a branch temporarily requires another command, document it in the pull request.
 
+=== Packaged-consumer checks
+
+The starter module uses Maven Invoker during `verify` to stage the current
+reactor artifacts in an isolated local repository and build the applications
+under `quickfixj-spring-boot-starter/src/it/` in forked Maven processes. These
+checks verify the published POM and dependency contract rather than resolving
+the starter directly from the reactor.
+
+The `minimal-starter` application verifies auto-configuration, the current 4.x
+Actuator dependency, and the absence of optional FIX message artifacts. The
+`selected-fix44` application verifies the README dependency-management pattern
+and adds FIX 4.4 without declaring the QuickFIX/J version again.
+
+Run the complete contract from the repository root:
+
+[source,shell]
+----
+mvn --batch-mode clean verify
+----
+
+To run one consumer while developing, select its directory name:
+
+[source,shell]
+----
+mvn --batch-mode -pl quickfixj-spring-boot-starter -am clean verify \
+    -Dinvoker.test=minimal-starter
+----
+
+Invoker copies the applications to
+`quickfixj-spring-boot-starter/target/consumer-projects/`. Forked build logs and
+JUnit-compatible Invoker reports are written under the starter module's
+`target/` directory. A consumer failure fails the parent Maven build.
+
 == Branches
 
 Use a short branch name that describes one independently reviewable change:

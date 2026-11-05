@@ -365,7 +365,10 @@ public class QuickFixJServerAutoConfiguration {
 		 */
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "quickfixj.server.concurrent", name = "enabled", havingValue = "false", matchIfMissing = true)
+		@ConditionalOnExpression(
+			"${quickfixj.server.concurrent.enabled:false} == false && "
+				+ "${quickfixj.server.dynamic.enabled:false} == false"
+		)
 		public Acceptor serverAcceptor(
 				Application serverApplication,
 				MessageStoreFactory serverMessageStoreFactory,

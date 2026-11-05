@@ -102,7 +102,11 @@ public class ConnectorManager implements SmartLifecycle {
 	}
 
 	/**
-	 * Start the connector, accepting new connections
+	 * Start the connector, accepting new connections. The manager is marked as
+	 * running only after the connector starts successfully. QuickFIX/J configuration
+	 * and runtime failures are mapped to {@link ConfigurationException}; other runtime
+	 * exceptions are mapped to {@link IllegalStateException}, while JVM errors
+	 * propagate unchanged.
 	 */
 	@Override
 	public void start() {
@@ -113,7 +117,7 @@ public class ConnectorManager implements SmartLifecycle {
 					connector.start();
 				} catch (ConfigError | RuntimeError ex) {
 					throw new ConfigurationException(ex.getMessage(), ex);
-				} catch (Throwable ex) {
+				} catch (RuntimeException ex) {
 					throw new IllegalStateException("Could not start the connector", ex);
 				}
 
@@ -124,7 +128,8 @@ public class ConnectorManager implements SmartLifecycle {
 
 	/**
 	 * Stop this connector, logging out existing sessions, closing their connections, and stopping to accept new
-	 * connections.
+	 * connections. The manager is marked as stopped after the connector stop attempt,
+	 * including when that attempt fails.
 	 */
 	@Override
 	public void stop() {
@@ -141,14 +146,34 @@ public class ConnectorManager implements SmartLifecycle {
 	}
 
 	/**
-	 * Stop this connector, invoking the specific callback once all the sessions have been logged out, all connections
-	 * closed and it has stopped accepting new connections.
+	 * Stop this connector and invoke the specified callback after the connector stop
+	 * attempt completes. The callback is invoked exactly once after the stop attempt
+	 * and after the manager is marked as stopped, including when the connector stop
+	 * attempt fails. If both stop and callback fail, the stop failure remains primary
+	 * and the callback failure is suppressed. The callback should complete promptly
+	 * because lifecycle operations remain serialized until it returns.
 	 */
 	@Override
 	public void stop(Runnable callback) {
 		synchronized (this.lifecycleMonitor) {
-			stop();
-			callback.run();
+			Throwable stopFailure = null;
+			try {
+				stop();
+			} catch (RuntimeException | Error ex) {
+				stopFailure = ex;
+				throw ex;
+			} finally {
+				try {
+					callback.run();
+				} catch (RuntimeException | Error callbackFailure) {
+					if (stopFailure == null) {
+						throw callbackFailure;
+					}
+					if (!stopFailure.equals(callbackFailure)) {
+						stopFailure.addSuppressed(callbackFailure);
+					}
+				}
+			}
 		}
 	}
 

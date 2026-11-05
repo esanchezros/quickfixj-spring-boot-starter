@@ -95,6 +95,11 @@ absent or `false`. Previously both acceptor conditions could match and the
 result depended on configuration processing order. Disable dynamic mode to
 retain a `SocketAcceptor`.
 
+Connector shutdown now always completes the Spring `SmartLifecycle` callback,
+including when QuickFIX/J stop fails. The connector failure still propagates and
+the manager reports itself stopped. QuickFIX/J startup failures retain their
+existing exception mapping, while unrelated JVM errors now propagate unchanged.
+
 ==== 4.2.x => 4.3.x
 
 There is no API break but the code cannot run with old version of QuickfixJ.

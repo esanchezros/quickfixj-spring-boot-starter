@@ -1,0 +1,157 @@
+= Customization
+
+The starter supplies a complete default connector but allows an application to replace individual QuickFIX/J components with Spring beans.
+
+== Default application callbacks
+
+When no `quickfix.Application` bean is present, the starter creates an `EventPublisherApplicationAdapter`.
+It converts QuickFIX/J callbacks into Spring application events:
+
+* `Create`
+* `Logon`
+* `Logout`
+* `FromAdmin`
+* `FromApp`
+* `ToAdmin`
+* `ToApp`
+
+Listen for only the events needed by the application:
+
+[source,java]
+----
+@Component
+class FixEventListener {
+
+    @EventListener
+    void onLogon(Logon event) {
+        // Session logged on
+    }
+
+    @EventListener
+    void onMessage(FromApp event) {
+        // Application message received from the peer
+    }
+}
+----
+
+An exception thrown by an event listener propagates through QuickFIX/J's callback path.
+QuickFIX/J then applies the session's `RejectMessageOnUnhandledException` behavior.
+
+Spring event publication adds indirection and is not intended as the highest-throughput callback model.
+For latency-sensitive or high-volume applications, provide a direct QuickFIX/J `Application` implementation:
+
+[source,java]
+----
+@Bean
+Application clientApplication() {
+    return new TradingApplication();
+}
+----
+
+Name the bean `serverApplication` for an Acceptor or `clientApplication` for an Initiator when explicit role naming helps the configuration remain clear.
+
+== Replace default components
+
+The auto-configuration can back off for application-provided implementations of:
+
+* `SessionSettings`
+* `Application`
+* `MessageStoreFactory`
+* `LogFactory`
+* `MessageFactory`
+* `Acceptor` or `Initiator`
+* `ExecutorFactory`
+* `SessionSettingsLocator`
+* `QuickFixJTemplate`
+
+For example, replace the Initiator log factory:
+
+[source,java]
+----
+@Bean
+LogFactory clientLogFactory(SessionSettings clientSessionSettings) {
+    return new FileLogFactory(clientSessionSettings);
+}
+----
+
+Or replace the complete Initiator:
+
+[source,java]
+----
+@Bean
+Initiator clientInitiator(
+        Application clientApplication,
+        MessageStoreFactory clientMessageStoreFactory,
+        SessionSettings clientSessionSettings,
+        LogFactory clientLogFactory,
+        MessageFactory clientMessageFactory) throws ConfigError {
+
+    return new ThreadedSocketInitiator(
+            clientApplication,
+            clientMessageStoreFactory,
+            clientSessionSettings,
+            clientLogFactory,
+            clientMessageFactory);
+}
+----
+
+[IMPORTANT]
+====
+Starter 4.x uses type-based back-off in several places and supports one auto-configured connector role per application context.
+Do not assume that adding similarly typed client and server beans to one context will create two independent connector graphs.
+Use the separate-context pattern in link:migration.adoc#multiple-connectors-in-4x[Multiple connectors in 4.x].
+====
+
+== `QuickFixJTemplate`
+
+The starter creates a `QuickFixJTemplate` bean when QuickFIX/J is present and the application has not supplied one.
+It locates a session, optionally validates the outgoing message with the session data dictionary, and sends synchronously through QuickFIX/J.
+
+Prefer constructor injection:
+
+[source,java]
+----
+@Service
+class OrderSender {
+
+    private final QuickFixJTemplate quickFixJTemplate;
+
+    OrderSender(QuickFixJTemplate quickFixJTemplate) {
+        this.quickFixJTemplate = quickFixJTemplate;
+    }
+
+    boolean send(Message message, SessionID sessionId) {
+        return quickFixJTemplate.send(message, sessionId);
+    }
+}
+----
+
+The template also has overloads that derive a `SessionID` from message header fields or accept sender, target, and qualifier values.
+It throws the starter's `SessionNotFoundException` when no session matches and `MessageValidationException` when enabled validation fails.
+
+Replace or tune it when the application needs different lookup or validation behavior:
+
+[source,java]
+----
+@Bean
+QuickFixJTemplate quickFixJTemplate(SessionLookupHandler lookupHandler) {
+    QuickFixJTemplate template = new QuickFixJTemplate(lookupHandler);
+    template.setDoValidation(true);
+    return template;
+}
+----
+
+== Custom settings resolution
+
+Provide a `SessionSettings` bean when settings come from a database, configuration service, or another non-resource source:
+
+[source,java]
+----
+@Bean
+SessionSettings clientSessionSettings() throws ConfigError {
+    return loadSettingsFromApplicationSource();
+}
+----
+
+Providing this bean bypasses the starter's `config-string`, configured resource, system-property, working-directory, and classpath lookup.
+See link:configuration.adoc#settings-source-precedence[Settings-source precedence].

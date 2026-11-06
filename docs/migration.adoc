@@ -1,0 +1,119 @@
+= Migration
+
+Review link:compatibility.adoc[Compatibility] before changing starter, Spring Boot, Java, or QuickFIX/J lines.
+Dependency upgrades can change runtime behavior even when the starter's Java API remains binary compatible.
+
+== 4.3.x to 4.4.x
+
+Starter 4.4.x is in development on `main`.
+The planned changes preserve the 4.x public API while correcting configuration metadata and runtime edge cases.
+
+=== Canonical configuration names
+
+Configuration metadata and examples use Spring Boot's canonical kebab-case names.
+Camel-case spellings for bound properties continue to work through relaxed binding.
+The legacy `useDefaultExecutorFactory` condition spelling is also retained; when both spellings are configured, `use-default-executor-factory` takes precedence.
+
+Earlier metadata incorrectly advertised `message-store-method`, `log-method`, and `health.enabled`.
+Those properties never controlled auto-configuration and are deprecated in favor of:
+
+* `message-store-factory`
+* `log-factory`
+* `actuator.enabled`
+
+The `CACHEDFILE` and `COMPOSITELOG` enum constants model all supported factories.
+The misspelled `CACHAEDFILE` constant and old Java accessors remain available during 4.x and have 5.0 as their earliest removal.
+
+=== Dynamic Acceptor selection
+
+`quickfixj.server.dynamic.enabled=true` now always selects `ThreadedSocketAcceptor`, even when `quickfixj.server.concurrent.enabled` is absent or `false`.
+Previously both Acceptor conditions could match and the result depended on configuration processing order.
+Disable dynamic mode to retain `SocketAcceptor`.
+
+=== Connector lifecycle failures
+
+Connector shutdown now always completes the Spring `SmartLifecycle` callback, including when QuickFIX/J stop fails.
+The connector failure still propagates and the manager reports itself stopped.
+QuickFIX/J startup failures retain their established exception mapping, while unrelated JVM errors propagate unchanged.
+
+=== QuickFIX/J 3.0.2
+
+The active line uses QuickFIX/J 3.0.2 and Apache MINA 2.2.9.
+QuickFIX/J 3.0.2 corrects Acceptor handling of Logon with `ResetSeqNumFlag=Y`, validates sequence numbers in the reject path, and adds a default `SessionStateListener` callback for discarded `PossDup` messages.
+
+Retest sequence resets, reject handling, SSL transport, and dependency allowlists before production rollout.
+An application can temporarily override the managed QuickFIX/J version to 3.0.1 for diagnosis, but the preferred rollback is the previously released starter version because the managed set is tested together.
+
+== 4.2.x to 4.3.x
+
+Starter 4.3.x requires the QuickFIX/J 3.0 line used by its dependency management.
+Do not force an older QuickFIX/J line into the dependency graph.
+Use `mvn dependency:tree` to confirm that `quickfixj-core` and all selected message artifacts resolve to one QuickFIX/J version.
+
+[[multiple-connectors-in-4x]]
+== 3.x to 4.x and multiple connectors
+
+Spring Framework 6.1 changed parameter-name-based autowiring behavior.
+Starter 4.x therefore does not support auto-configuring the client and server graphs in the same application context, or multiple connectors of one role in one context.
+
+Use a parent context for shared application services and one child context per connector:
+
+[source,java]
+----
+public final class FixContexts {
+
+    public static void main(String[] args) {
+        SpringApplicationBuilder parent =
+                new SpringApplicationBuilder(CommonConfiguration.class)
+                        .web(WebApplicationType.NONE);
+
+        parent.run(args);
+
+        parent.child(AcceptorConfiguration.class)
+                .properties("spring.config.name=acceptor")
+                .web(WebApplicationType.NONE)
+                .run(args);
+
+        parent.child(InitiatorConfiguration.class)
+                .properties("spring.config.name=initiator")
+                .web(WebApplicationType.NONE)
+                .run(args);
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class CommonConfiguration {
+        // Shared application services
+    }
+
+    @SpringBootApplication
+    static class AcceptorConfiguration {
+    }
+
+    @SpringBootApplication
+    static class InitiatorConfiguration {
+    }
+}
+----
+
+Configure `acceptor.properties` with `quickfixj.server.enabled=true` and `initiator.properties` with `quickfixj.client.enabled=true`.
+Keep role-specific QuickFIX/J and Spring beans in their respective child contexts.
+
+The staged replacement is described in link:adr/0002-client-server-composition.adoc[ADR 0002]: 4.x will first expose an opt-in role-specific composition model, and 5.0 can make that model the default after migration testing.
+
+== Actuator packaging
+
+Starter 4.x includes the QuickFIX/J Actuator module and Spring Boot Actuator in its default dependency graph.
+Do not add `quickfixj-spring-boot-actuator` separately when using the starter.
+
+Starter 5.0 plans to remove that transitive coupling and provide a dedicated Actuator starter.
+See link:adr/0003-actuator-packaging.adoc[ADR 0003].
+
+== Upgrade checklist
+
+. Read the release notes and link:compatibility.adoc[compatibility matrix].
+. Remove dependency overrides that conflict with the target starter line.
+. Run the complete unit and integration suite on Java 17 and the deployment Java version.
+. Exercise real peer logon, message receipt, logout, reconnect, and error paths.
+. Check Actuator exposure and health aggregation with every configured session.
+. Inspect `mvn dependency:tree` for mixed QuickFIX/J or Spring versions.
+. Keep the previous starter version available as the primary rollback.

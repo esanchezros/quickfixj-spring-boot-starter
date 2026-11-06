@@ -1,0 +1,303 @@
+= Configuration reference
+
+The starter binds Acceptor settings under `quickfixj.server` and Initiator settings under `quickfixj.client`.
+The tables below use `quickfixj.<role>` where `<role>` is either `server` or `client`.
+
+Use Spring Boot's canonical kebab-case spelling in configuration files.
+Spring relaxed binding continues to accept camel-case variants for bound properties, but the documentation and generated metadata use kebab case.
+
+[[settings-source-precedence]]
+== Settings-source precedence
+
+The starter creates one `quickfix.SessionSettings` bean for the enabled role.
+The first applicable source wins:
+
+. An application-provided `SessionSettings` bean causes the default bean to back off.
+. `quickfixj.<role>.config-string` supplies the complete settings text.
+. The resource named by `quickfixj.<role>.config`.
+. The `quickfixj.<role>.config` JVM system property.
+. `quickfixj-<role>.cfg` in the working directory.
+. `quickfixj-<role>.cfg` at the root of the classpath.
+
+The application fails to start if no settings source is available or if QuickFIX/J cannot parse the selected settings.
+The upstream https://quickfixj.org/docs/configuration[QuickFIX/J configuration guide] defines the contents of the settings file.
+
+== Common connector properties
+
+[cols="3,1,5", options="header"]
+|===
+|Property |Default |Description
+
+|`quickfixj.<role>.enabled`
+|`false`
+|Enable auto-configuration for the role.
+
+|`quickfixj.<role>.config`
+|None
+|Spring resource location for the QuickFIX/J settings file, for example `classpath:quickfixj-server.cfg` or `file:./config/quickfixj-client.cfg`.
+
+|`quickfixj.<role>.config-string`
+|None
+|Complete QuickFIX/J settings text. It takes precedence over file locations.
+
+|`quickfixj.<role>.resolve-placeholders`
+|`false`
+|Resolve `${...}` placeholders against the Spring `Environment` while loading a settings resource. It does not apply to `config-string`, which Spring resolves during property binding.
+
+|`quickfixj.<role>.auto-startup`
+|`true`
+|Start the connector automatically with the Spring context.
+
+|`quickfixj.<role>.force-disconnect`
+|`false`
+|Disconnect logged-on sessions forcibly when stopping the connector.
+
+|`quickfixj.<role>.phase`
+|`2147483647`
+|Spring `SmartLifecycle` phase used to order startup and shutdown.
+
+|`quickfixj.<role>.jmx-enabled`
+|`false`
+|Register QuickFIX/J JMX MBeans for the connector.
+
+|`quickfixj.<role>.message-store-factory`
+|`memory`
+|Select `cachedfile`, `file`, `jdbc`, `memory`, `noop`, or `sleepycat`.
+
+|`quickfixj.<role>.log-factory`
+|`screen`
+|Select `compositelog`, `file`, `jdbc`, `slf4j`, or `screen`.
+
+|`quickfixj.<role>.actuator.enabled`
+|`false`
+|Create the role-specific Actuator endpoint and health integration. See link:operations.adoc[Operations and Actuator].
+|===
+
+The old `message-store-method`, `log-method`, and `health.enabled` properties are deprecated metadata compatibility entries.
+They never controlled their respective auto-configuration paths.
+Use `message-store-factory`, `log-factory`, and `actuator.enabled`.
+
+[[concurrency]]
+== Concurrency
+
+Set `quickfixj.<role>.concurrent.enabled=true` to select QuickFIX/J's threaded connector:
+
+* `ThreadedSocketAcceptor` for the server role.
+* `ThreadedSocketInitiator` for the client role.
+
+The default is the single-threaded `SocketAcceptor` or `SocketInitiator`.
+Dynamic Acceptor sessions always require and select `ThreadedSocketAcceptor`, even when `quickfixj.server.concurrent.enabled=false`.
+
+[cols="3,1,5", options="header"]
+|===
+|Property suffix |Default |Description
+
+|`concurrent.enabled`
+|`false`
+|Use the threaded connector implementation.
+
+|`concurrent.use-default-executor-factory`
+|`false`
+|Create the starter's default QuickFIX/J `ExecutorFactory`.
+
+|`concurrent.queue-capacity`
+|`2147483647`
+|Executor queue capacity. An unbounded queue prevents expansion beyond the core pool size.
+
+|`concurrent.core-pool-size`
+|`8`
+|Core number of executor threads.
+
+|`concurrent.max-pool-size`
+|`2147483647`
+|Maximum executor pool size when the queue is bounded.
+
+|`concurrent.allow-core-thread-time-out`
+|`true`
+|Allow core executor threads to time out.
+
+|`concurrent.keep-alive-seconds`
+|`60`
+|Idle time before eligible executor threads terminate.
+
+|`concurrent.wait-for-tasks-to-complete-on-shutdown`
+|`false`
+|Wait for queued tasks during executor shutdown.
+
+|`concurrent.await-termination-seconds`
+|`0`
+|Maximum wait for remaining tasks during executor shutdown.
+
+|`concurrent.thread-name-prefix`
+|`QuickFixJ Spring Boot Starter thread-`
+|Prefix for threads created by the default executor factory.
+|===
+
+Example:
+
+[source,yaml]
+----
+quickfixj:
+  client:
+    enabled: true
+    config: classpath:quickfixj-client.cfg
+    concurrent:
+      enabled: true
+      use-default-executor-factory: true
+      queue-capacity: 1000
+      core-pool-size: 8
+      max-pool-size: 32
+      allow-core-thread-time-out: true
+      keep-alive-seconds: 60
+      wait-for-tasks-to-complete-on-shutdown: true
+      await-termination-seconds: 10
+      thread-name-prefix: "fix-initiator-"
+----
+
+The legacy condition spelling `useDefaultExecutorFactory` is retained for 4.x compatibility.
+Use `use-default-executor-factory` in new configuration.
+
+[[dynamic-acceptor-sessions]]
+== Dynamic Acceptor sessions
+
+Enable dynamic sessions with:
+
+[source,properties]
+----
+quickfixj.server.enabled=true
+quickfixj.server.dynamic.enabled=true
+quickfixj.server.config=classpath:quickfixj-server.cfg
+----
+
+Define one or more template sessions with `AcceptorTemplate=Y`:
+
+[source,ini]
+----
+[default]
+ConnectionType=acceptor
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=EXECUTOR
+TargetCompID=*
+SocketAcceptPort=9876
+AcceptorTemplate=Y
+----
+
+Dynamic mode registers QuickFIX/J `DynamicAcceptorSessionProvider` instances and selects `ThreadedSocketAcceptor`.
+It takes precedence over `quickfixj.server.concurrent.enabled=false`.
+
+== Placeholder resolution
+
+Placeholder resolution is useful when a checked-in QuickFIX/J settings file needs environment-specific identifiers, hosts, or ports.
+
+[source,properties]
+----
+quickfixj.client.enabled=true
+quickfixj.client.resolve-placeholders=true
+quickfixj.client.config=classpath:quickfixj-client.cfg
+
+fix.sender-comp-id=CLIENT
+fix.target-comp-id=EXECUTOR
+fix.host=localhost
+----
+
+The settings file can then reference Spring properties and defaults:
+
+[source,ini]
+----
+[default]
+ConnectionType=initiator
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+ReconnectInterval=5
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=${fix.sender-comp-id}
+TargetCompID=${fix.target-comp-id}
+SocketConnectHost=${fix.host}
+SocketConnectPort=${fix.port:9876}
+----
+
+An unresolved required placeholder fails startup.
+Use Spring Boot's normal external-configuration sources to provide secrets; do not commit passwords to the FIX settings file.
+
+== Inline settings
+
+Use `config-string` when the complete QuickFIX/J configuration belongs in `application.yml` or another Spring property source:
+
+[source,yaml]
+----
+quickfixj:
+  server:
+    enabled: true
+    config-string: |
+      [default]
+      ConnectionType=acceptor
+      StartTime=00:00:00
+      EndTime=00:00:00
+      HeartBtInt=30
+      UseDataDictionary=Y
+
+      [session]
+      BeginString=FIX.4.4
+      SenderCompID=EXECUTOR
+      TargetCompID=CLIENT
+      SocketAcceptPort=9876
+----
+
+`config-string` takes precedence over `config`.
+For long or shared session definitions, a separate QuickFIX/J settings file is usually easier to validate and maintain.
+
+== Complete role examples
+
+=== Acceptor
+
+[source,yaml]
+----
+quickfixj:
+  server:
+    enabled: true
+    config: classpath:quickfixj-server.cfg
+    resolve-placeholders: true
+    auto-startup: true
+    force-disconnect: false
+    phase: 2147483647
+    jmx-enabled: false
+    message-store-factory: memory
+    log-factory: screen
+    concurrent:
+      enabled: false
+    dynamic:
+      enabled: false
+    actuator:
+      enabled: false
+----
+
+=== Initiator
+
+[source,yaml]
+----
+quickfixj:
+  client:
+    enabled: true
+    config: classpath:quickfixj-client.cfg
+    resolve-placeholders: true
+    auto-startup: true
+    force-disconnect: false
+    phase: 2147483647
+    jmx-enabled: false
+    message-store-factory: memory
+    log-factory: screen
+    concurrent:
+      enabled: false
+    actuator:
+      enabled: false
+----
+
+For bean replacement and callback handling, continue with link:customization.adoc[Customization].

@@ -1,0 +1,34 @@
+= Examples
+
+The https://github.com/esanchezros/quickfixj-spring-boot-starter-examples[QuickFIX/J Spring Boot Starter examples repository] contains runnable applications for common deployment patterns.
+
+== First applications
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server[Simple Acceptor]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client[Simple Initiator]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-and-server[Separate client and server applications]
+
+== Application callbacks
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-listener[Acceptor with Spring event listeners]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-listener[Initiator with Spring event listeners]
+
+== Persistence and dynamic sessions
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-with-database[Acceptor with a database message store]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-client-with-database[Initiator with a database message store]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/simple-server-dynamic-sessions[Acceptor with dynamic sessions]
+
+== Container deployments
+
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client[Acceptor and Initiator containers]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-failover[Containerized server failover]
+* https://github.com/esanchezros/quickfixj-spring-boot-starter-examples/tree/master/docker-server-client-with-database[Containers with database message storage]
+
+[NOTE]
+====
+The examples repository has its own release and maintenance history.
+Compare its starter version and configuration with link:compatibility.adoc[the current compatibility matrix] before copying an example into a new application.
+====
+
+For the smallest current dependency and configuration path, use link:getting-started.adoc[Getting started].

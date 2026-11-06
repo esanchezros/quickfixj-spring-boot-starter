@@ -1,26 +1,26 @@
-= Project Documentation
+= Project documentation
 
-The main link:../README.adoc[README] is the quickest introduction to the starter. This directory contains maintenance, compatibility, and architectural documentation.
+The link:../README.adoc[root README] provides the shortest path to a working Acceptor or Initiator.
+Use the focused guides below for complete setup and maintenance information.
 
-== Maintainer documentation
+== User guides
 
+* link:getting-started.adoc[Getting started] -- dependency selection, connector roles, and first application setup.
+* link:configuration.adoc[Configuration reference] -- settings sources, properties, concurrency, dynamic sessions, placeholders, and inline settings.
+* link:customization.adoc[Customization] -- application callbacks, bean overrides, and `QuickFixJTemplate`.
+* link:operations.adoc[Operations and Actuator] -- endpoints, health indicators, JMX, and operational security.
+* link:migration.adoc[Migration] -- version changes, multiple connectors, upgrade checks, and rollback guidance.
+* link:examples.adoc[Examples] -- runnable applications organized by use case.
+* link:compatibility.adoc[Compatibility] -- supported starter, Spring Boot, Java, and QuickFIX/J lines.
+* link:support-policy.adoc[Support policy] -- maintenance scope for active, maintenance, and end-of-life branches.
+
+QuickFIX/J owns the session-settings format and engine-level behavior.
+Use the upstream https://quickfixj.org/docs/configuration[QuickFIX/J configuration guide] for schedules, persistence, validation, networking, proxies, and SSL.
+
+== Contributor and maintainer documentation
+
+* link:../CONTRIBUTING.adoc[Contributing]
 * link:../ROADMAP.adoc[Roadmap]
-* link:support-policy.adoc[Support Policy]
-* link:compatibility.adoc[Compatibility]
-* link:release-process.adoc[Release Process]
+* link:release-process.adoc[Release process]
 * link:adr/README.adoc[Architecture Decision Records]
-
-== Planned user documentation
-
-The current README contains the complete user reference. A future documentation project will split it into focused guides without removing the quick-start path:
-
-* Getting started
-* Configuration sources and properties
-* Acceptor configuration
-* Initiator configuration
-* Customization and bean overrides
-* Actuator and operations
-* Testing
-* Migration guides
-
-Until that work is complete, the README remains the authoritative usage reference.
+* link:../SECURITY.md[Security policy]

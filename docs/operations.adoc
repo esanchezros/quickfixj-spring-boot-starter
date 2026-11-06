@@ -1,0 +1,126 @@
+= Operations and Actuator
+
+Starter 4.x includes the QuickFIX/J Actuator module and Spring Boot Actuator transitively.
+Applications using `quickfixj-spring-boot-starter` do not need to add `quickfixj-spring-boot-actuator` separately.
+The dependency split planned for starter 5.0 is recorded in link:adr/0003-actuator-packaging.adoc[ADR 0003].
+
+Actuator integration is disabled until it is enabled for the active connector role.
+
+== Enable the Acceptor integration
+
+[source,properties]
+----
+quickfixj.server.actuator.enabled=true
+
+management.endpoint.quickfixjserver.enabled=true
+management.endpoints.web.exposure.include=health,quickfixjserver
+management.health.quickfixjserver.enabled=true
+----
+
+The role-specific endpoint is available at `/actuator/quickfixjserver` when the application exposes Actuator over HTTP.
+
+== Enable the Initiator integration
+
+[source,properties]
+----
+quickfixj.client.actuator.enabled=true
+
+management.endpoint.quickfixjclient.enabled=true
+management.endpoints.web.exposure.include=health,quickfixjclient
+management.health.quickfixjclient.enabled=true
+----
+
+The role-specific endpoint is available at `/actuator/quickfixjclient` when the application exposes Actuator over HTTP.
+
+The same configuration in YAML is:
+
+[source,yaml]
+----
+quickfixj:
+  client:
+    actuator:
+      enabled: true
+
+management:
+  endpoint:
+    quickfixjclient:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,quickfixjclient
+  health:
+    quickfixjclient:
+      enabled: true
+----
+
+== Session-settings endpoint
+
+The `quickfixjserver` and `quickfixjclient` endpoints return the effective QuickFIX/J settings for every session managed by the connector.
+Default settings and session-specific settings are combined, and the session ID fields are included in each entry.
+
+Example shape:
+
+[source,json]
+----
+{
+  "FIX.4.4:CLIENT->EXECUTOR": {
+    "BeginString": "FIX.4.4",
+    "SenderCompID": "CLIENT",
+    "TargetCompID": "EXECUTOR",
+    "ConnectionType": "initiator",
+    "SocketConnectHost": "localhost",
+    "SocketConnectPort": "9876"
+  }
+}
+----
+
+Values pass through Spring Boot's Actuator `Sanitizer` before they are returned.
+Keep normal Actuator access controls in place even when sensitive values are masked.
+
+== Health indicators
+
+The role-specific health indicator evaluates every connector session against its QuickFIX/J schedule:
+
+[cols="1,1,3"]
+|===
+|Session result |Health status |Meaning
+
+|`LoggedOn` |`UP` |The session is within its schedule and logged on.
+|`LoggedOff` |`DOWN` |The session is within its schedule but is not logged on.
+|`NotInSession` |`UNKNOWN` |The current time is outside the configured session schedule.
+|`Error` |`OUT_OF_SERVICE` |The schedule or session state could not be evaluated.
+|===
+
+The aggregate uses Spring Boot's status aggregation across all session results.
+A connector with multiple sessions is unhealthy when any in-schedule session contributes an unhealthy status according to that aggregation.
+
+Health details contain the session ID, the session result, and the evaluated schedule when available.
+Use Spring Boot's `management.endpoint.health.show-details` policy to control who can see details.
+
+== JMX
+
+QuickFIX/J's own JMX MBeans are separate from the Actuator endpoints.
+Enable them for the active role with:
+
+[source,properties]
+----
+quickfixj.server.jmx-enabled=true
+----
+
+or:
+
+[source,properties]
+----
+quickfixj.client.jmx-enabled=true
+----
+
+JMX registration requires the corresponding connector to be auto-configured.
+
+== Operational guidance
+
+* Do not expose all Actuator endpoints publicly.
+* Apply the application's normal authentication and authorization to QuickFIX/J endpoints.
+* Treat session identifiers, hosts, schedules, and connection settings as operationally sensitive even when passwords are sanitized.
+* Monitor connector health together with application readiness; a running JVM does not imply an in-session FIX logon.
+* Use `quickfixj.<role>.force-disconnect=true` only when shutdown must not wait for normal QuickFIX/J logout behavior.

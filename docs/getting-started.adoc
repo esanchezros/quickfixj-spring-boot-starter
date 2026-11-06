@@ -1,0 +1,198 @@
+= Getting started
+:current-version: 4.3.0
+
+This guide explains the dependency choices and minimum application setup for the QuickFIX/J Spring Boot Starter.
+For a copy-and-run overview, start with the link:../README.adoc[root README].
+
+== Requirements
+
+Starter `{current-version}` requires:
+
+* Java 17 or later.
+* Spring Boot 4.0.x.
+* One QuickFIX/J message artifact for each FIX protocol used by the application.
+
+The `main` branch targets the versions shown in link:compatibility.adoc[Compatibility] and may be ahead of the latest Maven Central release.
+
+== Add the starter
+
+The shortest dependency declaration is:
+
+[source,xml,subs="+attributes"]
+----
+<dependency>
+    <groupId>io.allune</groupId>
+    <artifactId>quickfixj-spring-boot-starter</artifactId>
+    <version>{current-version}</version>
+</dependency>
+----
+
+This adds `quickfixj-core`, but it intentionally does not add every generated FIX message package.
+
+=== Select FIX message artifacts
+
+The starter POM manages the compatible QuickFIX/J version for these optional artifacts:
+
+[cols="1,2"]
+|===
+|Protocol |Artifact
+
+|FIX 4.0 |`quickfixj-messages-fix40`
+|FIX 4.1 |`quickfixj-messages-fix41`
+|FIX 4.2 |`quickfixj-messages-fix42`
+|FIX 4.3 |`quickfixj-messages-fix43`
+|FIX 4.4 |`quickfixj-messages-fix44`
+|FIX 5.0 |`quickfixj-messages-fix50`
+|FIX 5.0 SP1 |`quickfixj-messages-fix50sp1`
+|FIX 5.0 SP2 |`quickfixj-messages-fix50sp2`
+|FIXT 1.1 |`quickfixj-messages-fixt11`
+|===
+
+Import the starter POM when you want to omit the QuickFIX/J version from selected message dependencies:
+
+[source,xml,subs="+attributes"]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.allune</groupId>
+            <artifactId>quickfixj-spring-boot-starter</artifactId>
+            <version>{current-version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>io.allune</groupId>
+        <artifactId>quickfixj-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.quickfixj</groupId>
+        <artifactId>quickfixj-messages-fix44</artifactId>
+    </dependency>
+</dependencies>
+----
+
+The packaged-consumer build verifies this exact Maven pattern with FIX 4.4.
+Applications that generate custom QuickFIX/J message classes can use those classes instead of the standard message artifacts.
+See the upstream https://github.com/quickfix-j/quickfixj#quickfixj-runtime[QuickFIX/J runtime documentation].
+
+== Choose the connector role
+
+QuickFIX/J calls the inbound listening role an `Acceptor` and the outbound connecting role an `Initiator`.
+Starter properties retain the older _server_ and _client_ names:
+
+[cols="1,1,1"]
+|===
+|QuickFIX/J role |Property root |Default settings file
+
+|`Acceptor` |`quickfixj.server` |`quickfixj-server.cfg`
+|`Initiator` |`quickfixj.client` |`quickfixj-client.cfg`
+|===
+
+Enable one role per Spring application context on starter 4.x.
+For applications that need both roles, see link:migration.adoc#multiple-connectors-in-4x[Multiple connectors in 4.x].
+
+== Create the Spring Boot application
+
+[source,java]
+----
+@SpringBootApplication
+public class FixApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(FixApplication.class, args);
+    }
+}
+----
+
+The enable annotations from older starter releases are not required and have been deprecated since 3.0.1.
+
+== Configure an Acceptor
+
+Add to `application.properties`:
+
+[source,properties]
+----
+quickfixj.server.enabled=true
+quickfixj.server.config=classpath:quickfixj-server.cfg
+----
+
+Create `quickfixj-server.cfg` on the application classpath:
+
+[source,ini]
+----
+[default]
+ConnectionType=acceptor
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+UseDataDictionary=Y
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=EXECUTOR
+TargetCompID=CLIENT
+SocketAcceptPort=9876
+----
+
+The default connector is `SocketAcceptor`.
+See link:configuration.adoc#concurrency[Concurrency] and link:configuration.adoc#dynamic-acceptor-sessions[Dynamic Acceptor sessions] for threaded and template-session variants.
+
+== Configure an Initiator
+
+Add to `application.properties`:
+
+[source,properties]
+----
+quickfixj.client.enabled=true
+quickfixj.client.config=classpath:quickfixj-client.cfg
+----
+
+Create `quickfixj-client.cfg` on the application classpath:
+
+[source,ini]
+----
+[default]
+ConnectionType=initiator
+StartTime=00:00:00
+EndTime=00:00:00
+HeartBtInt=30
+ReconnectInterval=5
+SocketConnectHost=localhost
+UseDataDictionary=Y
+
+[session]
+BeginString=FIX.4.4
+SenderCompID=CLIENT
+TargetCompID=EXECUTOR
+SocketConnectPort=9876
+----
+
+The default connector is `SocketInitiator`.
+Set `quickfixj.client.concurrent.enabled=true` to select `ThreadedSocketInitiator`.
+
+== Default components
+
+For an enabled role, the starter creates:
+
+* `SessionSettings` from the configured settings source.
+* `MemoryStoreFactory` unless another message-store factory is selected.
+* `ScreenLogFactory` unless another log factory is selected.
+* QuickFIX/J's `DefaultMessageFactory`.
+* `EventPublisherApplicationAdapter` for QuickFIX/J callbacks.
+* The role's connector and a Spring `SmartLifecycle` manager.
+* A `QuickFixJTemplate` for synchronous sends.
+
+Most beans back off when the application supplies a replacement.
+See link:customization.adoc[Customization] before overriding several connector components, because starter 4.x intentionally supports one auto-configured role per context.
+
+== Next steps
+
+* Use link:configuration.adoc[Configuration reference] for properties and settings-source precedence.
+* Use link:customization.adoc[Customization] to process callbacks or replace default beans.
+* Use link:operations.adoc[Operations and Actuator] for endpoints, health, and JMX.
+* Use the upstream https://quickfixj.org/docs/configuration[QuickFIX/J configuration guide] for session schedules, persistence, validation, networking, proxies, and SSL.

@@ -50,7 +50,7 @@ Publication should use staging or an equivalent review step when the publishing 
 . Verify the artifacts and POMs from Maven Central.
 . Create the signed or annotated Git tag used by the project.
 . Publish the GitHub release and release notes.
-. Update README version examples and compatibility documentation.
+. Update the version attributes in `README.adoc` and `docs/getting-started.adoc`, then update compatibility documentation.
 . Advance the development version.
 . Announce any deprecations, operational changes, or required migrations.
 . Create or confirm backport issues for the maintained `3.x` line.

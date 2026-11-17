@@ -24,13 +24,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import quickfix.Acceptor;
 import quickfix.Application;
+import quickfix.Connector;
 import quickfix.Initiator;
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.mina.acceptor.AbstractSocketAcceptor;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlType;
 import quickfix.field.OrderQty;
@@ -39,6 +42,8 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TransactTime;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
@@ -55,6 +60,9 @@ import static quickfix.field.CxlType.PARTIAL_CANCEL;
  */
 public class QuickFixJServerClientIntegrationTest {
 
+	private static final int EXPECTED_SESSION_COUNT = 6;
+	private static final String TEST_PORT_PROPERTY = "quickfixj.test.port";
+
 	private AnnotationConfigApplicationContext parentContext;
 	private AnnotationConfigApplicationContext serverContext;
 	private AnnotationConfigApplicationContext clientContext;
@@ -62,38 +70,80 @@ public class QuickFixJServerClientIntegrationTest {
 	@BeforeEach
 	public void setUp() {
 		parentContext = new AnnotationConfigApplicationContext(QuickFixJCommonConfiguration.class);
-		serverContext = new AnnotationConfigApplicationContext(QuickFixJServerContextConfiguration.class);
-		clientContext = new AnnotationConfigApplicationContext(QuickFixJClientContextConfiguration.class);
-
-		serverContext.setParent(parentContext);
-		clientContext.setParent(parentContext);
-
-		serverContext.start();
-		clientContext.start();
+		serverContext = createContext(QuickFixJServerContextConfiguration.class, 0);
 
 		Acceptor serverAcceptor = serverContext.getBean("serverAcceptor", Acceptor.class);
+		int serverPort = getBoundPort(serverAcceptor);
+
+		clientContext = createContext(QuickFixJClientContextConfiguration.class, serverPort);
 		Initiator clientInitiator = clientContext.getBean("clientInitiator", Initiator.class);
 
-		await().atMost(TEN_SECONDS).until(() ->
-				serverAcceptor.getSessions()
-						.stream()
-						.allMatch(sessionID -> Session.lookupSession(sessionID).isLoggedOn())
-		);
-		await().atMost(TEN_SECONDS).until(() ->
-				clientInitiator.getSessions()
-						.stream()
-						.allMatch(sessionID -> Session.lookupSession(sessionID).isLoggedOn())
-		);
+		awaitLoggedOn("acceptor", serverAcceptor);
+		awaitLoggedOn("initiator", clientInitiator);
 	}
 
 	@AfterEach
 	void tearDown() {
-		System.out.println("closing clientContext now...");
-		clientContext.close();
-		System.out.println("closing serverContext now...");
-		serverContext.close();
-		System.out.println("closing parent now...");
-		parentContext.close();
+		try {
+			closeContext(clientContext);
+		} finally {
+			try {
+				closeContext(serverContext);
+			} finally {
+				closeContext(parentContext);
+			}
+		}
+	}
+
+	private AnnotationConfigApplicationContext createContext(Class<?> configuration, int port) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		try {
+			context.setParent(parentContext);
+			TestPropertyValues.of(TEST_PORT_PROPERTY + "=" + port).applyTo(context);
+			context.register(configuration);
+			context.refresh();
+			return context;
+		} catch (RuntimeException | Error exception) {
+			try {
+				context.close();
+			} catch (RuntimeException closeException) {
+				exception.addSuppressed(closeException);
+			}
+			throw exception;
+		}
+	}
+
+	private int getBoundPort(Acceptor acceptor) {
+		assertThat(acceptor).isInstanceOf(AbstractSocketAcceptor.class);
+		AbstractSocketAcceptor socketAcceptor = (AbstractSocketAcceptor) acceptor;
+
+		assertThat(socketAcceptor.getEndpoints()).as("acceptor endpoints").hasSize(1);
+		SocketAddress localAddress = socketAcceptor.getEndpoints().iterator().next().getLocalAddress();
+		assertThat(localAddress).as("acceptor endpoint address").isInstanceOf(InetSocketAddress.class);
+
+		int port = ((InetSocketAddress) localAddress).getPort();
+		assertThat(port).as("operating-system-assigned acceptor port").isPositive();
+		return port;
+	}
+
+	private void awaitLoggedOn(String connectorName, Connector connector) {
+		await().alias("all " + connectorName + " sessions logged on")
+				.atMost(TEN_SECONDS)
+				.untilAsserted(() -> {
+					assertThat(connector.getSessions()).as(connectorName + " sessions")
+							.hasSize(EXPECTED_SESSION_COUNT)
+							.allSatisfy(sessionID -> {
+								Session session = Session.lookupSession(sessionID);
+								assertThat(session).as("session " + sessionID).isNotNull();
+								assertThat(session.isLoggedOn()).as("session " + sessionID + " logged on").isTrue();
+							});
+				});
+	}
+
+	private void closeContext(AnnotationConfigApplicationContext context) {
+		if (context != null) {
+			context.close();
+		}
 	}
 
 	@Test

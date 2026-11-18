@@ -68,6 +68,16 @@
 			<artifactId>spring-webflux</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.allune</groupId>
+			<artifactId>assertj-quickfixj</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.allune</groupId>
+			<artifactId>fix-mock-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- QuickFIX/J dependencies -->
 		<dependency>

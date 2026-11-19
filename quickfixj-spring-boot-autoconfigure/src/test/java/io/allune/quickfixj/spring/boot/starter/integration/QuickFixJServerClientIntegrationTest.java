@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.starter.integration;
 
+import io.allune.quickfixj.api.Assertions;
 import io.allune.quickfixj.api.MessageAssert;
 import io.allune.quickfixj.spring.boot.starter.integration.config.QuickFixJCommonConfiguration;
 import io.allune.quickfixj.spring.boot.starter.integration.config.client.QuickFixJClientContextConfiguration;
@@ -261,7 +262,7 @@ public class QuickFixJServerClientIntegrationTest {
 
 		Message capturedMessage = messageArgumentCaptor.getValue();
 		assertThat(capturedMessage).isEqualTo(message);
-		MessageAssert capturedMessageAssert = io.allune.quickfixj.api.Assertions.assertThat(capturedMessage)
+		MessageAssert capturedMessageAssert = Assertions.assertThat(capturedMessage)
 				.isOrderCancelRequest();
 		boolean applicationVersionResolvable = !FixVersions.BEGINSTRING_FIXT11.equals(
 				capturedMessage.getHeader().getString(BeginString.FIELD))

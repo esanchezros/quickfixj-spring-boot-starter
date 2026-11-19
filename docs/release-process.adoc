@@ -43,7 +43,23 @@ The release pull request should record:
 
 The maintainer performs or explicitly approves Maven Central publication. Credentials must stay in the maintainer's local settings or the repository's protected release environment and must never be committed.
 
-Publication should use staging or an equivalent review step when the publishing service supports it. The maintainer verifies the staged artifacts before publication becomes final.
+The repository's Central Publishing Maven Plugin configuration defaults to manual publication. A release deployment uploads the signed bundle, waits for Portal validation, and stops before publication:
+
+[source,shell]
+----
+mvn --show-version -Prelease clean deploy
+----
+
+The maintainer must inspect the validated deployment in the Central Portal and publish it explicitly. Drop failed, abandoned, or superseded deployments so they cannot be published later by mistake. Do not rely on command-line properties to override the repository's publication mode.
+
+To assemble and inspect the release bundle without uploading it, use the plugin's bundle-only rehearsal:
+
+[source,shell]
+----
+mvn --show-version -Prelease -DskipTests -DskipUpload=true clean deploy
+----
+
+The rehearsal must not replace the complete verification command. Before publication, confirm the POMs, primary artifacts, source archives, Javadocs, signatures, checksums, licenses, and expected module set. Once published, Maven Central coordinates are immutable and cannot be replaced.
 
 == After publication
 

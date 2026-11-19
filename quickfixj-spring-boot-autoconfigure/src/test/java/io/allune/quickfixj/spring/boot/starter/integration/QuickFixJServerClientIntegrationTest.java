@@ -15,6 +15,7 @@
  */
 package io.allune.quickfixj.spring.boot.starter.integration;
 
+import io.allune.quickfixj.api.MessageAssert;
 import io.allune.quickfixj.spring.boot.starter.integration.config.QuickFixJCommonConfiguration;
 import io.allune.quickfixj.spring.boot.starter.integration.config.client.QuickFixJClientContextConfiguration;
 import io.allune.quickfixj.spring.boot.starter.integration.config.server.QuickFixJServerContextConfiguration;
@@ -29,13 +30,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.Connector;
+import quickfix.FixVersions;
 import quickfix.Initiator;
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.mina.acceptor.AbstractSocketAcceptor;
+import quickfix.field.ApplVerID;
+import quickfix.field.BeginString;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlType;
+import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
@@ -254,7 +259,22 @@ public class QuickFixJServerClientIntegrationTest {
 		ArgumentCaptor<SessionID> sessionIDArgumentCaptor = ArgumentCaptor.forClass(SessionID.class);
 		verify(application).toApp(messageArgumentCaptor.capture(), sessionIDArgumentCaptor.capture());
 
-		assertThat(messageArgumentCaptor.getValue()).isEqualTo(message);
+		Message capturedMessage = messageArgumentCaptor.getValue();
+		assertThat(capturedMessage).isEqualTo(message);
+		MessageAssert capturedMessageAssert = io.allune.quickfixj.api.Assertions.assertThat(capturedMessage)
+				.isOrderCancelRequest();
+		boolean applicationVersionResolvable = !FixVersions.BEGINSTRING_FIXT11.equals(
+				capturedMessage.getHeader().getString(BeginString.FIELD))
+				|| capturedMessage.getHeader().isSetField(ApplVerID.FIELD);
+		// AssertJ QuickFIX/J needs ApplVerID to select a dictionary for FIXT field and header assertions.
+		if (applicationVersionResolvable) {
+			capturedMessageAssert
+					.hasFieldValue(ClOrdID.FIELD, "321")
+					.header()
+					.hasMsgType(MsgType.ORDER_CANCEL_REQUEST)
+					.hasSenderCompID(senderCompID)
+					.hasTargetCompID(targetCompID);
+		}
 		assertThat(sessionIDArgumentCaptor.getValue().getSenderCompID()).isEqualTo(senderCompID);
 		assertThat(sessionIDArgumentCaptor.getValue().getTargetCompID()).isEqualTo(targetCompID);
 	}

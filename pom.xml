@@ -53,6 +53,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quickfixj.version>3.0.2</quickfixj.version>
 		<assertj-quickfixj.version>1.1.0</assertj-quickfixj.version>
+		<fix-mock.version>0.2.0</fix-mock.version>
 		<awaitility.version>4.3.0</awaitility.version>
 		<spring-boot-dependencies.version>4.1.2</spring-boot-dependencies.version>
 		<snakeyaml.version>2.7</snakeyaml.version>
@@ -179,6 +180,11 @@
 				<groupId>io.allune</groupId>
 				<artifactId>assertj-quickfixj</artifactId>
 				<version>${assertj-quickfixj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.allune</groupId>
+				<artifactId>fix-mock-core</artifactId>
+				<version>${fix-mock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.awaitility</groupId>

@@ -15,7 +15,6 @@
  */
 package io.allune.quickfixj.spring.boot.starter.integration;
 
-import io.allune.quickfixj.api.Assertions;
 import io.allune.quickfixj.api.MessageAssert;
 import io.allune.quickfixj.spring.boot.starter.integration.config.QuickFixJCommonConfiguration;
 import io.allune.quickfixj.spring.boot.starter.integration.config.client.QuickFixJClientContextConfiguration;
@@ -52,11 +51,13 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 
+import static io.allune.quickfixj.api.Assertions.assertThat;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.TEN_SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static quickfix.field.CxlType.PARTIAL_CANCEL;
@@ -261,8 +262,8 @@ public class QuickFixJServerClientIntegrationTest {
 		verify(application).toApp(messageArgumentCaptor.capture(), sessionIDArgumentCaptor.capture());
 
 		Message capturedMessage = messageArgumentCaptor.getValue();
-		assertThat(capturedMessage).isEqualTo(message);
-		MessageAssert capturedMessageAssert = Assertions.assertThat(capturedMessage)
+		assertEquals(message, capturedMessage);
+		MessageAssert capturedMessageAssert = assertThat(capturedMessage)
 				.isOrderCancelRequest();
 		boolean applicationVersionResolvable = !FixVersions.BEGINSTRING_FIXT11.equals(
 				capturedMessage.getHeader().getString(BeginString.FIELD))
